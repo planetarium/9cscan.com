@@ -63,7 +63,4 @@ grunt deploy
 
 ## License
 
-Apache 2.0# 9cscan.com
-# 9cscan.com
-# 9cscan.com
-# 9cscan.com
+Apache 2.0
