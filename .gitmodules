@@ -1,0 +1,4 @@
+[submodule "NineChronicles"]
+	path = NineChronicles
+	url = https://github.com/planetarium/NineChronicles.git
+	branch = main
