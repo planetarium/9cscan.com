@@ -60,7 +60,7 @@ let router = new Router({
         {
             path: '/address/:address/transactions',
             name: 'accountTransactions',
-            meta: {noLayout:true},
+            meta: {noLayout:true, embed:true},
             props: true,
             component: AccountTransactionList
         },

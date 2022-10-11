@@ -12,7 +12,14 @@
       <actions-select v-model="filter.action" color="point" @change="changeActionFilter"></actions-select>
     </template>
     <template v-slot:default="{items, loading}">
-      <transaction-table :transactions="items" involved detail :loading="loading"></transaction-table>
+      <transaction-table
+          :transactions="items"
+          :link-external="isEmbedMode"
+          :no-from="isEmbedMode"
+          :show-avatar="isEmbedMode"
+          :detail="!isEmbedMode"
+          involved
+          :loading="loading"></transaction-table>
     </template>
   </page-list-wrapper>
 </template>
@@ -36,7 +43,8 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('Block', ['size'])
+        ...mapGetters('Block', ['size']),
+        isEmbedMode() {return this.$route.meta['embed']}
     },
     async created() {
     },
