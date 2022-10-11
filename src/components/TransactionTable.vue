@@ -9,10 +9,10 @@
             <th>Block</th>
             <th>Age</th>
             <th v-if="detail">Confirm</th>
-            <th v-if="!noFrom">From</th>
+            <th v-if="!embedMode">From</th>
             <th v-if="involved">Involved</th>
             <th>Action</th>
-            <th v-if="detail || showAvatar">Avatar</th>
+            <th v-if="detail || embedMode">Avatar</th>
             <th v-if="detail">Updated<br />Addresses</th>
           </tr>
         </thead>
@@ -33,18 +33,18 @@
         <transition-group name="list-complete" tag="tbody" v-else>
           <tr v-for="tx in transactions" :key="tx.id" class="row-item">
             <td>
-              <router-link :to="{name: 'transaction', params: {id: tx.id}}" :target="linkExternal ? '_blank' : ''">
+              <router-link :to="{name: 'transaction', params: {id: tx.id}}" :target="embedMode ? '_blank' : ''">
                 {{shortAddress(tx.id)}}
               </router-link>
             </td>
-            <td><v-btn class="rect pointlink-btn" outlined small depressed  :to="{name: 'block', params: {index: tx.blockIndex}}">{{tx.blockIndex}}</v-btn></td>
+            <td><v-btn class="rect pointlink-btn" outlined small depressed  :target="embedMode ? '_blank' : ''" :to="{name: 'block', params: {index: tx.blockIndex}}">{{tx.blockIndex}}</v-btn></td>
             <td class="text-no-wrap">{{moment(tx.timestamp).fromNow()}}</td>
             <td v-if="detail">
               <v-chip label small outlined text-color="#555"><strong class="mr-1">{{latestBlockIndex - tx.blockIndex + 1}}</strong> Confirms</v-chip>
             </td>
 
-            <td v-if="!noFrom">
-              <router-link :to="{name: 'account', params: {address: tx.signer}}" :target="linkExternal ? '_blank' : ''">
+            <td v-if="!embedMode">
+              <router-link :to="{name: 'account', params: {address: tx.signer}}" :target="embedMode ? '_blank' : ''">
                 {{tx.signer.substr(0, 8)}}
               </router-link>
             </td>
@@ -52,13 +52,13 @@
               <v-chip label small color="success" :outlined="tx.involved['type'] == 'INVOLVED'" v-if="tx.involved">{{tx.involved['type']}}</v-chip>
             </td>
             <td>
-              <v-btn label small :to="{name: 'transaction', params: {id: tx.id}}" style="text-transform: none;height:20px;font-weight:500;letter-spacing: 0" color="point" rounded outlined v-for="action in tx.actions" v-if="action.inspection" class="darken-1 px-2 mx-1">
-                <v-btn icon x-small color="point" :to="{query: {action: action.inspection['typeId']}, ...(detail ? {} : {name: 'transactions'})}" style="width:12px;" class="mr-1"><v-icon x-small>mdi-filter-variant</v-icon></v-btn>
+              <v-btn label small :to="{name: 'transaction', params: {id: tx.id}}" style="text-transform: none;height:20px;font-weight:500;letter-spacing: 0" color="point" rounded outlined v-for="action in tx.actions" v-if="action.inspection" class="darken-1 px-2 mx-1" :target="embedMode ? '_blank' : ''">
+                <v-btn icon x-small color="point" :to="{query: {action: action.inspection['typeId']}, ...((detail || embedMode) ? {} : {name: 'transactions'})}" style="width:12px;" class="mr-1"><v-icon x-small>mdi-filter-variant</v-icon></v-btn>
                 {{action.inspection['typeId']}}
               </v-btn>
             </td>
-            <td v-if="detail || showAvatar">
-              <router-link :to="{name: 'avatar', params: {address: action.inspection['avatarAddress']}}" v-for="action in tx.actions" v-if="action.inspection" class="mx-1" :target="linkExternal ? '_blank' : ''">
+            <td v-if="detail || embedMode">
+              <router-link :to="{name: 'avatar', params: {address: action.inspection['avatarAddress']}}" v-for="action in tx.actions" v-if="action.inspection" class="mx-1" :target="embedMode ? '_blank' : ''">
                 {{action.inspection['avatarAddress'] && action.inspection['avatarAddress'].substr(0, 8)}}
               </router-link>
             </td>
@@ -93,18 +93,10 @@ export default {
             type: Boolean,
             default: false
         },
-        linkExternal: {
+        embedMode: {
             type:Boolean,
             default: false
-        },
-        noFrom: {
-          type:Boolean,
-          default: false
-        },
-        showAvatar: {
-          type:Boolean,
-          default: false
-        },
+        }
     },
     mixins: [],
     data() {

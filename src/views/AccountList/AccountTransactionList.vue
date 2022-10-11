@@ -14,9 +14,7 @@
     <template v-slot:default="{items, loading}">
       <transaction-table
           :transactions="items"
-          :link-external="isEmbedMode"
-          :no-from="isEmbedMode"
-          :show-avatar="isEmbedMode"
+          :embed-mode="isEmbedMode"
           :detail="!isEmbedMode"
           involved
           :loading="loading"></transaction-table>
