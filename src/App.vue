@@ -1,9 +1,9 @@
 <template>
   <v-app id="app">
-    <toolbar></toolbar>
-    <global-search v-if="$route.name != 'index'"></global-search>
+    <toolbar v-if="!$route.meta['noLayout']"></toolbar>
+    <global-search v-if="!$route.meta['noLayout'] && $route.name != 'index'"></global-search>
     <router-view id="router"/>
-    <common-footer class="mt-12 pt-12"></common-footer>
+    <common-footer class="mt-12 pt-12" v-if="!$route.meta['noLayout']"></common-footer>
   </v-app>
 </template>
 
