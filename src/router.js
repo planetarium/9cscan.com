@@ -8,6 +8,7 @@ import Transaction from "@/views/Transaction";
 import Account from "@/views/Account";
 import Avatar from "@/views/Avatar";
 import Status from "@/views/Status";
+import AccountTransactionList from "@/views/AccountList/AccountTransactionList";
 
 Vue.use(Router)
 let router = new Router({
@@ -55,6 +56,13 @@ let router = new Router({
             path: '/address/:address',
             name: 'account',
             component: Account
+        },
+        {
+            path: '/address/:address/transactions',
+            name: 'accountTransactions',
+            meta: {noLayout:true},
+            props: true,
+            component: AccountTransactionList
         },
         {
             path: '/avatar/:address',
