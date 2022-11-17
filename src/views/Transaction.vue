@@ -160,6 +160,8 @@ export default {
             let tx = await this.$store.dispatch('Block/loadTransaction', this.id)
             if (tx) {
               this.tx = tx
+            } else {
+              this.tx = {}
             }
             if (!this.tx.status || this.tx.status == 'STAGING' || this.tx.status == 'INVALID') {
                 this.refreshTxStatus()
