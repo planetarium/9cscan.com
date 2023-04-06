@@ -38,7 +38,7 @@
           <h5 class="scoreboard-title">Network Performance</h5>
 
           <v-row class="performance-list">
-            <v-col class="performance-item" cols="12" sm="4">
+            <v-col class="performance-item" cols="12" sm="6">
               <div class="performance-card">
                 <div v-if="loading" style="margin-bottom: 7px">
                   <v-progress-circular indeterminate color="#ccc">
@@ -51,20 +51,7 @@
               </div>
             </v-col>
 
-            <v-col class="performance-item" cols="12" sm="4">
-              <div class="performance-card">
-                <div v-if="loading" style="margin-bottom: 7px">
-                  <v-progress-circular indeterminate color="#ccc">
-                  </v-progress-circular>
-                </div>
-                <div class="data" v-else>
-                  <label id="avg-difficulty"></label>
-                </div>
-                <span>Avg difficulty</span>
-              </div>
-            </v-col>
-
-            <v-col class="performance-item" cols="12" sm="4">
+            <v-col class="performance-item" cols="12" sm="6">
               <div class="performance-card">
                 <div v-if="loading" style="margin-bottom: 7px">
                   <v-progress-circular indeterminate color="#ccc">
