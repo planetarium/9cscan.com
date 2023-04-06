@@ -44,7 +44,7 @@
                 {{block.miner.substr(0, 8)}}
               </router-link>
             </td>
-            <td v-if="detail">{{shortAddress(block.nonce)}}</td>
+            <td v-if="detail">{{block.nonce && shortAddress(block.nonce)}}</td>
             <td v-if="detail">{{shortAddress(block.stateRootHash)}}</td>
             <td>{{block.difficulty}}</td>
           </tr>
