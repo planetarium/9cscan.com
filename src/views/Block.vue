@@ -45,20 +45,8 @@
             </v-col>
           </v-row>
           <v-row class="info-item ma-0">
-            <v-col cols="12" sm="3" class="item-title">Difficulty:</v-col>
-            <v-col cols="12" sm="9" class="item-value" v-if="!loading">{{block.difficulty.toLocaleString()}}</v-col>
-          </v-row>
-          <v-row class="info-item ma-0">
-            <v-col cols="12" sm="3" class="item-title">Total Difficulty:</v-col>
-            <v-col cols="12" sm="9" class="item-value" v-if="!loading">{{block.totalDifficulty.toLocaleString()}}</v-col>
-          </v-row>
-          <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">State Root Hash:</v-col>
             <v-col cols="12" sm="9" class="item-value" v-if="!loading">0x{{block.stateRootHash}}</v-col>
-          </v-row>
-          <v-row class="info-item ma-0">
-            <v-col cols="12" sm="3" class="item-title">Nonce:</v-col>
-            <v-col cols="12" sm="9" class="item-value" v-if="!loading">{{block.nonce}}</v-col>
           </v-row>
         </v-card-text>
       </v-card>
