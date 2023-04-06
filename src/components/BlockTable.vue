@@ -10,9 +10,7 @@
             <th>Age</th>
             <th>Total Tx</th>
             <th>Miner</th>
-            <th v-if="detail">Nonce</th>
             <th v-if="detail">State Root Hash</th>
-            <th>Difficulty</th>
           </tr>
         </thead>
         <tbody v-if="loading">
@@ -44,9 +42,7 @@
                 {{block.miner.substr(0, 8)}}
               </router-link>
             </td>
-            <td v-if="detail">{{block.nonce && shortAddress(block.nonce)}}</td>
             <td v-if="detail">{{shortAddress(block.stateRootHash)}}</td>
-            <td>{{block.difficulty}}</td>
           </tr>
         </transition-group>
       </template>
