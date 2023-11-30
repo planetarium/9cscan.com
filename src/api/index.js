@@ -156,7 +156,7 @@ export default {
         return data
     },
     getPrice: async function() {
-        return await get('/price')
+        return await api('GET', 'https://api.9cscan.com/price', {})
     },
     getStatus: async function() {
         return await get('/status')
