@@ -12,8 +12,8 @@
             <th v-if="!embedMode">From</th>
             <th v-if="involved">Involved</th>
             <th>Action</th>
+            <th v-if="detail"></th>
             <th v-if="detail || embedMode">Avatar</th>
-            <th v-if="detail">Updated<br />Addresses</th>
           </tr>
         </thead>
         <tbody v-if="loading">
@@ -38,7 +38,7 @@
               </router-link>
             </td>
             <td><v-btn class="rect pointlink-btn" outlined small depressed  :target="embedMode ? '_blank' : ''" :to="{name: 'block', params: {index: tx.blockIndex}}">{{tx.blockIndex}}</v-btn></td>
-            <td class="text-no-wrap">{{moment(tx.timestamp).fromNow()}}</td>
+            <td class="text-no-wrap">{{moment(tx.blockTimestamp || tx.timestamp).fromNow()}}</td>
             <td v-if="detail">
               <v-chip label small outlined text-color="#555"><strong class="mr-1">{{latestBlockIndex - tx.blockIndex + 1}}</strong> Confirms</v-chip>
             </td>
@@ -57,12 +57,16 @@
                 {{action.inspection['typeId']}}
               </v-btn>
             </td>
+            <td v-if="detail">
+              <span v-if="tx?.actions?.[0]?.inspection?.['amount']">
+                <amount-label :asset-data="tx.actions[0].inspection['amount'][0]" :amount="tx.actions[0].inspection['amount'][1]" />
+              </span>
+            </td>
             <td v-if="detail || embedMode">
               <router-link :to="{name: 'avatar', params: {address: action.inspection['avatarAddress']}}" v-for="action in tx.actions" v-if="action.inspection" class="mx-1" :target="embedMode ? '_blank' : ''">
                 {{action.inspection['avatarAddress'] && action.inspection['avatarAddress'].substr(0, 8)}}
               </router-link>
             </td>
-            <td v-if="detail">{{tx.updatedAddresses.length}}</td>
           </tr>
         </transition-group>
       </template>
@@ -72,10 +76,11 @@
 
 <script>
 import {mapGetters} from "vuex";
+import AmountLabel from "@/components/ui/AmountLabel.vue";
 
 export default {
     name: 'TransactionTable',
-    components: {},
+    components: {AmountLabel},
     props: {
         loading: {
             type: Boolean,

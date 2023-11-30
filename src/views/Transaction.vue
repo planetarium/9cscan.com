@@ -40,9 +40,15 @@
             </v-col>
           </v-row>
           <v-row class="info-item ma-0">
+            <v-col cols="12" sm="3" class="item-title">Age:</v-col>
+            <v-col cols="12" sm="9" class="item-value" v-if="!loading && tx.id">
+              <v-icon small>mdi-clock-outline</v-icon> {{moment(tx.blockTimestamp).fromNow()}} <span style="color:#777">({{ moment(tx.blockTimestamp) }}</span>
+            </v-col>
+          </v-row>
+          <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Timestamp:</v-col>
             <v-col cols="12" sm="9" class="item-value" v-if="!loading && tx.id">
-              <v-icon small>mdi-clock-outline</v-icon> {{moment(tx.timestamp).fromNow()}} <span style="color:#777">({{ moment(tx.timestamp) }}</span>
+              {{ moment(tx.timestamp) }}
             </v-col>
           </v-row>
           <v-row class="info-item ma-0">
@@ -160,6 +166,10 @@ export default {
             let tx = await this.$store.dispatch('Block/loadTransaction', this.id)
             if (tx) {
               this.tx = tx
+              if (!tx.blockTimestamp) {
+                const block = await this.$store.dispatch('Block/loadBlock', tx.blockIndex)
+                tx.blockTimestamp = block.timestamp
+              }
             } else {
               this.tx = {}
             }
