@@ -42,7 +42,7 @@ export default {
 <style lang="scss">
 .amount {
   font-size: 12px;
-  color: #333;
+  color: #444;
   font-weight: 500;
 
   .ticker {

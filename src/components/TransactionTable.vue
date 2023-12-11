@@ -55,6 +55,7 @@
               <v-btn label small :to="{name: 'transaction', params: {id: tx.id}}" style="text-transform: none;height:20px;font-weight:500;letter-spacing: 0" color="point" rounded outlined v-for="action in tx.actions" v-if="action.inspection" class="darken-1 px-2 mx-1" :target="embedMode ? '_blank' : ''">
                 <v-btn icon x-small color="point" :to="{query: {action: action.inspection['typeId']}, ...((detail || embedMode) ? {} : {name: 'transactions'})}" style="width:12px;" class="mr-1"><v-icon x-small>mdi-filter-variant</v-icon></v-btn>
                 {{action.inspection['typeId']}}
+                <span style="font-size: 10px;opacity:0.8;" v-if="action.inspection['productType']">({{action.inspection['productType']}})</span>
               </v-btn>
             </td>
             <td v-if="detail">

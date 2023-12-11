@@ -106,6 +106,16 @@ function parseTxAction(tx) {
                 inspection['avatarAddress'] = inspection['avatarAddress'].toLowerCase()
             }
 
+            try {
+                //to display NCG amount
+                if (!inspection['amount']) {
+                    if (inspection['typeId'].startsWith('buy_product')) {
+                        inspection['amount'] = inspection['p'][0][1]
+                        inspection['productType'] = inspection['p'][0][6]
+                    }
+                }
+            } catch(e) {}
+
             action['inspection'] = inspection
         }
     })

@@ -5,7 +5,7 @@ node_modules
 *.iml
 
 # local env files
-.env.localhost
+.env*
 
 # Npm
 package-lock.json

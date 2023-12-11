@@ -128,11 +128,10 @@ import {mapGetters} from "vuex"
 import BlockTable from "@/components/BlockTable";
 import TransactionTable from "@/components/TransactionTable";
 import CopyBtn from "@/components/btn/CopyBtn";
-import ActionDescriptor from "@/components/ui/ActionDescriptor";
 import Vue from "vue"
 export default {
     name: 'Transaction',
-    components: {ActionDescriptor, CopyBtn, TransactionTable, BlockTable},
+    components: {CopyBtn, TransactionTable, BlockTable},
     mixins: [],
     data() {
         return {
@@ -151,7 +150,6 @@ export default {
             this.init()
         })
         this.init()
-        this.$store.dispatch('Sheet/init')
     },
     methods: {
         async init() {
