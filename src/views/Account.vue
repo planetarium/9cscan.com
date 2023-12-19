@@ -42,6 +42,7 @@
         <v-tabs v-model="tab">
           <v-tab @click="goReplace('account', null, {address})">Transactions</v-tab>
           <v-tab @click="goReplace('account', {t:'mined'}, {address})">Mined Blocks</v-tab>
+          <v-tab @click="goReplace('account', {t:'transfer', action: 'transfer_asset5'}, {address})">NCG Transfer</v-tab>
         </v-tabs>
         <v-divider></v-divider>
         <div v-if="loading" class="py-12">
@@ -53,6 +54,9 @@
           </div>
           <div v-if="tab == 1">
             <account-block-list :miner="address"></account-block-list>
+          </div>
+          <div v-if="tab == 2">
+            <account-transfer-list :address="address"></account-transfer-list>
           </div>
         </v-card-text>
       </v-card>
@@ -67,10 +71,11 @@ import TransactionTable from "@/components/TransactionTable";
 import AccountTransactionList from "@/views/AccountList/AccountTransactionList";
 import AccountBlockList from "@/views/AccountList/AccountBlockList";
 import CopyBtn from "@/components/btn/CopyBtn";
-const TABS = {'mined': 1}
+import AccountTransferList from "@/views/AccountList/AccountTransferList.vue";
+const TABS = {'mined': 1, 'transfer': 2}
 export default {
     name: 'Account',
-    components: {CopyBtn, AccountBlockList, AccountTransactionList, TransactionTable},
+    components: {CopyBtn, AccountBlockList, AccountTransactionList, AccountTransferList, TransactionTable},
     mixins: [],
     data() {
         return {

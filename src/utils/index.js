@@ -10,6 +10,9 @@ let methods = {
     timeFormat(ts) {
         return moment(ts).format('ll, LT')
     },
+    ncgFormat(num) {
+        return new Intl.NumberFormat('en-US', {style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2}).format(num)
+    },
     searchKeyword(_key) {
         let key = _key.trim().toLowerCase()
         if (key.startsWith('0x')) {

@@ -158,6 +158,12 @@ export default {
   color: var(--v-pointlink-base) !important;
   font-weight: 600 !important;
 }
+.pointgreen-btn {
+  background-color: transparent;
+  border-color: var(--v-pointgreen-lighten1) !important;
+  color: var(--v-pointgreen-base) !important;
+  font-weight: 600 !important;
+}
 .pointred-btn {
   background-color: var(--v-pointred-base) !important;
   color: white !important;

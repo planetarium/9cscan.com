@@ -82,6 +82,10 @@ new Vue({
             base: '#ff4142',
             lighten1: '#ff3a40'
           },
+          pointgreen: {
+            base: '#34b904',
+            lighten1: '#63b61d'
+          },
           pointblue: {
             base: '#3E2A8C',
             darken1: '#2c1e65',

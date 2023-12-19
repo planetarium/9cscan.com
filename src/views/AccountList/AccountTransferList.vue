@@ -13,12 +13,12 @@
         <actions-select v-model="filter.action" color="point" @change="changeActionFilter"></actions-select>
       </template>
       <template v-slot:default="{items, loading}">
-        <transaction-table
+        <transfer-table
             :transactions="items"
             :embed-mode="isEmbedMode"
             :detail="!isEmbedMode"
             involved
-            :loading="loading"></transaction-table>
+            :loading="loading"></transfer-table>
       </template>
     </page-list-wrapper>
     <div class="mt-2" style="position: absolute; right: 10px;">
@@ -33,16 +33,17 @@ import {mapGetters} from "vuex"
 import TransactionTable from "@/components/TransactionTable";
 import PageListWrapper from "@/components/PageListWrapper";
 import ActionsSelect from "@/components/form/ActionsSelect";
+import TransferTable from "@/components/TransferTable.vue";
 import {download, generateCsv, mkConfig} from "export-to-csv";
 export default {
-    name: 'AccountTransactionList',
-    components: {ActionsSelect, PageListWrapper, TransactionTable},
+    name: 'AccountTransferList',
+    components: {TransferTable, ActionsSelect, PageListWrapper, TransactionTable},
     props: ['address'],
     mixins: [],
     data() {
         return {
-            loading: false,
             csvProgress: 0,
+            loading: false,
             txs: [],
             before: null
         }
@@ -78,20 +79,26 @@ export default {
             this.csvProgress = txs.length;
           }
           txs = txs.map(item => {
-            const amount = item.actions?.[0]?.inspection?.['amount']
-            item.amount = amount ? amount[1] : ''
+            const inspection = item.actions?.[0]?.inspection
+            const amount = inspection?.['amount']
+            const sender = inspection?.['sender']
+            const recipient = inspection?.['recipient']
+            item.from = sender
+            item.to = recipient
+            item.inOut = item.involved?.type === 'SIGNED' ? 'OUT' : 'IN'
+            item.value = amount ? ((item.inOut === 'OUT' ? '-' : '') + amount[1]) : ''
             const decimal = Number(amount?.[0]?.['decimalPlaces'] ?? 0)
-            if (item.amount && decimal > 0) {
-              item.amount /= Math.pow(10, decimal)
+            if (item.value && decimal > 0) {
+              item.value /= Math.pow(10, decimal)
             }
-            item.amountTicker = amount ? amount[0].ticker : ''
+            item.valueTicker = amount ? amount[0].ticker : ''
             item.actionType = item.actions?.[0]?.typeId ?? ''
             item.actions = JSON.stringify(item.actions)
             item.updatedAddresses = JSON.stringify(item.updatedAddresses)
             item.involved = item.involved?.type ?? ''
             return item
           })
-          const csvConfig = mkConfig({ useKeysAsHeaders: true, filename: `transactions-${action ?? 'all'}-${this.address}` });
+          const csvConfig = mkConfig({ useKeysAsHeaders: true, filename: `transfer-${action ?? 'all'}-${this.address}` });
           const csv = generateCsv(csvConfig)(txs);
           download(csvConfig)(csv)
           console.log(txs)
@@ -99,9 +106,10 @@ export default {
           this.csvProgress = undefined;
         },
         changeActionFilter(action) {
+          console.log('hoho', action)
             this.$router.push({
-                param: {address: this.address},
-                query: action ? {action} : {}
+                param: {t: 'transfer', address: this.address},
+                query: action ? {action, t: 'transfer'} : {}
             })
         }
 

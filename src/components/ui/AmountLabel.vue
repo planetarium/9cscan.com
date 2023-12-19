@@ -1,6 +1,6 @@
 <template>
   <span class="amount">
-    {{decimalAmount}} <span class="ticker">{{ticker}}</span>
+    {{ncgFormat(decimalAmount)}} <span class="ticker">{{ticker}}</span>
   </span>
 </template>
 <script>
@@ -12,6 +12,10 @@ export default {
     },
     amount: {
       type: Number
+    },
+    minus: {
+      type: Boolean,
+      default: false
     }
   },
   components: {},
@@ -26,7 +30,7 @@ export default {
     },
     decimalAmount() {
       const decimal = Number(this.assetData?.['decimalPlaces'] ?? 0)
-      let amount = this.amount
+      let amount = this.amount * (this.minus ? -1 : 1)
       if (decimal > 0) {
         amount /= Math.pow(10, decimal)
         return amount.toFixed(2)
@@ -41,7 +45,6 @@ export default {
 
 <style lang="scss">
 .amount {
-  font-size: 12px;
   color: #444;
   font-weight: 500;
 
