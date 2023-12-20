@@ -35,7 +35,7 @@
               <div class="my-2" style="display: flex;justify-content: center;">
                 <div :class="`item-bg item-bg-${item.item.grade || 5}`">
                   <img :src="`/icons/FungibleAssetValue/${item.ticker}.png`" v-if="item.ticker" />
-                  <img :src="`/icons/item/${item.itemId}.png`" v-if="item.itemId"/>
+                  <img :src="`/icons/Item/${item.itemId}.png`" v-if="item.itemId"/>
                   <div class="item-level" v-if="item.item.level">
                     +{{item.item.level}}
                   </div>

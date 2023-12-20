@@ -1,6 +1,6 @@
 <template>
   <div class="page-list">
-    <v-card class="px-sm-4 px-1 py-2" :outlined="!flat" :flat="flat">
+    <v-card class="px-sm-4 px-1 py-2" style="border:0;" :outlined="!flat" :flat="flat">
       <v-card-title class="d-flex align-start px-2 justify-space-between align-sm-center flex-column flex-sm-row">
         <h4>{{ title }}<slot :filter="filter" name="title-after"></slot></h4>
         <pagination :size="size" :can-prev="canPrev" :can-next="canNext" :page="page" @updateSize="changeSize" @goFirst="goFirst" @prev="prev" @next="next"></pagination>

@@ -99,6 +99,9 @@ new Vue({
             darken1: '#2c1e65',
             darken2: '#1b123f',
           },
+          pointpurple: {
+            base: '#8549FF',
+          },
           pointyellow: {
             base: '#f0b90b',
           },

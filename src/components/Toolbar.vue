@@ -1,15 +1,14 @@
 <template>
   <div class="top">
     <div id="toolbar-wrap" class="d-flex justify-center">
-      <v-toolbar dense height="64px" class="page-wide-wrap py-0 my-0 px-2 px-md-4" flat>
+      <v-toolbar dense height="80px" class="page-wide-wrap py-0 my-0 px-2 px-md-4" flat>
         <div class="d-flex justify-space-between flex-fill align-center">
           <v-toolbar-title class="d-flex align-center" style="min-width: 40px;overflow: visible">
             <v-btn icon @click.stop="drawer = !drawer" class="pa-0 ma-0 hidden-md-and-up">
               <v-icon color="pointblue" large>mdi-menu</v-icon>
             </v-btn>
             <v-btn class="hidden-xs-only mx-0 px-2" text :to="{name: 'index'}">
-              <img src="../assets/icon.png" height="36" style="opacity: 0.8" />
-              <h3 class="logo theme-font ml-2">9cscan</h3>
+              <img src="/full_logo.png" height="36" style="opacity: 0.8" />
             </v-btn>
           </v-toolbar-title>
           <v-toolbar-items class="hidden-sm-and-down">
@@ -109,26 +108,28 @@ export default {
 }
 .top {
   background-color: white;
-  height: 64px;
+  height: 80px;
   .menu-item {
     background-color: transparent;
     color: #333 !important;
-    font-weight: 500;
     letter-spacing: 0px;
-    font-size: 16px;
+    font-family: Inter !important;
+    font-size: 18px !important;
+    font-style: normal !important;
+    font-weight: 700 !important;
     margin: 0px 20px;
     transition-property: all;
     transition-duration: 0.52s;
 
     &:hover {
       margin-bottom: -2px;
-      border-bottom: 2px solid var(--v-point-base);
+      border-bottom: 2px solid var(--v-pointpurple-base);
       opacity: 1;
       text-decoration: none !important;
     }
 
     &.selected {
-      color: var(--v-point-base) !important;
+      color: var(--v-pointpurple-base) !important;
     }
   }
 }

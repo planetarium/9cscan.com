@@ -27,6 +27,7 @@ export default {
 
 <style lang="scss">
 @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;800;900&display=swap');
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 #app {
     font-family: Pretendard;
@@ -34,7 +35,7 @@ export default {
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
-    background-color: #fcfcfc;
+    background-color: #fff;
     text-underline-offset: 2px;
 
     a {
@@ -198,12 +199,11 @@ div.v-menu__content.menuable__content__active {
 }
 
 thead {
-  background-color: #f5f7fa;
+  background-color: #fff;
   position: relative;
   z-index: 10;
   text-align: center;
   th {
-    border-top: 1px solid #ddd;
     text-align: center !important;
     color: #111 !important;
     font-size: 14px !important;
@@ -214,8 +214,11 @@ thead {
 .detail-page {
   .page-title {
     text-align: left;
-    font-size: 28px;
-    font-weight: 500;
+    font-family: Inter;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
     > span {
       font-weight: 500;
       color:#777;

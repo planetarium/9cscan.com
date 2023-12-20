@@ -143,29 +143,38 @@ export default {
 
 <style scoped lang="scss">
 .search-section {
-  height: 240px;
+  height: 360px;
   position: relative;
   z-index: 0;
-  background-color: var(--v-pointblue-darken2);
+  background: linear-gradient(296deg, #493969 14.78%, #69419F 46.29%, #5D7EAA 107.02%);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   margin-bottom: 0px;
 
   &:after {
     position: absolute;
-    opacity: 0.16;
     z-index: -2;
     left: 0px;
     top: 0px;
-    background: url('https://nine-chronicles.com/assets/img/hero/1.jpg') center
-      no-repeat;
-    background-size: cover;
+    background: url('/grid.png') center no-repeat;
+    background-size: 120%;
     content: '';
     width: 100%;
     height: 100%;
   }
 
+  .search-title {
+    color: var(--White, #FFF);
+    font-family: Inter !important;
+    font-size: 32px !important;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 40px; /* 125% */
+  }
+
   .search-form {
     h2 {
-      margin-top: 20px;
+      margin-top: 32px;
+      margin-bottom: 32px;
       font-size: 26px;
       color: white;
       font-weight: 600;
@@ -188,21 +197,24 @@ export default {
       .v-input__append-inner {
         margin: 0px !important;
         display: flex;
-        height: 56px;
+        height: 80px;
         justify-items: center;
         align-items: center;
         margin-right: -14px !important;
         overflow: hidden;
-        border-bottom-right-radius: 4px;
-        border-top-right-radius: 4px;
+        border-bottom-right-radius: 16px;
+        border-top-right-radius: 16px;
 
         .v-btn {
-          min-height: 56px;
+          min-width: 84px;
+          min-height: 80px;
         }
       }
 
       .v-input__slot {
         background-color: white !important;
+        border-radius: 16px;
+        max-width: 800px;
 
         &::before {
           border: 0px !important;
@@ -212,11 +224,15 @@ export default {
           color: var(--v-text-base) !important;
           max-height: 44px;
           height: 44px;
-          font-size: 16px;
+          font-family: Inter;
+          font-size: 20px;
+          font-weight: 700;
         }
         input::placeholder {
-          color: var(--v-text-base) !important;
-          font-size: 16px;
+          font-family: Inter !important;
+          color: #838B9B !important;
+          font-size: 20px;
+          padding-left: 10px;
         }
       }
     }

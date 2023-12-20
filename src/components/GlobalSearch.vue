@@ -65,7 +65,6 @@ export default {
   position: relative;
   z-index: 0;
   //background-color: var(--v-pointblue-darken2);
-  box-shadow: 0px 5px 5px #eee;
   background-color: white;
   margin-bottom: 0px;
   &:after {
