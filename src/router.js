@@ -8,6 +8,7 @@ import Transaction from "@/views/Transaction";
 import Account from "@/views/Account";
 import Avatar from "@/views/Avatar";
 import Status from "@/views/Status";
+import Arena from "@/views/Arena";
 import AccountTransactionList from "@/views/AccountList/AccountTransactionList";
 
 Vue.use(Router)
@@ -68,6 +69,11 @@ let router = new Router({
             path: '/avatar/:address',
             name: 'avatar',
             component: Avatar
+        },
+        {
+            path: '/arenas',
+            name: 'arenas',
+            component: Arena
         },
     ]
 })
