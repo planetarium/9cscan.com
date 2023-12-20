@@ -14,6 +14,14 @@ import utils from './utils'
 import BigNumber from "bignumber.js"
 import CSV from "./utils/csvToJson"
 
+axios.get('/item_name.csv').then(({data}) => {
+  const items = window.CSV.parse(data)
+  const itemNames = {}
+  items.forEach((item) => {
+    itemNames[item.Key] = item
+  })
+  Vue.prototype.itemNames = itemNames
+})
 window.setIntervalImmediately = function(func, interval) {
   func();
   return setInterval(func, interval)

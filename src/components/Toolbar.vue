@@ -19,6 +19,19 @@
             <a depressed class="menu-item" @click="go('transactions')" :class="{'selected': $route.name == 'transactions'}">
               Transactions
             </a>
+            <v-menu offset-y>
+              <template v-slot:activator="{on,attrs}">
+                <a depressed class="menu-item" :class="{'selected': $route.name == 'shopHistory'}" v-bind="attrs" v-on="on">
+                  Stats
+                </a>
+              </template>
+              <div class="px-4 py-2" style="min-width: 150px;">
+
+                <a depressed class="menu-item py-2" @click="go('shopHistory')" style="color: #333;font-size: 0.9em;font-weight: bold;display: flex;align-items: center">
+                  <img src="/icons/Item/100000.png" style="width: 20px;margin-right: 8px;" /> <span>Shop History</span>
+                </a>
+              </div>
+            </v-menu>
           </v-toolbar-items>
           <v-spacer class="hidden-sm-and-up"></v-spacer>
           <v-btn text class="hidden-sm-and-up mr-8" :to="{name: 'index'}"><h3 class="logo theme-font">9cscan</h3></v-btn>
@@ -51,6 +64,7 @@ export default {
     mixins: [],
     data() {
         return {
+            showStats: false,
             drawer: false,
             search: ''
         }
@@ -76,7 +90,6 @@ export default {
 #toolbar-wrap {
   height: 64px;
   width: 100%;
-  z-index: 100;
   position: relative;
 
   .side-menu-item {

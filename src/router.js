@@ -9,6 +9,7 @@ import Account from "@/views/Account";
 import Avatar from "@/views/Avatar";
 import Status from "@/views/Status";
 import AccountTransactionList from "@/views/AccountList/AccountTransactionList";
+import ShopHistory from "@/views/ShopHistory.vue";
 
 Vue.use(Router)
 let router = new Router({
@@ -68,6 +69,11 @@ let router = new Router({
             path: '/avatar/:address',
             name: 'avatar',
             component: Avatar
+        },
+        {
+            path: '/stats/shop/history',
+            name: 'shopHistory',
+            component: ShopHistory
         },
     ]
 })

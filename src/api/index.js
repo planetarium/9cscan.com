@@ -171,4 +171,7 @@ export default {
     getStatus: async function() {
         return await get('/status')
     },
+    getShopHistory: async function(param) {
+        return await get('/shopHistory', param)
+    },
 }
