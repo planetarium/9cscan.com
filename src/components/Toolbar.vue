@@ -28,7 +28,9 @@
                 </a>
               </template>
               <div class="px-4 py-2" style="min-width: 150px;">
-
+                <a depressed class="menu-item py-2" @click="go('arena')" style="color: #333;font-size: 0.9em;font-weight: bold;display: flex;align-items: center">
+                  <img src="/icons/Item/49900001.png" style="width: 20px;margin-right: 8px;" /> <span>Arena</span>
+                </a>
                 <a depressed class="menu-item py-2" @click="go('shopHistory')" style="color: #333;font-size: 0.9em;font-weight: bold;display: flex;align-items: center">
                   <img src="/icons/Item/100000.png" style="width: 20px;margin-right: 8px;" /> <span>Shop History</span>
                 </a>

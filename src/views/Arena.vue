@@ -31,6 +31,7 @@ import {mapGetters} from "vuex"
 import PageListWrapper from "@/components/PageListWrapper";
 import ArenaParticipantsTable from "@/components/ArenaParticipantsTable";
 import ArenaSelect from "@/components/form/ArenaSelect";
+import api from "@/api";
 
 export default {
   name: 'ArenaList',
@@ -60,8 +61,7 @@ export default {
         .filter((item) => item)
         .join('&');
 
-      const response = await fetch(`http://localhost:3030/arena/${championshipId}/${round}?${query}`);
-      const result = await response.json();
+      const result = await api.getArena(championshipId, round, query);
 
       this.participants = result;
       this.before = result[result.length - 1].avatarAddress;

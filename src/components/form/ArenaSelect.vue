@@ -18,6 +18,8 @@
 </template>
 
 <script>
+import api from "@/api";
+
 export default {
   name: 'ArenaSelect',
   components: {},
@@ -35,8 +37,7 @@ export default {
   },
   async created() {
     const defaultValue = this.$route.query.arena;
-    const response = await fetch('http://localhost:3030/arena');
-    const result = await response.json();
+    const result = await api.getArenaSeasons();
 
     this.items = result.map((item) => ({ ...item, id: `${item.championshipId}-${item.round}` }));
     this.value = defaultValue || this.items[0].id;

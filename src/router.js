@@ -10,6 +10,7 @@ import Avatar from "@/views/Avatar";
 import Status from "@/views/Status";
 import AccountTransactionList from "@/views/AccountList/AccountTransactionList";
 import ShopHistory from "@/views/ShopHistory.vue";
+import Arena from "@/views/Arena.vue";
 
 Vue.use(Router)
 let router = new Router({
@@ -74,6 +75,11 @@ let router = new Router({
             path: '/stats/shop/history',
             name: 'shopHistory',
             component: ShopHistory
+        },
+        {
+            path: '/stats/arena',
+            name: 'arena',
+            component: Arena
         },
     ]
 })

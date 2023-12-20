@@ -174,4 +174,10 @@ export default {
     getShopHistory: async function(param) {
         return await get('/shopHistory', param)
     },
+    getArenaSeasons: async function() {
+        return await get(`/arena`)
+    },
+    getArena: async function(championshipId, round, query) {
+        return await get(`/arena/${championshipId}/${round}?${query}`)
+    }
 }
