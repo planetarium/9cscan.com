@@ -12,6 +12,9 @@
             </v-btn>
           </v-toolbar-title>
           <v-toolbar-items class="hidden-sm-and-down">
+            <a depressed class="menu-item" @click="go('arenas')" :class="{'selected': $route.name == 'arenas'}">
+              Arenas
+            </a>
             <a depressed class="menu-item" @click="go('blocks')" :class="{'selected': $route.name == 'blocks' || $route.name.startsWith('block')}">
               Blocks
             </a>
@@ -45,6 +48,7 @@
             <h3 class="logo theme-font">9cScan</h3>
           </div>
         </v-list-item>
+        <v-list-item class="menu-item side-menu-item" @click="go('arenas')" :class="{'selected': $route.name == 'arenas'}">Arenas</v-list-item>
         <v-list-item class="menu-item side-menu-item" @click="go('blocks')" :class="{'selected': $route.name == 'blocks' || $route.name.startsWith('blocks')}">Blocks</v-list-item>
         <v-list-item class="menu-item side-menu-item" @click="go('transactions')" :class="{'selected': $route.name == 'transactions'}">Transactions</v-list-item>
       </v-list>
