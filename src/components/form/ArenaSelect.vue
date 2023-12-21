@@ -2,7 +2,7 @@
   <v-menu offset-y v-if="items && value" v-model="isActive">
     <template v-slot:activator="{on, attrs}">
       <v-btn class="menu-down-btn" small outlined color="point" rounded v-bind="attrs" v-on="on">
-        {{ value }}
+        Season {{ currentItem.season }} - {{ currentItem.arenaType }}
         <v-icon color="point" class="ml-1" small>mdi-chevron-down</v-icon>
       </v-btn>
     </template>
@@ -10,7 +10,7 @@
     <div style="background-color: white">
       <v-list class="arena-menu-down-list">
         <v-list-item v-for="(item, index) in items" :key="index" @click="select(item)">
-          <v-list-item-title v-html="item.id"></v-list-item-title>
+          <v-list-item-title v-html="`Season ${item.season} - ${item.arenaType}${item.isCurrent ? ' (Current)' : ''}`"></v-list-item-title>
         </v-list-item>
       </v-list>
     </div>
@@ -32,6 +32,9 @@ export default {
     };
   },
   computed: {
+    currentItem() {
+      return this.items.find((item) => item.id === this.value);
+    }
   },
   beforeDestroy() {
   },
