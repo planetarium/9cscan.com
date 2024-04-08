@@ -1,7 +1,7 @@
 <template>
   <v-menu offset-y v-model="onoff">
     <template v-slot:activator="{on,attrs}">
-      <v-btn class="menu-down-btn" small outlined :color="color" rounded v-bind="attrs" v-on="on" style="text-transform: none; font-weight:700;letter-spacing: 0px;" @click="open">
+      <v-btn class="menu-down-btn" outlined :color="color" rounded v-bind="attrs" v-on="on" @click="open">
         <span v-if="items.find(item => item.value == value)">
           <img src="/icons/UI_icon_option_stat.png" style="width: 16px;" />
           <img src="/icons/UI_icon_option_stat.png" style="width: 16px;margin-left:-6px;" v-if="value.split('+')[0] > 1" />
@@ -9,8 +9,8 @@
           <img src="/icons/UI_icon_option_skill.png" style="width: 16px;margin-left:-6px;" v-if="value.split('+')[1] > 0" />
         </span>
         <span v-else>All Options</span>
-        <v-icon color="point" class="ml-1" small @click.stop.prevent="clearItem" v-if="value">mdi-close</v-icon>
-        <v-icon color="point" class="ml-1" small>mdi-chevron-down</v-icon></v-btn>
+        <v-icon :color="color" class="ml-1" small @click.stop.prevent="clearItem" v-if="value">mdi-close</v-icon>
+        <v-icon :color="color" class="ml-1" small>mdi-chevron-down</v-icon></v-btn>
     </template>
 
     <div style="background-color: white">

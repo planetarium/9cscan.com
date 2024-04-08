@@ -62,7 +62,7 @@
             <v-card-actions class="d-flex justify-center">
               <v-btn
                 color="pointlink"
-                class="rect flex-fill"
+                class="rect rounded flex-fill"
                 outlined
                 depressed
                 to="blocks"
@@ -87,7 +87,7 @@
             <v-card-actions class="d-flex justify-center">
               <v-btn
                 color="pointlink"
-                class="rect flex-fill"
+                class="rect rounded flex-fill"
                 outlined
                 depressed
                 to="transactions"
@@ -143,7 +143,7 @@ export default {
 
 <style scoped lang="scss">
 .search-section {
-  height: 360px;
+  height: 280px;
   position: relative;
   z-index: 0;
   background: linear-gradient(296deg, #493969 14.78%, #69419F 46.29%, #5D7EAA 107.02%);
@@ -165,16 +165,16 @@ export default {
   .search-title {
     color: var(--White, #FFF);
     font-family: Inter !important;
-    font-size: 32px !important;
+    font-size: 24px !important;
     font-style: normal;
-    font-weight: 700;
+    font-weight: 800;
     line-height: 40px; /* 125% */
   }
 
   .search-form {
     h2 {
-      margin-top: 32px;
-      margin-bottom: 32px;
+      margin-top: 16px;
+      margin-bottom: 20px;
       font-size: 26px;
       color: white;
       font-weight: 600;
@@ -197,24 +197,24 @@ export default {
       .v-input__append-inner {
         margin: 0px !important;
         display: flex;
-        height: 80px;
+        height: 60px;
         justify-items: center;
         align-items: center;
         margin-right: -14px !important;
         overflow: hidden;
-        border-bottom-right-radius: 16px;
-        border-top-right-radius: 16px;
+        border-bottom-right-radius: 12px;
+        border-top-right-radius: 12px;
 
         .v-btn {
-          min-width: 84px;
-          min-height: 80px;
+          min-width: 64px;
+          min-height: 60px;
         }
       }
 
       .v-input__slot {
         background-color: white !important;
-        border-radius: 16px;
-        max-width: 800px;
+        border-radius: 12px;
+        max-width: 650px;
 
         &::before {
           border: 0px !important;
@@ -225,14 +225,14 @@ export default {
           max-height: 44px;
           height: 44px;
           font-family: Inter;
-          font-size: 20px;
-          font-weight: 700;
+          font-size: 14px;
+          font-weight: 600;
+          padding-left: 8px;
         }
         input::placeholder {
           font-family: Inter !important;
           color: #838B9B !important;
-          font-size: 20px;
-          padding-left: 10px;
+          font-size: 14px;
         }
       }
     }

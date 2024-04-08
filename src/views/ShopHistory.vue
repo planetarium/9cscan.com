@@ -8,23 +8,23 @@
                              :items="items"
                              :before="before"
                              @loadItems="loadHistory"
-                             :acceptFilter="['type', 'itemId', 'grade', 'level', 'options']"
+                             :acceptFilter="['type', 'itemId', 'grade', 'level', 'options', 'to', 'from']"
                              :loading="loadings.items"
           >
             <template v-slot:title-after="{filter}">
-              <item-type-select :value="filter.type || filter.itemId" color="point" @change="changeTypeFilter" />
+              <item-type-select :value="filter.type || filter.itemId" color="grayButton" @change="changeTypeFilter" />
               <span style="margin-left: 8px;" v-if="filter.type">
-                <item-grade-select v-model="filter.grade" color="point" @change="changeGradeFilter" />
+                <item-grade-select v-model="filter.grade" color="grayButton" @change="changeGradeFilter" />
               </span>
               <span style="margin-left: 8px;" v-if="filter.type && filter.grade || filter.itemId">
-                <item-level-select v-model="filter.level" color="point" @change="changeLevelFilter" />
+                <item-level-select v-model="filter.level" color="grayButton" @change="changeLevelFilter" />
               </span>
               <span style="margin-left: 8px;" v-if="filter.type && filter.grade || filter.itemId">
-                <item-options-select v-model="filter.options" color="point" @change="changeOptionsFilter" />
+                <item-options-select v-model="filter.options" color="grayButton" @change="changeOptionsFilter" />
               </span>
             </template>
             <template v-slot:default="{items, loading}">
-              <shop-history-table :items="items" :loading="loading"></shop-history-table>
+              <shop-history-table :items="items" :loading="loading" @filter="filterItem"></shop-history-table>
             </template>
           </page-list-wrapper>
         </v-col>
@@ -73,14 +73,14 @@ export default {
       $onLoaded() {
         this.$store.dispatch('Block/syncTx', true)
       },
-      async loadHistory({page, itemId, type, grade, level, options, before}) {
+      async loadHistory({page, itemId, to, from, type, grade, level, ticker, options, before}) {
         this.loadings.items = true
         try {
           let itemSubType
           if (type) {
             itemSubType = {'weapon': 6, 'armor': 7, 'belt': 8, 'necklace': 9, 'ring': 10, 'food': 0, 'costume': 1, 'hourglass': 15, 'appotion': 16 }[type]
           }
-          let {items, before: nextBefore} = await api.getShopHistory({page, itemId, itemSubType, grade, level, options, before})
+          let {items, before: nextBefore} = await api.getShopHistory({page, to, from, ticker, itemId, itemSubType, grade, level, options, before})
           this.items = items
           this.before = nextBefore
         } finally {
@@ -111,6 +111,11 @@ export default {
       changeOptionsFilter(options) {
         this.$router.push({
           query: options ? {...this.$route.query, options} : {...this.$route.query, options: undefined}
+        })
+      },
+      filterItem(item) {
+        this.$router.push({
+          query: item
         })
       }
     }

@@ -75,13 +75,16 @@ new Vue({
           inputbg: {
             base: '#1d1e1f'
           },
+          grayButton: {
+            base: '#9aa1a8',
+          },
           text: {
             base: '#6e6e73',
             lighten1: '#9999a0',
             lighten2: '#b7b7bb',
           },
           primary: {
-            base: '#2A8BA9'
+            base: '#53ACD3'
           },
           point: {
             base: '#f6a14c',
@@ -106,7 +109,7 @@ new Vue({
             base: '#f0b90b',
           },
           pointlink: {
-            base: '#1d9bf0',
+            base: '#53ACD3',
             lighten1: '#8ed1ff'
           }
         }

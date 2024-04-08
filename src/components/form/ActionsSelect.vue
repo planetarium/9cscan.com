@@ -1,10 +1,10 @@
 <template>
   <v-menu offset-y v-model="onoff">
     <template v-slot:activator="{on,attrs}">
-      <v-btn class="menu-down-btn" small outlined :color="color" rounded v-bind="attrs" v-on="on" style="text-transform: none; font-weight:700;letter-spacing: 0px;" @click="open">
+      <v-btn class="menu-down-btn" outlined :color="color" rounded v-bind="attrs" v-on="on" @click="open">
         {{ value || 'All Actions'}}
-        <v-icon color="point" class="ml-1" small @click.stop.prevent="clearItem" v-if="value">mdi-close</v-icon>
-        <v-icon color="point" class="ml-1" small>mdi-chevron-down</v-icon></v-btn>
+        <v-icon :color="color" class="ml-1" small @click.stop.prevent="clearItem" v-if="value">mdi-close</v-icon>
+        <v-icon :color="color" class="ml-1" small>mdi-chevron-down</v-icon></v-btn>
     </template>
 
     <div style="background-color: white">

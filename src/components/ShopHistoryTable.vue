@@ -48,6 +48,9 @@
                     <img src="/icons/UI_icon_option_stat.png" v-if="item.itemId_options.split('_')[1].split('+')[0] >= 3"  />
                     <img src="/icons/UI_icon_option_skill.png" v-if="item.itemId_options.split('_')[1].split('+')[1] > 0"  />
                   </div>
+                  <div class="item-filter">
+                    <v-btn icon x-small color="white" @click="filterItem(item)"><v-icon x-small>mdi-filter</v-icon></v-btn>
+                  </div>
                 </div>
               </div>
             </td>
@@ -118,6 +121,13 @@ export default {
     async created() {
     },
     methods: {
+      filterItem(item) {
+        if (item.ticker) {
+          this.$emit('filter', {ticker: item.ticker})
+        } else {
+          this.$emit('filter', {itemId: item.itemId, level: item.item.level, options: item.itemId_options.split('_')[1]})
+        }
+      }
     }
 }
 </script>
@@ -166,6 +176,10 @@ export default {
   background: url('/icons/item_bg_5.png');
   background-size: contain;
 }
+.item-bg-6 {
+  background: url('/icons/item_bg_6.png');
+  background-size: contain;
+}
 .item-level {
   position: absolute;
   font-family: "Roboto", sans-serif;
@@ -196,6 +210,14 @@ export default {
   text-align: right;
   width: 100%;
   height: 28px;
+}
+.item-filter {
+  position: absolute;
+  right: 1px;
+  top: 1px;
+  background: rgba(55, 55, 55, 0.7);
+  border-radius: 2px;
+  opacity: 0.8;
 }
 .item-option {
   background: url('/icons/item_option_bg.png') no-repeat;
@@ -248,5 +270,8 @@ export default {
 }
 .text-grade-5 {
   color: #8b00b9;
+}
+.text-grade-6 {
+  color: #e30000;
 }
 </style>

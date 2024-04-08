@@ -3,11 +3,8 @@
     <div class="page-wide-wrap detail-page px-md-12">
       <h1 class="page-title px-4 px-md-0">Transaction Details</h1>
 
-      <v-card class="mt-4" outlined>
+      <v-card class="mt-4 pt-6 border-none" outlined>
         <v-progress-linear indeterminate height="2" v-if="loading"></v-progress-linear>
-        <v-tabs>
-          <v-tab>Overview</v-tab>
-        </v-tabs>
         <v-divider></v-divider>
         <v-card-text class="pa-0">
           <v-row class="info-item ma-0">
@@ -79,11 +76,9 @@
         </v-card-text>
       </v-card>
 
-      <v-card class="mt-4" outlined>
+      <h1 class="page-sub-title mt-12">Action Data</h1>
+      <v-card class="mt-4 border-none" outlined>
         <v-progress-linear indeterminate height="2" v-if="loading"></v-progress-linear>
-        <v-tabs>
-          <v-tab>Action Data</v-tab>
-        </v-tabs>
         <v-divider></v-divider>
         <v-card-text class="py-12" v-if="!tx.actions || tx.actions.length == 0">
           No Action Data

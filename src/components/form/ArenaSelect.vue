@@ -1,9 +1,9 @@
 <template>
   <v-menu offset-y v-if="items && value" v-model="isActive">
     <template v-slot:activator="{on, attrs}">
-      <v-btn class="menu-down-btn" small outlined color="point" rounded v-bind="attrs" v-on="on">
+      <v-btn class="menu-down-btn" outlined color="grayButton" rounded v-bind="attrs" v-on="on">
         Season {{ currentItem.season }} - {{ currentItem.arenaType }}
-        <v-icon color="point" class="ml-1" small>mdi-chevron-down</v-icon>
+        <v-icon color="grayButton" class="ml-1" small>mdi-chevron-down</v-icon>
       </v-btn>
     </template>
 

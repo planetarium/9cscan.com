@@ -2,14 +2,8 @@
   <v-container fluid class="px-0">
     <div class="page-wide-wrap detail-page px-md-12">
       <h1 class="page-title px-4 px-md-0">Address <span style="font-size:0.6em;" class="hex">{{address}} <copy-btn :text="address" icon x-small><v-icon small>mdi-content-copy</v-icon></copy-btn></span></h1>
-      <v-divider class="my-2"></v-divider>
-
-
-      <v-card class="mt-4" outlined v-if="loading || !notFound">
+      <v-card class="mt-4 pt-6 border-none" outlined v-if="loading || !notFound">
         <v-progress-linear indeterminate height="2" v-if="loading"></v-progress-linear>
-        <v-tabs>
-          <v-tab>Overview</v-tab>
-        </v-tabs>
         <v-divider></v-divider>
         <v-card-text class="pa-0">
           <v-row class="info-item ma-0">
@@ -38,7 +32,7 @@
         </v-card-text>
       </v-card>
 
-      <v-card class="mt-8" outlined>
+      <v-card class="mt-8 border-none" outlined>
         <v-tabs v-model="tab">
           <v-tab @click="goReplace('account', null, {address})">Transactions</v-tab>
           <v-tab @click="goReplace('account', {t:'mined'}, {address})">Mined Blocks</v-tab>

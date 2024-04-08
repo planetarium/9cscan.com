@@ -43,7 +43,7 @@ export default {
       color: var(--v-pointlink-base);
       transition-property: opacity;
       transition-duration: 0.3s;
-      font-weight: 500;
+      font-weight: 600;
       text-decoration: none;
       &:hover {
         text-decoration: underline;
@@ -140,6 +140,9 @@ export default {
 .v-btn.rect {
   border-radius: 0px !important;
   font-family: Pretendard !important;
+  &.rounded {
+    border-radius: 6px !important;
+  }
   &.v-size--default {
     height: 40px !important;
     font-size: 15px !important;
@@ -158,6 +161,9 @@ export default {
   border-color: var(--v-pointlink-lighten1) !important;
   color: var(--v-pointlink-base) !important;
   font-weight: 600 !important;
+  &.v-btn.rect {
+    border-radius: 4px !important;
+  }
 }
 .pointgreen-btn {
   background-color: transparent;
@@ -204,10 +210,11 @@ thead {
   z-index: 10;
   text-align: center;
   th {
+    font-family: Inter;
     text-align: center !important;
-    color: #111 !important;
+    color: #596271 !important;
     font-size: 14px !important;
-    font-weight: 600;
+    font-weight: 700;
   }
 }
 
@@ -224,6 +231,14 @@ thead {
       color:#777;
       font-size: 0.8em;
     }
+  }
+  .page-sub-title {
+    text-align: left;
+    font-family: Inter;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
   }
   .table-info {
     text-align: left;
@@ -255,5 +270,22 @@ thead {
       color: #111;
     }
   }
+}
+.menu-down-btn {
+  background: #fff !important;
+  text-transform: none !important;
+  font-weight:700 !important;
+  letter-spacing: 0px;
+  height: 28px !important;
+  > span {
+    padding: 0px 6px;
+    color: #596271 !important;
+    font-weight: 700 !important;
+    letter-spacing: 0px;
+  }
+}
+
+.border-none {
+  border: none !important;
 }
 </style>

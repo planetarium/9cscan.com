@@ -3,10 +3,9 @@
     <v-row>
       <v-col class="py-0 d-flex align-center text-no-wrap">
         <div class="hidden-xs-only">
-          <span>show</span>
           <v-menu class="menu-select">
             <template v-slot:activator="{on}">
-              <v-btn v-on="on" depressed small rounded class="mx-2">{{size}} <v-icon small>mdi-chevron-down</v-icon></v-btn>
+              <v-btn v-on="on" depressed color="grayButton" outlined rounded class="menu-down-btn px-2"><span class="mr-1">Show</span> {{size}} <v-icon small class="ml-1">mdi-chevron-down</v-icon></v-btn>
             </template>
 
             <v-list class="menu-items">
@@ -19,11 +18,11 @@
         </div>
       </v-col>
       <v-col class="d-flex py-1 align-center page-item text-no-wrap justify-center">
-        <v-btn depressed small style="color:var(--v-text-base);" @click="goFirst" :disabled="page == 1"><v-icon color="text">mdi-chevron-double-left</v-icon><span class="hidden-xs-only">first</span></v-btn>
-        <v-btn depressed small class="ml-2" @click="prev" :disabled="!canPrev || (page && page == 1)"><v-icon color="text">mdi-chevron-left</v-icon></v-btn>
+        <v-btn depressed rounded small style="color:var(--v-text-base);" @click="goFirst" :disabled="page == 1"><v-icon color="text">mdi-chevron-double-left</v-icon><span class="hidden-xs-only">first</span></v-btn>
+        <v-btn depressed rounded small class="ml-2" @click="prev" :disabled="!canPrev || (page && page == 1)"><v-icon color="text">mdi-chevron-left</v-icon></v-btn>
         <span class="mx-2" v-if="page">{{(1 + size * ((page || 1) - 1)).toLocaleString()}} ~ {{(size * (page || 1)).toLocaleString()}}  <span v-if="total"> of {{total.toLocaleString()}}</span></span>
         <span class="mx-2" v-else>{{before}} ~</span>
-        <v-btn depressed small @click="next" :disabled="!canNext"><v-icon color="text">mdi-chevron-right</v-icon></v-btn>
+        <v-btn depressed rounded small @click="next" :disabled="!canNext"><v-icon color="text">mdi-chevron-right</v-icon></v-btn>
       </v-col>
     </v-row>
   </div>
@@ -94,11 +93,14 @@ export default {
   }
   .page-item {
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 700;
   }
   ::v-deep .v-btn {
+    background-color: #fff !important;
+    border: 1px solid #9aa1a8;
     &.v-btn--disabled {
-      background-color: #f5f5f5 !important;
+      border: 1px solid #c6cbd0;
+      background-color: #f6f6f6 !important;
     }
   }
 

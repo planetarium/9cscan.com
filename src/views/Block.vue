@@ -4,7 +4,6 @@
       <h1 class="page-title px-4 px-md-0">Block
         <span>#{{index}}</span>
       </h1>
-      <v-divider class="my-2"></v-divider>
 
       <v-card v-if="!loading && latestBlockIndex > 0 && latestBlockIndex < index" outlined>
         <v-progress-linear indeterminate height="2"></v-progress-linear>
@@ -12,11 +11,8 @@
           <div style="font-size: 28px;" class="my-12"><v-progress-circular class="mr-2" width="2" size="26" indeterminate></v-progress-circular> {{index - latestBlockIndex}} Block(s) left...</div>
         </v-card-text>
       </v-card>
-      <v-card class="mt-4" outlined v-if="loading || block.index">
+      <v-card class="mt-4 pt-6 border-none" outlined v-if="loading || block.index">
         <v-progress-linear indeterminate height="2" v-if="loading"></v-progress-linear>
-        <v-tabs>
-          <v-tab>Overview</v-tab>
-        </v-tabs>
         <v-divider></v-divider>
         <v-card-text class="pa-0">
           <v-row class="info-item ma-0">
@@ -51,18 +47,15 @@
         </v-card-text>
       </v-card>
 
-      <v-card class="mt-8" outlined id="tx" name="tx" v-if="block.index">
-        <v-tabs>
-          <v-tab>Transactions</v-tab>
-        </v-tabs>
-        <v-divider></v-divider>
+      <h1 class="page-sub-title mt-8">Transactions</h1>
+      <v-card class="mt-2 border-none" outlined id="tx" name="tx" v-if="block.index">
         <div v-if="loading" class="py-12">
           <v-progress-circular indeterminate></v-progress-circular>
         </div>
         <div v-else>
-          <p class="table-info">
+          <p class="table-info d-flex align-center justify-space-between">
+            <actions-select v-model="filter.action" color="grayButton" @change="changeActionFilter"></actions-select>
             <span class="mr-3">Total {{filteredTxs.length}} Transactions</span>
-            <actions-select v-model="filter.action" color="point" @change="changeActionFilter"></actions-select>
           </p>
           <transaction-table class="ma-4" detail :transactions="filteredTxs"></transaction-table>
         </div>

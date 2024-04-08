@@ -10,7 +10,7 @@
                        flat
     >
       <template v-slot:title-after="{filter}">
-        <actions-select v-model="filter.action" color="point" @change="changeActionFilter"></actions-select>
+        <actions-select v-model="filter.action" color="grayButton" @change="changeActionFilter"></actions-select>
       </template>
       <template v-slot:default="{items, loading}">
         <transaction-table
