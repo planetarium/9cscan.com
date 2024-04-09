@@ -10,11 +10,18 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         run: {
-            web_build: {
+            web_build_odin: {
                 cmd: 'npm',
                 args: [
                     'run',
-                    'build'
+                    'build-odin'
+                ]
+            },
+            web_build_heimdall: {
+                cmd: 'npm',
+                args: [
+                    'run',
+                    'build-heimdall'
                 ]
             },
             web_stage: {
@@ -44,9 +51,18 @@ module.exports = function(grunt) {
                 uploadConcurrency: 5,
                 downloadConcurrency: 5
             },
-            web: {
+            odin: {
                 options: {
-                    bucket: config.s3WebBucketName,
+                    bucket: '9cscan',
+                    differential: true
+                },
+                files: [
+                    {action: 'upload', cwd: 'dist', src: ['**'], expand: true}
+                ]
+            },
+            heimdall: {
+                options: {
+                    bucket: '9cscan-planet1',
                     differential: true
                 },
                 files: [
@@ -55,7 +71,7 @@ module.exports = function(grunt) {
             },
             stage: {
                 options: {
-                    bucket: config.s3StageWebBucketName,
+                    bucket: 'stage.9cscan',
                     differential: true
                 },
                 files: [
@@ -67,6 +83,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('build', ['run:web_build']);
     grunt.registerTask('serve', ['run:web_serve']);
-    grunt.registerTask('deploy', ['run:web_build', 'aws_s3:web']);
+    grunt.registerTask('deploy-odin', ['run:web_build_odin', 'aws_s3:odin']);
+    grunt.registerTask('deploy-heimdall', ['run:web_build_heimdall', 'aws_s3:heimdall']);
     grunt.registerTask('stage', ['run:web_stage', 'aws_s3:stage']);
 };

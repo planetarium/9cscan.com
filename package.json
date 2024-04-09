@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --mode localhost --port 3000",
-    "build": "vue-cli-service build --mode production",
+    "build-odin": "vue-cli-service build --mode planet0",
+    "build-heimdall": "vue-cli-service build --mode planet1",
     "stage": "vue-cli-service build --mode stage",
     "lint": "vue-cli-service lint"
   },
