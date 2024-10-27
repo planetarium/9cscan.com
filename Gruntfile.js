@@ -24,6 +24,13 @@ module.exports = function(grunt) {
                     'build-heimdall'
                 ]
             },
+            web_build_thor: {
+                cmd: 'npm',
+                args: [
+                    'run',
+                    'build-thor'
+                ]
+            },
             web_stage: {
                 cmd: 'npm',
                 args: [
@@ -69,6 +76,15 @@ module.exports = function(grunt) {
                     {action: 'upload', cwd: 'dist', src: ['**'], expand: true}
                 ]
             },
+            thor: {
+                options: {
+                    bucket: '9cscan-planet2',
+                    differential: true
+                },
+                files: [
+                    {action: 'upload', cwd: 'dist', src: ['**'], expand: true}
+                ]
+            },
             stage: {
                 options: {
                     bucket: 'stage.9cscan',
@@ -85,5 +101,6 @@ module.exports = function(grunt) {
     grunt.registerTask('serve', ['run:web_serve']);
     grunt.registerTask('deploy-odin', ['run:web_build_odin', 'aws_s3:odin']);
     grunt.registerTask('deploy-heimdall', ['run:web_build_heimdall', 'aws_s3:heimdall']);
+    grunt.registerTask('deploy-thor', ['run:web_build_thor', 'aws_s3:thor']);
     grunt.registerTask('stage', ['run:web_stage', 'aws_s3:stage']);
 };
