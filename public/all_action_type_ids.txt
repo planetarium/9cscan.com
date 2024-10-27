@@ -209,6 +209,8 @@ stake2
 transfer_asset
 transfer_asset2
 transfer_asset3
+transfer_asset4
+transfer_asset5
 transfer_assets
 unlock_equipment_recipe
 unlock_equipment_recipe2
