@@ -9,6 +9,8 @@
             </v-btn>
             <v-btn class="hidden-xs-only mx-0 px-2" text :to="{name: 'index'}">
               <img src="/full_logo.png" height="36" style="opacity: 0.8" />
+              <h1 v-if="networkName" style="color: black; margin-left: 6px; line-height: 36px; margin-top: 10px; font-size: 12px; opacity:0.8">
+                {{ networkName }}</h1> 
             </v-btn>
           </v-toolbar-title>
           <v-toolbar-items class="hidden-sm-and-down">
@@ -70,7 +72,8 @@ export default {
         return {
             showStats: false,
             drawer: false,
-            search: ''
+            search: '',
+            networkName: process.env.VUE_APP_NETWORK_NAME || ''
         }
     },
     computed: {
