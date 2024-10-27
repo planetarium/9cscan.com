@@ -48,10 +48,7 @@ export default {
         },
     },
     async created() {
-        const apvResponse = await fetch(`https://release.nine-chronicles.com/main/config.json`);
-        const apvJson = await apvResponse.json();
-        const version = apvJson.AppProtocolVersion.split('/')[0];
-        const actionTypeIdsResponse = await fetch(`https://planetarium.github.io/lib9c/v${version}/all_action_type_ids.txt`);
+        const actionTypeIdsResponse = await fetch(`https://9cscan.com/all_action_type_ids.txt`);
         const actionTypeIds = (await actionTypeIdsResponse.text()).split('\n');
 
         this.items = actionTypeIds;
