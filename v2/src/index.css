@@ -2,48 +2,117 @@
 @tailwind components;
 @tailwind utilities;
 
+body, html, #root {
+  font-family: 'Pretendard', 'Inter', 'Frank Ruhl Libre', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+  background-color: #fff;
+}
+
+.theme-font {
+  font-family: 'Frank Ruhl Libre', serif;
+}
+.hex {
+  font-family: Helvetica,Arial,sans-serif;
+  word-break: break-all;
+}
+
+.ellipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.ellipsis2 {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+}
+.ellipsis5 {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+}
+.ellipsis7 {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 7;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+}
+
+.page-wide-wrap {
+  max-width: 1440px !important;
+  padding: 20px 16px !important;
+  margin: auto !important;
+  min-width: 300px !important;
+}
+.page-wrap {
+  max-width: 1000px;
+  min-width: 300px !important;
+  padding: 20px;
+  margin: auto;
+}
+
+/* 테이블 헤더 스타일 */
+thead th {
+  font-family: 'Inter', sans-serif;
+  text-align: center !important;
+  color: #596271 !important;
+  font-size: 14px !important;
+  font-weight: 700;
+}
+
+/* 버튼 스타일 일부 반영 (Tailwind로 대체) */
+
+/* 기타 유틸리티 */
+.border-none {
+  border: none !important;
+}
+
+/* 기존 폰트 클래스 유지 */
 .ubuntu-mono-regular {
   font-family: "Ubuntu Mono", monospace;
   font-weight: 400;
   font-style: normal;
 }
-
 .ubuntu-mono-bold {
   font-family: "Ubuntu Mono", monospace;
   font-weight: 700;
   font-style: normal;
 }
-
 .ubuntu-mono-regular-italic {
   font-family: "Ubuntu Mono", monospace;
   font-weight: 400;
   font-style: italic;
 }
-
 .ubuntu-mono-bold-italic {
   font-family: "Ubuntu Mono", monospace;
   font-weight: 700;
   font-style: italic;
 }
-
 .quantico-regular {
   font-family: "Quantico", serif;
   font-weight: 400;
   font-style: normal;
 }
-
 .quantico-bold {
   font-family: "Quantico", serif;
   font-weight: 700;
   font-style: normal;
 }
-
 .quantico-regular-italic {
   font-family: "Quantico", serif;
   font-weight: 400;
   font-style: italic;
 }
-
 .quantico-bold-italic {
   font-family: "Quantico", serif;
   font-weight: 700;
