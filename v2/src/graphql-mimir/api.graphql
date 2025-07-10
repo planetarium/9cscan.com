@@ -1,0 +1,138 @@
+query GetAvatarAddresses($address: Address!) {
+  agent(address: $address) {
+    avatarAddresses {
+      key
+      value
+    }
+  }
+}
+
+query GetWorldInformation($avatarAddress: Address!) {
+  worldInformation(address: $avatarAddress) {
+    worldDictionary {
+      key
+      value {
+        isStageCleared
+        isUnlocked
+        name
+        stageBegin
+        stageClearedBlockIndex
+        stageClearedId
+        stageEnd
+        unlockedBlockIndex
+      }
+    }
+  }
+}
+
+fragment AvatarFields on AvatarState {
+  address
+  name
+  level
+}
+
+query GetAvatarsInformation(
+  $avatarAddress1: Address!
+  $avatarAddress2: Address!
+  $avatarAddress3: Address!
+) {
+  avatar1: avatar(address: $avatarAddress1) {
+    ...AvatarFields
+  }
+
+  avatar2: avatar(address: $avatarAddress2) {
+    ...AvatarFields
+  }
+  avatar3: avatar(address: $avatarAddress3) {
+    ...AvatarFields
+  }
+}
+
+query GetItemSlot($avatarAddress: Address!, $battleType: BattleType!) {
+  itemSlot(address: $avatarAddress, battleType: $battleType) {
+    battleType
+    costumes
+    equipments
+  }
+}
+
+query GetRuneSlot($avatarAddress: Address!, $battleType: BattleType!) {
+  runeSlot(address: $avatarAddress, battleType: $battleType) {
+    battleType
+    slots {
+      index
+      isLock
+      runeId
+      runeSlotType
+      runeType
+    }
+  }
+}
+
+query GetActionPoint($avatarAddress: Address!) {
+  actionPoint(address: $avatarAddress)
+  dailyRewardReceivedBlockIndex(address: $avatarAddress)
+}
+
+query GetCombinationSlots($avatarAddress: Address!) {
+  combinationSlots(avatarAddress: $avatarAddress) {
+    key
+    value {
+      index
+      startBlockIndex
+      unlockBlockIndex
+      result {
+        itemUsable {
+          elementalType
+          grade
+          id
+          itemId
+          itemSubType
+          itemType
+          requiredBlockIndex
+          statsMap {
+            value {
+              key
+              value {
+                additionalValue
+                baseValue
+                statType
+              }
+            }
+          }
+          skills {
+            chance
+            power
+            referencedStatType
+            statPowerRatio
+            skillRow {
+              combo
+              cooldown
+              elementalType
+              hitCount
+              id
+              skillCategory
+              skillTargetType
+              skillType
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+query GetNCG($address: Address!) {
+  balance(address: $address, currencyTicker: "NCG")
+}
+
+query GetCrystal($address: Address!) {
+  balance(address: $address, currencyTicker: "CRYSTAL")
+}
+
+query GetRunes($avatarAddress: Address!) {
+  runes(avatarAddress: $avatarAddress) {
+    level
+    runeId
+  }
+}

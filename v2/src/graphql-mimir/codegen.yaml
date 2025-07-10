@@ -1,0 +1,20 @@
+overwrite: true
+schema: ./src/graphql-mimir/schema.graphql
+documents: ./src/graphql-mimir/api.graphql
+generates:
+  ./src/graphql-mimir/generated/graphql.tsx:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-resolvers
+      - typescript-react-apollo
+    config:
+      reactApolloVersion: 3
+      withComponent: false
+      withHOC: false
+      scalars:
+        Long: number
+        TxId: string
+  # ./src/graphql-mimir/generated/schema.json:
+  #   plugins:
+  #     - introspection
