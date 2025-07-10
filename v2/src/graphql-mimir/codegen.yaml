@@ -1,5 +1,5 @@
 overwrite: true
-schema: http://localhost:5009/graphql
+schema: https://odin-mimir.9c.gg/graphql
 documents: ./src/graphql-mimir/api.graphql
 generates:
   ./src/graphql-mimir/generated/graphql.tsx:

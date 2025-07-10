@@ -1,76 +1,53 @@
 import SearchSection from '@/components/SearchSection';
-import BlockTable from '@/components/BlockTable';
-import TransactionTable from '@/components/TransactionTable';
+import BlockTable, { type Block } from '@/components/BlockTable';
+import TransactionTable, { type Transaction } from '@/components/TransactionTable';
 import ScoreBoard from '@/components/ScoreBoard';
-import { useGetBlocksForMainPageQuery } from '@/graphql-mimir/generated/graphql';
-
-interface Block {
-  index: number;
-  hash: string;
-  timestamp: string;
-  transactionCount: number;
-  miner: string;
-  stateRootHash: string;
-}
-
-interface Action {
-  inspection?: {
-    typeId: string;
-    productType?: string;
-    amount?: [any, any];
-    avatarAddress?: string;
-  };
-}
-
-interface Transaction {
-  id: string;
-  blockIndex: number;
-  blockTimestamp?: string;
-  timestamp: string;
-  signer: string;
-  involved?: {
-    type: string;
-  };
-  actions: Action[];
-}
+import { useGetBlocksQuery, useGetTransactionsQuery } from '@/graphql-mimir/generated/graphql';
 
 export default function MainPage() {
   const handleSearch = (keyword: string) => {
     console.log('Searching for:', keyword);
   };
 
-  const { data, loading } = useGetBlocksForMainPageQuery({
+  const { data: blocksData, loading: blocksLoading } = useGetBlocksQuery({
     variables: { skip: 0, take: 10 },
     pollInterval: 8 * 1000,
   });
 
+  const { data: transactionsData, loading: transactionsLoading } = useGetTransactionsQuery({
+    variables: { skip: 0, take: 10 },
+    pollInterval: 8 * 1000,
+  });
+
+  const loading = blocksLoading || transactionsLoading;
+
   const latestBlocks10: Block[] =
-    data?.blocks?.items?.map((block) => ({
+    blocksData?.blocks?.items?.map((block) => ({
       index: block.object.index,
       hash: block.object.hash,
       timestamp: block.object.timestamp,
-      transactionCount: block.object.transactions.length,
+      transactionCount: block.object.txCount,
       miner: block.object.miner,
       stateRootHash: block.object.stateRootHash,
     })) || [];
 
-  const latestBlockIndex = data?.blocks?.items?.[0]?.object?.index || 0;
+  const latestBlockIndex = blocksData?.blocks?.items?.[0]?.object?.index || 0;
 
   const latestTransactions10: Transaction[] =
-    data?.blocks?.items?.flatMap(
-      (block) =>
-        block.object.transactions.map((transaction) => ({
-          id: transaction.id,
-          blockIndex: block.object.index,
-          blockTimestamp: block.object.timestamp,
-          timestamp: transaction.timestamp,
-          signer: transaction.signer,
-          actions:
-            transaction.actions.map((action) => ({
-              inspection: action.typeId ? { typeId: action.typeId } : undefined,
-            })) || [],
-        })) || []
-    ) || [];
+    transactionsData?.transactions?.items?.map((transaction) => ({
+      id: transaction.object.id,
+      blockIndex: transaction.blockIndex,
+      blockTimestamp: transaction.object.timestamp,
+      timestamp: transaction.object.timestamp,
+      signer: transaction.object.signer,
+      actions: transaction.object.actions.map((action) => ({
+        inspection: {
+          typeId: action.typeId || '',
+          avatarAddress: transaction.firstAvatarAddressInActionArguments || '',
+          // amount: transaction.firstNCGAmountInActionArguments || [0, 0],
+        },
+      })),
+    })) || [];
 
   return (
     <div className="min-h-screen bg-gray-50">

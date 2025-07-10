@@ -1,5 +1,5 @@
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
-import MainPage from '@/pages/MainPage';
+import { Outlet } from 'react-router-dom';
 
 function App() {
   const client = new ApolloClient({
@@ -9,7 +9,7 @@ function App() {
 
   return (
     <ApolloProvider client={client}>
-      <MainPage />
+      <Outlet />
     </ApolloProvider>
   );
 }

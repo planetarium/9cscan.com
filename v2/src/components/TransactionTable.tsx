@@ -1,4 +1,6 @@
-interface Action {
+import { Link } from 'react-router-dom';
+
+export interface Action {
   inspection?: {
     typeId: string;
     productType?: string;
@@ -7,7 +9,7 @@ interface Action {
   };
 }
 
-interface Transaction {
+export interface Transaction {
   id: string;
   blockIndex: number;
   blockTimestamp?: string;
@@ -19,7 +21,7 @@ interface Transaction {
   actions: Action[];
 }
 
-interface TransactionTableProps {
+export interface TransactionTableProps {
   loading: boolean;
   transactions: Transaction[];
   detail?: boolean;
@@ -108,17 +110,17 @@ export default function TransactionTable({
                 className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
               >
                 <td className="px-4 py-3 text-sm text-blue-600 hover:text-blue-800">
-                  <a href={`/transaction/${tx.id}`} className="hover:underline">
+                  <Link to={`/transaction/${tx.id}`} className="hover:underline">
                     {shortAddress(tx.id)}
-                  </a>
+                  </Link>
                 </td>
                 <td className="px-4 py-3">
-                  <button
-                    type="button"
-                    className="px-3 py-1 text-sm bg-blue-50 text-blue-600 border border-blue-200 rounded hover:bg-blue-100 transition-colors"
+                  <Link
+                    to={`/block/${tx.blockIndex}`}
+                    className="inline-block px-3 py-1 text-sm bg-blue-50 text-blue-600 border border-blue-200 rounded hover:bg-blue-100 transition-colors"
                   >
                     {tx.blockIndex}
-                  </button>
+                  </Link>
                 </td>
                 <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
                   {formatTimeAgo(tx.blockTimestamp || tx.timestamp)}

@@ -1,4 +1,6 @@
-interface Block {
+import { Link } from 'react-router-dom';
+
+export interface Block {
   index: number;
   hash: string;
   timestamp: string;
@@ -7,7 +9,7 @@ interface Block {
   stateRootHash: string;
 }
 
-interface BlockTableProps {
+export interface BlockTableProps {
   loading: boolean;
   blocks: Block[];
   detail?: boolean;
@@ -79,12 +81,12 @@ export default function BlockTable({ loading, blocks, detail = false }: BlockTab
                 className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
               >
                 <td className="px-4 py-3">
-                  <button
-                    type="button"
-                    className="px-3 py-1 text-sm bg-blue-50 text-blue-600 border border-blue-200 rounded hover:bg-blue-100 transition-colors"
+                  <Link
+                    to={`/block/${block.index}`}
+                    className="inline-block px-3 py-1 text-sm bg-blue-50 text-blue-600 border border-blue-200 rounded hover:bg-blue-100 transition-colors"
                   >
                     {block.index}
-                  </button>
+                  </Link>
                 </td>
                 {detail && (
                   <td className="px-4 py-3 text-sm text-gray-600 font-mono">

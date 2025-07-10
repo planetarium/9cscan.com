@@ -34,7 +34,7 @@ query GetNCG($address: Address!) {
   balance(address: $address, currencyTicker: "NCG")
 }
 
-query GetBlocksForMainPage($skip: Int!, $take: Int!) {
+query GetBlocks($skip: Int!, $take: Int!) {
   blocks(skip: $skip, take: $take) {
     items {
       id
@@ -44,14 +44,7 @@ query GetBlocksForMainPage($skip: Int!, $take: Int!) {
         miner
         stateRootHash
         timestamp
-        transactions {
-          id
-          timestamp
-          signer
-          actions {
-            typeId
-          }
-        }
+        txCount
       }
     }
     pageInfo {
@@ -70,14 +63,88 @@ query GetBlock($index: Long!) {
       miner
       stateRootHash
       timestamp
-      transactions {
+      txCount
+    }
+  }
+}
+
+query GetTransaction($txId: String!) {
+  transaction(txId: $txId) {
+    blockHash
+    blockIndex
+    firstActionTypeId
+    firstAvatarAddressInActionArguments
+    firstNCGAmountInActionArguments
+    object {
+      id
+      nonce
+      publicKey
+      signature
+      signer
+      timestamp
+      txStatus
+      updatedAddresses
+      actions {
+        raw
+        typeId
+        values
+      }
+    }
+  }
+}
+
+query GetTransactionsByBlockIndex($index: Long!) {
+  transactionsByBlockIndex(blockIndex: $index) {
+    blockHash
+    blockIndex
+    firstActionTypeId
+    firstAvatarAddressInActionArguments
+    firstNCGAmountInActionArguments
+    object {
+      id
+      nonce
+      publicKey
+      signature
+      signer
+      timestamp
+      txStatus
+      updatedAddresses
+      actions {
+        raw
+        typeId
+        values
+      }
+    }
+  }
+}
+
+query GetTransactions($skip: Int!, $take: Int!) {
+  transactions(skip: $skip, take: $take) {
+    items {
+      blockHash
+      blockIndex
+      firstActionTypeId
+      firstAvatarAddressInActionArguments
+      firstNCGAmountInActionArguments
+      object {
         id
-        timestamp
+        nonce
+        publicKey
+        signature
         signer
+        timestamp
+        txStatus
+        updatedAddresses
         actions {
+          raw
           typeId
+          values
         }
       }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
     }
   }
 }
