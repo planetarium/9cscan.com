@@ -1,4 +1,5 @@
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import MainPage from '@/pages/MainPage';
 
 function App() {
   const client = new ApolloClient({
@@ -8,7 +9,7 @@ function App() {
 
   return (
     <ApolloProvider client={client}>
-      <div className="relative w-full bg-background h-screen pt-5">test</div>
+      <MainPage />
     </ApolloProvider>
   );
 }
