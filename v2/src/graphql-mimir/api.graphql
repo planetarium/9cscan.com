@@ -148,3 +148,15 @@ query GetTransactions($skip: Int!, $take: Int!) {
     }
   }
 }
+
+query GetBlocksForStats($skip: Int!, $take: Int!) {
+  blocks(skip: $skip, take: $take) {
+    items {
+      object {
+        index
+        timestamp
+        txCount
+      }
+    }
+  }
+}

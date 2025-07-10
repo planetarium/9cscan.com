@@ -11,34 +11,16 @@ export default function BlockListPage() {
 
   const page = Number.parseInt(searchParams.get('page') || '1', 10);
 
-  const { data: latestBlocksData, loading: latestLoading } = useGetBlocksQuery({
-    variables: { skip: 0, take: ITEMS_PER_PAGE },
+  const { data: blocksData, loading: blocksLoading } = useGetBlocksQuery({
+    variables: {
+      skip: (page - 1) * ITEMS_PER_PAGE,
+      take: ITEMS_PER_PAGE,
+    },
     pollInterval: 8 * 1000,
   });
 
-  const { data: blocksData, loading: blocksLoading } = useGetBlocksQuery({
-    variables: {
-      skip: page > 1 ? (page - 1) * ITEMS_PER_PAGE : 0,
-      take: ITEMS_PER_PAGE,
-    },
-    skip: page === 1,
-  });
-
-  const showLatest = page === 1;
-  const currentLoading = showLatest ? latestLoading : blocksLoading;
-
   useEffect(() => {
-    if (showLatest && latestBlocksData?.blocks?.items) {
-      const latestBlocks: Block[] = latestBlocksData.blocks.items.map((block) => ({
-        index: block.object.index,
-        hash: block.object.hash,
-        timestamp: block.object.timestamp,
-        transactionCount: block.object.txCount,
-        miner: block.object.miner,
-        stateRootHash: block.object.stateRootHash,
-      }));
-      setBlocks(latestBlocks);
-    } else if (!showLatest && blocksData?.blocks?.items) {
+    if (blocksData?.blocks?.items) {
       const blockList: Block[] = blocksData.blocks.items.map((block) => ({
         index: block.object.index,
         hash: block.object.hash,
@@ -49,7 +31,7 @@ export default function BlockListPage() {
       }));
       setBlocks(blockList);
     }
-  }, [showLatest, latestBlocksData, blocksData]);
+  }, [blocksData]);
 
   const handlePageChange = (newPage: number) => {
     const newSearchParams = new URLSearchParams(searchParams);
@@ -69,9 +51,9 @@ export default function BlockListPage() {
         <h1 className="text-3xl font-bold text-gray-800 mb-6">Blocks</h1>
 
         <div className="bg-white border border-gray-200 rounded-lg">
-          <BlockTable loading={currentLoading} blocks={blocks} detail />
+          <BlockTable loading={blocksLoading} blocks={blocks} detail />
 
-          {!currentLoading && blocks.length > 0 && (
+          {!blocksLoading && blocks.length > 0 && (
             <div className="px-6 py-4 border-t border-gray-200">
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-600">Page {page}</div>

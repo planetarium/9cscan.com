@@ -1,7 +1,14 @@
+import TxHistoryChart from './TxHistoryChart';
+
+interface Block {
+  index: number;
+  timestamp: string;
+  txCount: number;
+}
+
 interface ScoreBoardProps {
   loading: boolean;
-  avgBlockTime: number;
-  avgTx: number;
+  blocks: Block[];
   WncgPrice: number;
   WncgMarketCap: number;
   WncgChange24h: number;
@@ -9,12 +16,33 @@ interface ScoreBoardProps {
 
 export default function ScoreBoard({
   loading,
-  avgBlockTime,
-  avgTx,
+  blocks,
   WncgPrice,
   WncgMarketCap,
   WncgChange24h,
 }: ScoreBoardProps) {
+  const calculateStats = () => {
+    if (!blocks || blocks.length < 2) return { avgBlockTime: 0, avgTx: 0 };
+
+    const sortedBlocks = [...blocks].sort((a, b) => a.index - b.index);
+
+    let totalBlockTime = 0;
+    let totalTx = 0;
+
+    for (let i = 1; i < sortedBlocks.length; i++) {
+      const currentTime = new Date(sortedBlocks[i].timestamp).getTime();
+      const prevTime = new Date(sortedBlocks[i - 1].timestamp).getTime();
+      totalBlockTime += (currentTime - prevTime) / 1000;
+      totalTx += sortedBlocks[i].txCount;
+    }
+
+    const avgBlockTime = totalBlockTime / (sortedBlocks.length - 1);
+    const avgTx = totalTx / sortedBlocks.length;
+
+    return { avgBlockTime, avgTx };
+  };
+
+  const { avgBlockTime, avgTx } = calculateStats();
   return (
     <div className="bg-white border border-gray-200 rounded-lg">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
@@ -89,9 +117,7 @@ export default function ScoreBoard({
         <div className="lg:col-span-1">
           <div>
             <h5 className="text-sm font-bold text-gray-700 uppercase mb-6">Transaction History</h5>
-            <div className="h-32 bg-gray-100 rounded flex items-center justify-center">
-              <span className="text-gray-500 text-sm">Chart Component</span>
-            </div>
+            <TxHistoryChart blocks={blocks} loading={loading} />
           </div>
         </div>
       </div>

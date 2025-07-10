@@ -13,45 +13,20 @@ export default function TransactionListPage() {
   const page = Number.parseInt(searchParams.get('page') || '1', 10);
   const action = searchParams.get('action') || '';
 
-  const { data: latestTransactionsData, loading: latestLoading } = useGetTransactionsQuery({
-    variables: { skip: 0, take: ITEMS_PER_PAGE },
-    pollInterval: 8 * 1000,
-  });
-
   const { data: transactionsData, loading: transactionsLoading } = useGetTransactionsQuery({
     variables: {
-      skip: page > 1 ? (page - 1) * ITEMS_PER_PAGE : 0,
+      skip: (page - 1) * ITEMS_PER_PAGE,
       take: ITEMS_PER_PAGE,
     },
-    skip: page === 1,
+    pollInterval: 8 * 1000,
   });
 
   const { data: blocksData } = useGetBlocksQuery({
     variables: { skip: 0, take: 1 },
   });
 
-  const showLatest = page === 1 && !action;
-  const currentLoading = showLatest ? latestLoading : transactionsLoading;
-
   useEffect(() => {
-    if (showLatest && latestTransactionsData?.transactions?.items) {
-      const latestTransactions: Transaction[] = latestTransactionsData.transactions.items.map(
-        (transaction) => ({
-          id: transaction.object.id,
-          blockIndex: transaction.blockIndex,
-          blockTimestamp: transaction.object.timestamp,
-          timestamp: transaction.object.timestamp,
-          signer: transaction.object.signer,
-          actions: transaction.object.actions.map((action) => ({
-            inspection: {
-              typeId: action.typeId || '',
-              avatarAddress: transaction.firstAvatarAddressInActionArguments || '',
-            },
-          })),
-        })
-      );
-      setTransactions(latestTransactions);
-    } else if (!showLatest && transactionsData?.transactions?.items) {
+    if (transactionsData?.transactions?.items) {
       const transactionList: Transaction[] = transactionsData.transactions.items.map(
         (transaction) => ({
           id: transaction.object.id,
@@ -69,7 +44,7 @@ export default function TransactionListPage() {
       );
       setTransactions(transactionList);
     }
-  }, [showLatest, latestTransactionsData, transactionsData]);
+  }, [transactionsData]);
 
   const handlePageChange = (newPage: number) => {
     const newSearchParams = new URLSearchParams(searchParams);
@@ -102,13 +77,13 @@ export default function TransactionListPage() {
 
         <div className="bg-white border border-gray-200 rounded-lg">
           <TransactionTable
-            loading={currentLoading}
+            loading={transactionsLoading}
             transactions={transactions}
             detail
             latestBlockIndex={latestBlockIndex}
           />
 
-          {!currentLoading && transactions.length > 0 && (
+          {!transactionsLoading && transactions.length > 0 && (
             <div className="px-6 py-4 border-t border-gray-200">
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-600">Page {page}</div>

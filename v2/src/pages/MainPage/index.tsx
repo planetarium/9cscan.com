@@ -3,7 +3,11 @@ import SearchSection from '@/components/SearchSection';
 import BlockTable, { type Block } from '@/components/BlockTable';
 import TransactionTable, { type Transaction } from '@/components/TransactionTable';
 import ScoreBoard from '@/components/ScoreBoard';
-import { useGetBlocksQuery, useGetTransactionsQuery } from '@/graphql-mimir/generated/graphql';
+import {
+  useGetBlocksQuery,
+  useGetTransactionsQuery,
+  useGetBlocksForStatsQuery,
+} from '@/graphql-mimir/generated/graphql';
 
 export default function MainPage() {
   const handleSearch = (keyword: string) => {
@@ -20,7 +24,12 @@ export default function MainPage() {
     pollInterval: 8 * 1000,
   });
 
-  const loading = blocksLoading || transactionsLoading;
+  const { data: statsData, loading: statsLoading } = useGetBlocksForStatsQuery({
+    variables: { skip: 0, take: 100 },
+    pollInterval: 8 * 1000,
+  });
+
+  const loading = blocksLoading || transactionsLoading || statsLoading;
 
   const latestBlocks10: Block[] =
     blocksData?.blocks?.items?.map((block) => ({
@@ -50,6 +59,13 @@ export default function MainPage() {
       })),
     })) || [];
 
+  const statsBlocks =
+    statsData?.blocks?.items?.map((block) => ({
+      index: block.object.index,
+      timestamp: block.object.timestamp,
+      txCount: block.object.txCount,
+    })) || [];
+
   return (
     <div className="min-h-screen bg-gray-50">
       <SearchSection onSearch={handleSearch} />
@@ -70,8 +86,7 @@ export default function MainPage() {
           <div className="mt-6">
             <ScoreBoard
               loading={loading}
-              avgBlockTime={0}
-              avgTx={0}
+              blocks={statsBlocks}
               WncgPrice={0}
               WncgMarketCap={0}
               WncgChange24h={0}
