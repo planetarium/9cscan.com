@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import SearchSection from '@/components/SearchSection';
 import BlockTable, { type Block } from '@/components/BlockTable';
 import TransactionTable, { type Transaction } from '@/components/TransactionTable';
@@ -83,12 +84,12 @@ export default function MainPage() {
             <h4 className="text-lg font-semibold text-gray-800 mb-4">Latest Blocks</h4>
             <BlockTable loading={loading} blocks={latestBlocks10} />
             <div className="flex justify-center mt-4">
-              <button
-                type="button"
-                className="w-full px-4 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-50 transition-colors"
+              <Link
+                to="/blocks"
+                className="w-full px-4 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-50 transition-colors text-center"
               >
                 View all blocks
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -100,12 +101,12 @@ export default function MainPage() {
               latestBlockIndex={latestBlockIndex}
             />
             <div className="flex justify-center mt-4">
-              <button
-                type="button"
-                className="w-full px-4 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-50 transition-colors"
+              <Link
+                to="/transactions"
+                className="w-full px-4 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-50 transition-colors text-center"
               >
                 View all transactions
-              </button>
+              </Link>
             </div>
           </div>
         </div>
