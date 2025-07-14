@@ -4,7 +4,7 @@ export interface Action {
   inspection?: {
     typeId: string;
     productType?: string;
-    amount?: [any, any];
+    amount?: string;
     avatarAddress?: string;
   };
 }
@@ -188,7 +188,7 @@ export default function TransactionTable({
                 {detail && (
                   <td className="px-4 py-3 text-sm text-gray-600">
                     {tx.actions[0]?.inspection?.amount && (
-                      <span>Amount: {tx.actions[0].inspection.amount[1]}</span>
+                      <span>Amount: {tx.actions[0].inspection.amount}</span>
                     )}
                   </td>
                 )}

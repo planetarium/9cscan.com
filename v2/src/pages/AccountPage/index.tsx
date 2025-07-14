@@ -26,6 +26,8 @@ const transformTransaction = (tx: any): Transaction => ({
   actions: tx.object.actions.map((action: any) => ({
     inspection: {
       typeId: action.typeId || '',
+      avatarAddress: tx.firstAvatarAddressInActionArguments || '',
+      amount: tx.firstNCGAmountInActionArguments || undefined,
     },
   })),
 });

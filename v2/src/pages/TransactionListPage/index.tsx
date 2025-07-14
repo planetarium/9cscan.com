@@ -53,6 +53,7 @@ export default function TransactionListPage() {
             inspection: {
               typeId: action.typeId || '',
               avatarAddress: transaction.firstAvatarAddressInActionArguments || '',
+              amount: transaction.firstNCGAmountInActionArguments || undefined,
             },
           })),
         })
