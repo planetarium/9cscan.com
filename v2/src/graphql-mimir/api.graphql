@@ -160,3 +160,15 @@ query GetBlocksForStats($skip: Int!, $take: Int!) {
     }
   }
 }
+
+query GetWNCGPrice {
+  wncgPrice {
+    quote {
+      usd {
+        marketCap
+        price
+        percentChange24h
+      }
+    }
+  }
+}

@@ -8,6 +8,7 @@ import {
   useGetTransactionsQuery,
   useGetBlocksForStatsQuery,
 } from '@/graphql-mimir/generated/graphql';
+import { useWNCG } from '@/hooks/useWNCG';
 
 export default function MainPage() {
   const handleSearch = (keyword: string) => {
@@ -29,7 +30,9 @@ export default function MainPage() {
     pollInterval: 8 * 1000,
   });
 
-  const loading = blocksLoading || transactionsLoading || statsLoading;
+  const { wncgData, loading: wncgLoading } = useWNCG();
+
+  const loading = blocksLoading || transactionsLoading || statsLoading || wncgLoading;
 
   const latestBlocks10: Block[] =
     blocksData?.blocks?.items?.map((block) => ({
@@ -87,9 +90,9 @@ export default function MainPage() {
             <ScoreBoard
               loading={loading}
               blocks={statsBlocks}
-              WncgPrice={0}
-              WncgMarketCap={0}
-              WncgChange24h={0}
+              WncgPrice={wncgData.price}
+              WncgMarketCap={wncgData.marketCap}
+              WncgChange24h={wncgData.percentChange24h}
             />
           </div>
         </div>
