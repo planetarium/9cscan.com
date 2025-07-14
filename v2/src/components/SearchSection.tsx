@@ -1,15 +1,14 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { searchKeyword } from '../utils/searchUtils';
 
-interface SearchSectionProps {
-  onSearch: (keyword: string) => void;
-}
-
-export default function SearchSection({ onSearch }: SearchSectionProps) {
+export default function SearchSection() {
   const [searchKey, setSearchKey] = useState('');
+  const navigate = useNavigate();
 
   const handleSearch = () => {
     if (searchKey.trim()) {
-      onSearch(searchKey);
+      searchKeyword(searchKey, navigate);
     }
   };
 

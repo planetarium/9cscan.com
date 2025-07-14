@@ -11,10 +11,6 @@ import {
 import { useWNCG } from '@/hooks/useWNCG';
 
 export default function MainPage() {
-  const handleSearch = (keyword: string) => {
-    console.log('Searching for:', keyword);
-  };
-
   const { data: blocksData, loading: blocksLoading } = useGetBlocksQuery({
     variables: { skip: 0, take: 10 },
     pollInterval: 8 * 1000,
@@ -71,7 +67,7 @@ export default function MainPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <SearchSection onSearch={handleSearch} />
+      <SearchSection />
 
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="mb-6">
