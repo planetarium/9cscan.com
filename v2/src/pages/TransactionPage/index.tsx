@@ -19,7 +19,8 @@ interface Transaction {
     typeId: string;
     avatarAddress?: string;
     id?: string;
-    [key: string]: any;
+    raw?: string;
+    values?: any;
   }>;
 }
 
@@ -49,7 +50,8 @@ export default function TransactionPage() {
             typeId: action.typeId || '',
             avatarAddress: data.transaction.firstAvatarAddressInActionArguments || '',
             id: data.transaction.firstActionTypeId || '',
-            ...action.values,
+            raw: action.raw || '',
+            values: action.values || null,
           })) || [],
       }
     : null;
@@ -253,25 +255,74 @@ export default function TransactionPage() {
                       </div>
                     )}
 
-                    {action.id && (
+                    {(() => {
+                      try {
+                        const parsedValues =
+                          typeof action.values === 'string'
+                            ? JSON.parse(action.values)
+                            : action.values;
+                        const idValue = parsedValues?.id || action.id;
+
+                        if (idValue) {
+                          return (
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                              <div className="md:col-span-1 font-semibold text-gray-700">Id:</div>
+                              <div className="md:col-span-3">{idValue}</div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      } catch {
+                        if (action.id) {
+                          return (
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                              <div className="md:col-span-1 font-semibold text-gray-700">Id:</div>
+                              <div className="md:col-span-3">{action.id}</div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }
+                    })()}
+
+                    {action.raw && (
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                        <div className="md:col-span-1 font-semibold text-gray-700">Id:</div>
-                        <div className="md:col-span-3">{action.id}</div>
+                        <div className="md:col-span-1 font-semibold text-gray-700">Raw:</div>
+                        <div className="md:col-span-3 text-gray-800">{action.raw}</div>
                       </div>
                     )}
 
-                    {Object.keys(action).map((key) => {
-                      if (['typeId', 'avatarAddress', 'id'].includes(key)) return null;
-                      return (
-                        <div
-                          key={key}
-                          className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 bg-gray-50 p-4 rounded"
-                        >
-                          <div className="md:col-span-1 font-normal text-gray-600">{key}:</div>
-                          <div className="md:col-span-3 text-gray-800">{String(action[key])}</div>
-                        </div>
-                      );
-                    })}
+                    {action.values &&
+                      (() => {
+                        try {
+                          const parsedValues =
+                            typeof action.values === 'string'
+                              ? JSON.parse(action.values)
+                              : action.values;
+
+                          return Object.entries(parsedValues)
+                            .filter(([key]) => key !== 'id')
+                            .map(([key, value]) => (
+                              <div key={key} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                                <div className="md:col-span-1 font-semibold text-gray-700">
+                                  {key}:
+                                </div>
+                                <div className="md:col-span-3 text-gray-800">{String(value)}</div>
+                              </div>
+                            ));
+                        } catch {
+                          return (
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                              <div className="md:col-span-1 font-semibold text-gray-700">
+                                Values:
+                              </div>
+                              <div className="md:col-span-3 text-gray-800">
+                                {String(action.values)}
+                              </div>
+                            </div>
+                          );
+                        }
+                      })()}
                   </div>
                 ))
               )}
