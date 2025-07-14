@@ -4,6 +4,7 @@ interface ActionsSelectProps {
   value?: string;
   color?: string;
   onChange?: (value: string) => void;
+  actionTypes: Array<{ id: string }>;
 }
 
 interface ActionItem {
@@ -11,25 +12,15 @@ interface ActionItem {
   label: string;
 }
 
-export default function ActionsSelect({ value, onChange }: ActionsSelectProps) {
+export default function ActionsSelect({ value, onChange, actionTypes }: ActionsSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [items, setItems] = useState<string[]>([]);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    const fetchActionTypeIds = async () => {
-      try {
-        const response = await fetch('https://9cscan.com/all_action_type_ids.txt');
-        const text = await response.text();
-        const actionTypeIds = text.split('\n').filter(Boolean);
-        setItems(actionTypeIds);
-      } catch (error) {
-        console.error('Failed to fetch action type IDs:', error);
-      }
-    };
-
-    fetchActionTypeIds();
-  }, []);
+    const actionTypeIds = actionTypes.map((type) => type.id);
+    setItems(actionTypeIds);
+  }, [actionTypes]);
 
   const filteredItems: ActionItem[] = items
     .filter((item) => !search || item.toLowerCase().includes(search.toLowerCase()))

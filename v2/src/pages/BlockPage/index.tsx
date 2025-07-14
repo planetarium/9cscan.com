@@ -2,12 +2,20 @@ import { useState, useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import {
   useGetBlockQuery,
-  useGetTransactionsByBlockIndexQuery,
+  useGetTransactionsQuery,
+  useGetActionTypesQuery,
 } from '@/graphql-mimir/generated/graphql';
 import TransactionTable, { type Transaction } from '@/components/TransactionTable';
 import CopyBtn from '@/components/CopyBtn';
 import ActionsSelect from '@/components/ActionsSelect';
 import type { Block } from '@/components/BlockTable';
+
+type BlockPageTransactionsVariables = {
+  skip: number;
+  take: number;
+  blockIndex?: number;
+  actionTypeId?: string;
+};
 
 export default function BlockPage() {
   const { index } = useParams<{ index: string }>();
@@ -22,11 +30,18 @@ export default function BlockPage() {
     skip: !blockIndex,
   });
 
-  const { data: transactionsData, loading: transactionsLoading } =
-    useGetTransactionsByBlockIndexQuery({
-      variables: { index: blockIndex },
-      skip: !blockIndex,
-    });
+  const { data: actionTypesData } = useGetActionTypesQuery();
+
+  const transactionVariables: BlockPageTransactionsVariables = {
+    skip: 0,
+    take: 100,
+    ...(blockIndex ? { blockIndex } : {}),
+    ...(actionFilter ? { actionTypeId: actionFilter } : {}),
+  };
+  const { data: transactionsData, loading: transactionsLoading } = useGetTransactionsQuery({
+    variables: transactionVariables,
+    skip: !blockIndex,
+  });
 
   const loading = blockLoading || transactionsLoading;
 
@@ -49,7 +64,7 @@ export default function BlockPage() {
       };
 
   const transactions: Transaction[] =
-    transactionsData?.transactionsByBlockIndex?.map((transaction) => ({
+    transactionsData?.transactions?.items?.map((transaction) => ({
       id: transaction.object.id,
       blockIndex: transaction.blockIndex,
       blockTimestamp: transaction.object.timestamp,
@@ -59,7 +74,6 @@ export default function BlockPage() {
         inspection: {
           typeId: action.typeId || '',
           avatarAddress: transaction.firstAvatarAddressInActionArguments || '',
-          // amount: transaction.firstNCGAmountInActionArguments || [0, 0],
         },
       })),
     })) || [];
@@ -110,6 +124,8 @@ export default function BlockPage() {
     const action = searchParams.get('action');
     setActionFilter(action || '');
   }, [searchParams]);
+
+  const actionTypes = actionTypesData?.actionTypes || [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -244,7 +260,11 @@ export default function BlockPage() {
             <h2 className="text-2xl font-bold text-gray-800 mt-8 mb-4">Transactions</h2>
             <div className="bg-white border border-gray-200 rounded-lg">
               <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-                <ActionsSelect value={actionFilter} onChange={handleActionFilterChange} />
+                <ActionsSelect
+                  value={actionFilter}
+                  onChange={handleActionFilterChange}
+                  actionTypes={actionTypes}
+                />
                 <span className="text-sm text-gray-600">
                   Total {block.transactionCount} Transactions
                 </span>

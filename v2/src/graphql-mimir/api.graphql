@@ -93,39 +93,31 @@ query GetTransaction($txId: String!) {
   }
 }
 
-query GetTransactionsByBlockIndex($index: Long!) {
-  transactionsByBlockIndex(blockIndex: $index) {
-    blockHash
-    blockIndex
-    firstActionTypeId
-    firstAvatarAddressInActionArguments
-    firstNCGAmountInActionArguments
-    object {
-      id
-      nonce
-      publicKey
-      signature
-      signer
-      timestamp
-      txStatus
-      updatedAddresses
-      actions {
-        raw
-        typeId
-        values
-      }
+query GetTransactions(
+  $skip: Int!
+  $take: Int!
+  $blockIndex: Long
+  $actionTypeId: String
+  $avatarAddress: String
+  $signer: String
+) {
+  transactions(
+    skip: $skip
+    take: $take
+    filter: {
+      blockIndex: $blockIndex
+      firstActionTypeId: $actionTypeId
+      firstAvatarAddressInActionArguments: $avatarAddress
+      signer: $signer
     }
-  }
-}
-
-query GetTransactions($skip: Int!, $take: Int!) {
-  transactions(skip: $skip, take: $take) {
+  ) {
     items {
       blockHash
       blockIndex
       firstActionTypeId
       firstAvatarAddressInActionArguments
       firstNCGAmountInActionArguments
+      id
       object {
         id
         nonce
@@ -146,6 +138,12 @@ query GetTransactions($skip: Int!, $take: Int!) {
       hasNextPage
       hasPreviousPage
     }
+  }
+}
+
+query GetActionTypes {
+  actionTypes {
+    id
   }
 }
 

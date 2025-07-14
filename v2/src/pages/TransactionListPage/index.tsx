@@ -1,10 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useGetBlocksQuery, useGetTransactionsQuery } from '@/graphql-mimir/generated/graphql';
+import {
+  useGetBlocksQuery,
+  useGetTransactionsQuery,
+  useGetActionTypesQuery,
+} from '@/graphql-mimir/generated/graphql';
 import TransactionTable, { type Transaction } from '@/components/TransactionTable';
 import ActionsSelect from '@/components/ActionsSelect';
 
 const ITEMS_PER_PAGE = 20;
+
+type TransactionListPageVariables = {
+  skip: number;
+  take: number;
+  actionTypeId?: string;
+};
 
 export default function TransactionListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -13,11 +23,16 @@ export default function TransactionListPage() {
   const page = Number.parseInt(searchParams.get('page') || '1', 10);
   const action = searchParams.get('action') || '';
 
+  const { data: actionTypesData } = useGetActionTypesQuery();
+
+  const transactionVariables: TransactionListPageVariables = {
+    skip: (page - 1) * ITEMS_PER_PAGE,
+    take: ITEMS_PER_PAGE,
+    ...(action ? { actionTypeId: action } : {}),
+  };
+
   const { data: transactionsData, loading: transactionsLoading } = useGetTransactionsQuery({
-    variables: {
-      skip: (page - 1) * ITEMS_PER_PAGE,
-      take: ITEMS_PER_PAGE,
-    },
+    variables: transactionVariables,
     pollInterval: 8 * 1000,
   });
 
@@ -66,13 +81,18 @@ export default function TransactionListPage() {
 
   const hasNextPage = transactionsData?.transactions?.pageInfo?.hasNextPage || false;
   const latestBlockIndex = blocksData?.blocks?.items?.[0]?.object?.index || 0;
+  const actionTypes = actionTypesData?.actionTypes || [];
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold text-gray-800">Transactions</h1>
-          <ActionsSelect value={action} onChange={handleActionFilterChange} />
+          <ActionsSelect
+            value={action}
+            onChange={handleActionFilterChange}
+            actionTypes={actionTypes}
+          />
         </div>
 
         <div className="bg-white border border-gray-200 rounded-lg">
