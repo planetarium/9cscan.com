@@ -5,5 +5,6 @@ import TransactionPage from './TransactionPage';
 import BlockListPage from './BlockListPage';
 import TransactionListPage from './TransactionListPage';
 import { AccountPage } from './AccountPage';
+import AvatarPage from './AvatarPage';
 
-export { ErrorPage, MainPage, NotFoundPage, TransactionPage, BlockListPage, TransactionListPage, AccountPage };
+export { ErrorPage, MainPage, NotFoundPage, TransactionPage, BlockListPage, TransactionListPage, AccountPage, AvatarPage };

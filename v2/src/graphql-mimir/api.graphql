@@ -112,8 +112,8 @@ query GetTransactions(
   $take: Int!
   $blockIndex: Long
   $actionTypeId: String
-  $avatarAddress: String
-  $signer: String
+  $avatarAddress: Address
+  $signer: Address
 ) {
   transactions(
     skip: $skip
@@ -183,4 +183,25 @@ query GetWNCGPrice {
       }
     }
   }
+}
+
+query GetAvatar($avatarAddress: Address!) {
+  avatar(address: $avatarAddress) {
+    address
+    agentAddress
+    blockIndex
+    characterId
+    combinationSlotAddresses
+    ear
+    exp
+    hair
+    lens
+    level
+    name
+    rankingMapAddress
+    tail
+    updatedAt
+    version
+  }
+  dailyRewardReceivedBlockIndex(address: $avatarAddress)
 }

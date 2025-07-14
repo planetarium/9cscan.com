@@ -1,5 +1,6 @@
 overwrite: true
-schema: https://odin-mimir.9c.gg/graphql
+# schema: https://odin-mimir.9c.gg/graphql
+schema: ./src/graphql-mimir/schema.graphql
 documents: ./src/graphql-mimir/api.graphql
 generates:
   ./src/graphql-mimir/generated/graphql.tsx:
@@ -15,6 +16,6 @@ generates:
       scalars:
         Long: number
         TxId: string
-  ./src/graphql-mimir/generated/schema.json:
-    plugins:
-      - introspection
+  # ./src/graphql-mimir/generated/schema.json:
+  #   plugins:
+  #     - introspection
