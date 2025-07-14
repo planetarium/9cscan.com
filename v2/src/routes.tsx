@@ -6,6 +6,7 @@ import NotFoundPage from '@/pages/NotFoundPage';
 import TransactionPage from '@/pages/TransactionPage';
 import BlockListPage from '@/pages/BlockListPage';
 import TransactionListPage from '@/pages/TransactionListPage';
+import { AccountPage } from '@/pages/AccountPage';
 import { Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 import Root from './App';
 
@@ -17,6 +18,7 @@ const router = createBrowserRouter(
       <Route path="/transaction/:id" element={<TransactionPage />} />
       <Route path="/blocks" element={<BlockListPage />} />
       <Route path="/transactions" element={<TransactionListPage />} />
+      <Route path="/account/:address" element={<AccountPage />} />
 
       <Route path="*" element={<NotFoundPage />} />
     </Route>
