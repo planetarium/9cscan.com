@@ -118,3 +118,10 @@ thead th {
   font-weight: 700;
   font-style: italic;
 }
+
+/* Search input placeholder styles */
+.search-input::placeholder {
+  color: #838B9B !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 14px !important;
+}

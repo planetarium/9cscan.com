@@ -10,6 +10,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import LoadingSpinner from './common/LoadingSpinner';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -24,43 +25,42 @@ interface TxHistoryChartProps {
   loading: boolean;
 }
 
-export default function TxHistoryChart({ blocks, loading }: TxHistoryChartProps) {
-  const chartRef = useRef<ChartJS<'line'>>(null);
+const processData = (blocks: Block[]) => {
+  if (!blocks || blocks.length === 0) return { labels: [], data: [] };
 
-  const processData = () => {
-    if (!blocks || blocks.length === 0) return { labels: [], data: [] };
+  const sortedBlocks = [...blocks]
+    .map((b) => ({ timestamp: b.timestamp, txCount: b.txCount, index: b.index }))
+    .reverse();
 
-    const sortedBlocks = [...blocks]
-      .map((b) => ({ timestamp: b.timestamp, txCount: b.txCount, index: b.index }))
-      .reverse();
+  if (sortedBlocks.length > 0) {
+    const startIndex = sortedBlocks[0].index - (sortedBlocks[0].index % 10);
+    const filteredBlocks = sortedBlocks.filter((b) => b.index >= startIndex);
 
-    if (sortedBlocks.length > 0) {
-      const startIndex = sortedBlocks[0].index - (sortedBlocks[0].index % 10);
-      const filteredBlocks = sortedBlocks.filter((b) => b.index >= startIndex);
-
-      const chunkedBlocks = [];
-      for (let i = 0; i < filteredBlocks.length; i += 10) {
-        chunkedBlocks.push(filteredBlocks.slice(i, i + 10));
-      }
-
-      const labels = chunkedBlocks.map((chunk) => {
-        const first = chunk[0];
-        const last = chunk[chunk.length - 1];
-        return `${first.index}~${last.index}`;
-      });
-
-      const data = chunkedBlocks.map((chunk) => {
-        const avgTx = chunk.reduce((sum, block) => sum + block.txCount, 0) / chunk.length;
-        return avgTx;
-      });
-
-      return { labels, data };
+    const chunkedBlocks = [];
+    for (let i = 0; i < filteredBlocks.length; i += 10) {
+      chunkedBlocks.push(filteredBlocks.slice(i, i + 10));
     }
 
-    return { labels: [], data: [] };
-  };
+    const labels = chunkedBlocks.map((chunk) => {
+      const first = chunk[0];
+      const last = chunk[chunk.length - 1];
+      return `${first.index}~${last.index}`;
+    });
 
-  const { labels, data } = processData();
+    const data = chunkedBlocks.map((chunk) => {
+      const avgTx = chunk.reduce((sum, block) => sum + block.txCount, 0) / chunk.length;
+      return avgTx;
+    });
+
+    return { labels, data };
+  }
+
+  return { labels: [], data: [] };
+};
+
+export default function TxHistoryChart({ blocks, loading }: TxHistoryChartProps) {
+  const chartRef = useRef<ChartJS<'line'>>(null);
+  const { labels, data } = processData(blocks);
 
   const chartData = {
     labels,
@@ -98,7 +98,7 @@ export default function TxHistoryChart({ blocks, loading }: TxHistoryChartProps)
   if (loading) {
     return (
       <div className="h-32 bg-gray-100 rounded flex items-center justify-center">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-400" />
+        <LoadingSpinner size="sm" color="gray" />
       </div>
     );
   }

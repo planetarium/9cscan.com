@@ -19,23 +19,42 @@ export default function SearchSection() {
   };
 
   return (
-    <div className="relative h-70 bg-gradient-to-br from-purple-800 via-purple-600 to-blue-500 shadow-lg mb-0">
+    <div
+      className="relative shadow-lg mb-0"
+      style={{
+        height: '280px',
+        background: 'linear-gradient(296deg, #493969 14.78%, #69419F 46.29%, #5D7EAA 107.02%)',
+        boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.25)',
+      }}
+    >
       <div
         className="absolute inset-0 bg-center bg-no-repeat bg-cover opacity-20"
-        style={{ backgroundImage: "url('/grid.png')" }}
+        style={{
+          backgroundImage: "url('/grid.png')",
+          backgroundSize: '120%',
+        }}
       />
       <div className="relative z-10 px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="md:w-2/3">
             <div className="search-form">
-              <h2 className="text-white text-2xl font-bold mb-5 mt-4">
+              <h2
+                className="text-white text-2xl font-bold mb-5 mt-4 font-inter"
+                style={{ fontSize: '26px', fontWeight: 600 }}
+              >
                 The Nine Chronicles Blockchain Explorer
               </h2>
               <div className="mt-4">
                 <div className="relative max-w-2xl">
                   <input
                     type="text"
-                    className="w-full h-15 px-4 py-3 bg-white rounded-xl text-gray-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white rounded-xl text-gray-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-inter search-input"
+                    style={{
+                      height: '60px',
+                      padding: '8px 16px',
+                      fontSize: '14px',
+                      fontWeight: 600,
+                    }}
                     placeholder="Search by Block / Account Address / Tx Hash / Action Symbol"
                     value={searchKey}
                     onChange={(e) => setSearchKey(e.target.value)}
@@ -44,7 +63,12 @@ export default function SearchSection() {
                   <button
                     type="button"
                     onClick={handleSearch}
-                    className="absolute right-0 top-0 h-15 w-16 bg-blue-600 hover:bg-blue-700 text-white rounded-r-xl flex items-center justify-center transition-colors"
+                    className="absolute right-0 top-0 text-white rounded-r-xl flex items-center justify-center transition-colors"
+                    style={{
+                      height: '60px',
+                      width: '64px',
+                      backgroundColor: '#3B82F6',
+                    }}
                   >
                     <svg
                       className="w-5 h-5"

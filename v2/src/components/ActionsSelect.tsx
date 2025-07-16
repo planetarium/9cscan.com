@@ -10,6 +10,7 @@ interface ActionsSelectProps {
 interface ActionItem {
   value: string;
   label: string;
+  highlightedLabel: string;
 }
 
 export default function ActionsSelect({ value, onChange, actionTypes }: ActionsSelectProps) {
@@ -26,7 +27,10 @@ export default function ActionsSelect({ value, onChange, actionTypes }: ActionsS
     .filter((item) => !search || item.toLowerCase().includes(search.toLowerCase()))
     .map((item) => ({
       value: item,
-      label: search ? item.replace(new RegExp(search, 'gi'), (match) => `<b>${match}</b>`) : item,
+      label: item,
+      highlightedLabel: search
+        ? item.replace(new RegExp(search, 'gi'), (match) => `<b>${match}</b>`)
+        : item,
     }));
 
   const handleSelect = (item: ActionItem) => {
@@ -96,18 +100,18 @@ export default function ActionsSelect({ value, onChange, actionTypes }: ActionsS
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={handleKeyDown}
-              autoFocus
             />
           </div>
           <div className="max-h-60 overflow-y-auto">
-            {filteredItems.map((item, index) => (
+            {filteredItems.map((item) => (
               <button
-                key={index}
+                key={item.value}
                 type="button"
                 className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 transition-colors"
                 onClick={() => handleSelect(item)}
-                dangerouslySetInnerHTML={{ __html: item.label }}
-              />
+              >
+                <span dangerouslySetInnerHTML={{ __html: item.highlightedLabel }} />
+              </button>
             ))}
             {filteredItems.length === 0 && (
               <div className="px-3 py-2 text-sm text-gray-500">No actions found</div>

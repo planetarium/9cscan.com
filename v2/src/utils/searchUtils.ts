@@ -24,8 +24,9 @@ export const searchKeyword = (key: string, navigate: NavigateFunction) => {
   }
 };
 
-export const shortAddress = (address: string, left = 2, right = 4) => {
-  return `${address.substring(0, left + 2)}..${address.substring(address.length - right, address.length)}`;
+export const shortAddress = (address: string, left = 8, right = 8) => {
+  if (!address || address.length < left + right) return address;
+  return `${address.substring(0, left)}...${address.substring(address.length - right)}`;
 };
 
 export const ncgFormat = (num: number): string => {
@@ -34,4 +35,8 @@ export const ncgFormat = (num: number): string => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).format(num);
+};
+
+export const formatNumber = (num: number): string => {
+  return new Intl.NumberFormat('en-US').format(num);
 }; 

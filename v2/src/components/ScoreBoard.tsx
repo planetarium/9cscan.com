@@ -1,4 +1,6 @@
 import TxHistoryChart from './TxHistoryChart';
+import LoadingSpinner from './common/LoadingSpinner';
+import { formatNumber } from '@/utils/commonUtils';
 
 interface Block {
   index: number;
@@ -14,6 +16,27 @@ interface ScoreBoardProps {
   WncgChange24h: number;
 }
 
+const calculateStats = (blocks: Block[]) => {
+  if (!blocks || blocks.length < 2) return { avgBlockTime: 0, avgTx: 0 };
+
+  const sortedBlocks = [...blocks].sort((a, b) => a.index - b.index);
+
+  let totalBlockTime = 0;
+  let totalTx = 0;
+
+  for (let i = 1; i < sortedBlocks.length; i++) {
+    const currentTime = new Date(sortedBlocks[i].timestamp).getTime();
+    const prevTime = new Date(sortedBlocks[i - 1].timestamp).getTime();
+    totalBlockTime += (currentTime - prevTime) / 1000;
+    totalTx += sortedBlocks[i].txCount;
+  }
+
+  const avgBlockTime = totalBlockTime / (sortedBlocks.length - 1);
+  const avgTx = totalTx / sortedBlocks.length;
+
+  return { avgBlockTime, avgTx };
+};
+
 export default function ScoreBoard({
   loading,
   blocks,
@@ -21,28 +44,7 @@ export default function ScoreBoard({
   WncgMarketCap,
   WncgChange24h,
 }: ScoreBoardProps) {
-  const calculateStats = () => {
-    if (!blocks || blocks.length < 2) return { avgBlockTime: 0, avgTx: 0 };
-
-    const sortedBlocks = [...blocks].sort((a, b) => a.index - b.index);
-
-    let totalBlockTime = 0;
-    let totalTx = 0;
-
-    for (let i = 1; i < sortedBlocks.length; i++) {
-      const currentTime = new Date(sortedBlocks[i].timestamp).getTime();
-      const prevTime = new Date(sortedBlocks[i - 1].timestamp).getTime();
-      totalBlockTime += (currentTime - prevTime) / 1000;
-      totalTx += sortedBlocks[i].txCount;
-    }
-
-    const avgBlockTime = totalBlockTime / (sortedBlocks.length - 1);
-    const avgTx = totalTx / sortedBlocks.length;
-
-    return { avgBlockTime, avgTx };
-  };
-
-  const { avgBlockTime, avgTx } = calculateStats();
+  const { avgBlockTime, avgTx } = calculateStats(blocks);
   return (
     <div className="bg-white border border-gray-200 rounded-lg">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
@@ -74,7 +76,7 @@ export default function ScoreBoard({
                   <div className="h-8 bg-gray-200 animate-pulse rounded" />
                 ) : (
                   <div className="text-2xl font-bold">
-                    ${Number(WncgMarketCap.toFixed()).toLocaleString()}
+                    ${formatNumber(Number(WncgMarketCap.toFixed()))}
                   </div>
                 )}
               </div>
@@ -89,7 +91,7 @@ export default function ScoreBoard({
               <div className="text-center sm:text-left">
                 {loading ? (
                   <div className="flex justify-center sm:justify-start mb-2">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-400" />
+                    <LoadingSpinner size="sm" color="gray" />
                   </div>
                 ) : (
                   <div className="text-2xl font-bold mb-1">{avgBlockTime.toFixed(2)}s</div>
@@ -100,7 +102,7 @@ export default function ScoreBoard({
               <div className="text-center sm:text-left">
                 {loading ? (
                   <div className="flex justify-center sm:justify-start mb-2">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-400" />
+                    <LoadingSpinner size="sm" color="gray" />
                   </div>
                 ) : (
                   <div className="text-2xl font-bold mb-1">{avgTx.toFixed(2)}</div>

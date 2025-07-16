@@ -1,8 +1,9 @@
-import { Link } from 'react-router-dom';
 import SearchSection from '@/components/SearchSection';
 import BlockTable, { type Block } from '@/components/BlockTable';
 import TransactionTable, { type Transaction } from '@/components/TransactionTable';
 import ScoreBoard from '@/components/ScoreBoard';
+import LinkButton from '@/components/common/LinkButton';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
 import {
   useGetBlocksQuery,
   useGetTransactionsQuery,
@@ -75,7 +76,7 @@ export default function MainPage() {
             <span>Block Height</span>
             {loading ? (
               <div className="ml-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600" />
+                <LoadingSpinner size="sm" />
               </div>
             ) : (
               <strong className="ml-2 text-blue-600">#{latestBlockIndex}</strong>
@@ -98,12 +99,9 @@ export default function MainPage() {
             <h4 className="text-lg font-semibold text-gray-800 mb-4">Latest Blocks</h4>
             <BlockTable loading={loading} blocks={latestBlocks10} />
             <div className="flex justify-center mt-4">
-              <Link
-                to="/blocks"
-                className="w-full px-4 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-50 transition-colors text-center"
-              >
+              <LinkButton to="/blocks" variant="outline" className="w-full">
                 View all blocks
-              </Link>
+              </LinkButton>
             </div>
           </div>
 
@@ -115,12 +113,9 @@ export default function MainPage() {
               latestBlockIndex={latestBlockIndex}
             />
             <div className="flex justify-center mt-4">
-              <Link
-                to="/transactions"
-                className="w-full px-4 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-50 transition-colors text-center"
-              >
+              <LinkButton to="/transactions" variant="outline" className="w-full">
                 View all transactions
-              </Link>
+              </LinkButton>
             </div>
           </div>
         </div>
