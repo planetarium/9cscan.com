@@ -60,7 +60,7 @@ export default function ScoreBoard({
                     ${WncgPrice.toFixed(2)}
                     <span className="text-gray-500 text-sm font-normal ml-1">/WNCG</span>
                     <span
-                      className={`text-sm font-normal ml-2 ${WncgChange24h < 0 ? 'text-red-500' : 'text-blue-500'}`}
+                      className={`text-sm font-normal text-bright-blue ml-2 ${WncgChange24h < 0 ? 'text-red-500' : 'text-blue-500'}`}
                     >
                       ({WncgChange24h.toFixed(2)}%)
                     </span>

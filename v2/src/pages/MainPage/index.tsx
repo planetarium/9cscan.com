@@ -70,7 +70,7 @@ export default function MainPage() {
     <div className="min-h-screen bg-gray-50">
       <SearchSection />
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-[1440px] min-w-xs mx-auto px-4 py-5">
         <div className="mb-6">
           <div className="flex items-center text-sm font-bold text-gray-700 uppercase">
             <span>Block Height</span>
@@ -79,7 +79,7 @@ export default function MainPage() {
                 <LoadingSpinner size="sm" />
               </div>
             ) : (
-              <strong className="ml-2 text-blue-600">#{latestBlockIndex}</strong>
+              <strong className="ml-2 text-bright-blue">#{latestBlockIndex}</strong>
             )}
           </div>
 
@@ -99,7 +99,11 @@ export default function MainPage() {
             <h4 className="text-lg font-semibold text-gray-800 mb-4">Latest Blocks</h4>
             <BlockTable loading={loading} blocks={latestBlocks10} />
             <div className="flex justify-center mt-4">
-              <LinkButton to="/blocks" variant="outline" className="w-full">
+              <LinkButton
+                to="/blocks"
+                variant="outline"
+                className="w-full text-bright-blue border-bright-blue"
+              >
                 View all blocks
               </LinkButton>
             </div>
@@ -113,7 +117,11 @@ export default function MainPage() {
               latestBlockIndex={latestBlockIndex}
             />
             <div className="flex justify-center mt-4">
-              <LinkButton to="/transactions" variant="outline" className="w-full">
+              <LinkButton
+                to="/transactions"
+                variant="outline"
+                className="w-full text-bright-blue border-bright-blue"
+              >
                 View all transactions
               </LinkButton>
             </div>

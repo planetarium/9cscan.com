@@ -30,5 +30,5 @@ interface TableCellProps {
 }
 
 export function TableCell({ children, className = '' }: TableCellProps) {
-  return <td className={`px-4 py-3 text-sm ${className}`}>{children}</td>;
+  return <td className={`px-4 py-3 text-sm text-center ${className}`}>{children}</td>;
 }

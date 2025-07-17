@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom';
 import { shortAddress, formatTimeAgo } from '@/utils/commonUtils';
 import TableContainer from './common/TableContainer';
 import TableHeader, { TableHeaderCell } from './common/TableHeader';
 import TableRow, { TableCell } from './common/TableRow';
 import Badge from './common/Badge';
+import Link from './common/Link';
 
 export interface Action {
   inspection?: {
@@ -66,14 +66,14 @@ export default function TransactionTable({
             {transactions.map((tx) => (
               <TableRow key={tx.id}>
                 <TableCell className="text-blue-600 hover:text-blue-800">
-                  <Link to={`/transaction/${tx.id}`} className="hover:underline">
-                    {shortAddress(tx.id)}
+                  <Link href={`/transaction/${tx.id}`} className="hover:underline">
+                    {shortAddress(tx.id, 4, 4)}
                   </Link>
                 </TableCell>
                 <TableCell>
                   <Link
-                    to={`/block/${tx.blockIndex}`}
-                    className="inline-block px-3 py-1 text-sm bg-blue-50 text-blue-600 border border-blue-200 rounded hover:bg-blue-100 transition-colors"
+                    href={`/block/${tx.blockIndex}`}
+                    className="inline-block px-3 py-1 text-sm bg-blue-50 text-[#53acd3] border border-blue-200 rounded hover:bg-blue-100 transition-colors"
                   >
                     {tx.blockIndex}
                   </Link>
@@ -91,9 +91,9 @@ export default function TransactionTable({
                 )}
                 {!embedMode && (
                   <TableCell className="text-blue-600 hover:text-blue-800">
-                    <a href={`/account/${tx.signer}`} className="hover:underline">
+                    <Link href={`/account/${tx.signer}`} className="hover:underline">
                       {tx.signer.substring(0, 8)}
-                    </a>
+                    </Link>
                   </TableCell>
                 )}
                 {involved && (
@@ -157,13 +157,13 @@ export default function TransactionTable({
                     {tx.actions.map(
                       (action, actionIndex) =>
                         action.inspection?.avatarAddress && (
-                          <a
+                          <Link
                             key={`${tx.id}-avatar-${actionIndex}`}
                             href={`/avatar/${action.inspection.avatarAddress}`}
                             className="mx-1 hover:underline"
                           >
                             {action.inspection.avatarAddress.substring(0, 8)}
-                          </a>
+                          </Link>
                         )
                     )}
                   </TableCell>

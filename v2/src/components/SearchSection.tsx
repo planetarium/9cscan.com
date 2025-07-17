@@ -35,7 +35,7 @@ export default function SearchSection() {
         }}
       />
       <div className="relative z-10 px-4 py-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-[1440px] px-4 mx-auto">
           <div className="md:w-2/3">
             <div className="search-form">
               <h2
@@ -67,7 +67,7 @@ export default function SearchSection() {
                     style={{
                       height: '60px',
                       width: '64px',
-                      backgroundColor: '#3B82F6',
+                      backgroundColor: '#2c3e50',
                     }}
                   >
                     <svg

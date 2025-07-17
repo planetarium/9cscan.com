@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import Link from './common/Link';
 import { shortAddress, formatTimeAgo } from '@/utils/commonUtils';
 import TableContainer from './common/TableContainer';
 import TableHeader, { TableHeaderCell } from './common/TableHeader';
@@ -37,7 +37,7 @@ export default function BlockTable({ loading, blocks, detail = false }: BlockTab
               <TableRow key={block.index}>
                 <TableCell>
                   <Link
-                    to={`/block/${block.index}`}
+                    href={`/block/${block.index}`}
                     className="inline-block px-3 py-1 text-sm bg-blue-50 text-blue-600 border border-blue-200 rounded hover:bg-blue-100 transition-colors"
                   >
                     {block.index}
@@ -52,14 +52,14 @@ export default function BlockTable({ loading, blocks, detail = false }: BlockTab
                   {formatTimeAgo(block.timestamp)}
                 </TableCell>
                 <TableCell className="text-blue-600 hover:text-blue-800">
-                  <a href={`/block/${block.index}#tx`} className="hover:underline">
+                  <Link href={`/block/${block.index}#tx`} className="hover:underline">
                     {block.transactionCount}
-                  </a>
+                  </Link>
                 </TableCell>
                 <TableCell className="text-blue-600 hover:text-blue-800">
-                  <a href={`/account/${block.miner}?t=mined`} className="hover:underline">
+                  <Link href={`/account/${block.miner}?t=mined`} className="hover:underline">
                     {block.miner.substring(0, 8)}
-                  </a>
+                  </Link>
                 </TableCell>
                 {detail && (
                   <TableCell className="text-gray-600 font-mono">
