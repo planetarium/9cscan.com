@@ -1,15 +1,14 @@
 import { shortAddress, formatTimeAgo } from '@/utils/commonUtils';
-import TableContainer from './common/TableContainer';
 import TableHeader, { TableHeaderCell } from './common/TableHeader';
 import TableRow, { TableCell } from './common/TableRow';
-import Badge from './common/Badge';
 import Link from './common/Link';
+import AmountLabel from './common/AmountLabel';
 
 export interface Action {
   inspection?: {
     typeId: string;
     productType?: string;
-    amount?: string;
+    amount?: [any, number];
     avatarAddress?: string;
   };
 }
@@ -44,11 +43,10 @@ export default function TransactionTable({
   latestBlockIndex = 0,
 }: TransactionTableProps) {
   return (
-    <TableContainer
-      loading={loading}
-      isEmpty={transactions.length === 0}
-      emptyMessage="No Transactions"
-    >
+    <div className="table-wrap bg-white">
+      {loading && (
+        <div className="h-0.5 bg-blue-600 animate-pulse"></div>
+      )}
       <div className="overflow-x-auto">
         <table className="w-full">
           <TableHeader>
@@ -59,24 +57,24 @@ export default function TransactionTable({
             {!embedMode && <TableHeaderCell>From</TableHeaderCell>}
             {involved && <TableHeaderCell>Involved</TableHeaderCell>}
             <TableHeaderCell>Action</TableHeaderCell>
-            {detail && <TableHeaderCell>Details</TableHeaderCell>}
+            {detail && <TableHeaderCell>Amount</TableHeaderCell>}
             {(detail || embedMode) && <TableHeaderCell>Avatar</TableHeaderCell>}
           </TableHeader>
           <tbody>
             {transactions.map((tx) => (
-              <TableRow key={tx.id}>
+              <TableRow key={tx.id} className="row-item transition-all duration-500">
                 <TableCell
                   className="text-blue-600 hover:text-blue-800"
                   style={{ fontFamily: 'Helvetica' }}
                 >
                   <Link href={`/transaction/${tx.id}`} className="hover:underline">
-                    {shortAddress(tx.id, 4, 4)}
+                    {shortAddress(tx.id)}
                   </Link>
                 </TableCell>
                 <TableCell>
                   <Link
                     href={`/block/${tx.blockIndex}`}
-                    className="inline-block px-3 py-1.5 text-xs bg-blue-50 text-[#53acd3] border border-bright-blue-light rounded hover:bg-blue-100 transition-colors"
+                    className="inline-block px-3 py-1.5 text-xs bg-blue-50 text-blue-600 border border-blue-200 rounded hover:bg-blue-100 transition-colors"
                   >
                     {tx.blockIndex}
                   </Link>
@@ -86,10 +84,10 @@ export default function TransactionTable({
                 </TableCell>
                 {detail && (
                   <TableCell>
-                    <Badge variant="default" size="sm">
+                    <div className="inline-flex items-center px-2 py-1 text-xs border border-gray-300 rounded bg-white text-gray-700">
                       <strong className="mr-1">{latestBlockIndex - tx.blockIndex + 1}</strong>
                       Confirms
-                    </Badge>
+                    </div>
                   </TableCell>
                 )}
                 {!embedMode && (
@@ -105,12 +103,13 @@ export default function TransactionTable({
                 {involved && (
                   <TableCell>
                     {tx.involved && (
-                      <Badge
-                        variant={tx.involved.type === 'INVOLVED' ? 'success' : 'warning'}
-                        size="sm"
-                      >
+                      <div className={`inline-flex items-center px-2 py-1 text-xs rounded ${
+                        tx.involved.type === 'INVOLVED' 
+                          ? 'bg-green-50 text-green-700 border border-green-200' 
+                          : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+                      }`}>
                         {tx.involved.type}
-                      </Badge>
+                      </div>
                     )}
                   </TableCell>
                 )}
@@ -120,11 +119,20 @@ export default function TransactionTable({
                       action.inspection && (
                         <div
                           key={`${tx.id}-action-${actionIndex}`}
-                          className="inline-flex items-center px-3 py-1 mx-1 text-xs bg-orange-50 text-orange-600 border border-orange-200 rounded-full"
+                          className="inline-flex items-center px-3 py-1 mx-1 text-xs rounded-full"
+                          style={{
+                            textTransform: 'none',
+                            height: '26px',
+                            fontWeight: 600,
+                            letterSpacing: 0,
+                            color: '#EBB077',
+                            backgroundColor: '#FFFAF8',
+                            padding: '0 12px'
+                          }}
                         >
                           <button
                             type="button"
-                            className="w-3 h-3 mr-1 text-orange-300 hover:text-orange-800"
+                            className="w-3 h-3 mr-1 text-orange-400 hover:text-orange-600"
                             aria-label="Filter by action type"
                             title="Filter by action type"
                           >
@@ -143,7 +151,7 @@ export default function TransactionTable({
                           </button>
                           {action.inspection.typeId}
                           {action.inspection.productType && (
-                            <span className="text-xs opacity-80 ml-1">
+                            <span style={{ fontSize: '10px', opacity: 0.8 }}>
                               ({action.inspection.productType})
                             </span>
                           )}
@@ -154,7 +162,10 @@ export default function TransactionTable({
                 {detail && (
                   <TableCell className="text-gray-600">
                     {tx.actions[0]?.inspection?.amount && (
-                      <span>Amount: {tx.actions[0].inspection.amount}</span>
+                      <AmountLabel
+                        assetData={tx.actions[0].inspection.amount[0]}
+                        amount={tx.actions[0].inspection.amount[1]}
+                      />
                     )}
                   </TableCell>
                 )}
@@ -179,6 +190,6 @@ export default function TransactionTable({
           </tbody>
         </table>
       </div>
-    </TableContainer>
+    </div>
   );
 }

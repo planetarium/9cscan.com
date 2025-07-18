@@ -54,7 +54,10 @@ export default function MainPage() {
         inspection: {
           typeId: action.typeId || '',
           avatarAddress: transaction.firstAvatarAddressInActionArguments || '',
-          amount: transaction.firstNCGAmountInActionArguments || undefined,
+          amount: transaction.firstNCGAmountInActionArguments ? [{
+            ticker: 'NCG',
+            decimalPlaces: 2
+          }, Number(transaction.firstNCGAmountInActionArguments)] : undefined,
         },
       })),
     })) || [];

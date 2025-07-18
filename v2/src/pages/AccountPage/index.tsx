@@ -7,7 +7,6 @@ import {
   useGetNcgQuery,
   useGetWncgPriceQuery,
   useGetTransactionsQuery,
-  useGetActionTypesQuery,
   useGetBlocksQuery,
 } from '../../graphql-mimir/generated/graphql';
 import CopyBtn from '../../components/CopyBtn';
@@ -277,7 +276,7 @@ const AccountTransactionList: React.FC<{ address: string }> = ({ address }) => {
   const page = Number.parseInt(searchParams.get('page') || '1', 10);
   const action = searchParams.get('action') || '';
 
-  const { data: actionTypesData } = useGetActionTypesQuery();
+
 
   const transactionVariables = {
     skip: (page - 1) * ITEMS_PER_PAGE,
@@ -317,7 +316,6 @@ const AccountTransactionList: React.FC<{ address: string }> = ({ address }) => {
   };
 
   const hasNextPage = transactionsData?.transactions?.pageInfo?.hasNextPage || false;
-  const actionTypes = actionTypesData?.actionTypes || [];
 
   return (
     <div>
@@ -326,7 +324,6 @@ const AccountTransactionList: React.FC<{ address: string }> = ({ address }) => {
         <ActionsSelect
           value={action}
           onChange={handleActionFilterChange}
-          actionTypes={actionTypes}
         />
       </div>
 
@@ -446,7 +443,7 @@ const AccountTransferList: React.FC<{ address: string }> = ({ address }) => {
   const page = Number.parseInt(searchParams.get('page') || '1', 10);
   const action = searchParams.get('action') || 'transfer_asset5';
 
-  const { data: actionTypesData } = useGetActionTypesQuery();
+
 
   const transactionVariables = {
     skip: (page - 1) * ITEMS_PER_PAGE,
@@ -486,7 +483,6 @@ const AccountTransferList: React.FC<{ address: string }> = ({ address }) => {
   };
 
   const hasNextPage = transactionsData?.transactions?.pageInfo?.hasNextPage || false;
-  const actionTypes = actionTypesData?.actionTypes || [];
 
   return (
     <div>
@@ -495,7 +491,6 @@ const AccountTransferList: React.FC<{ address: string }> = ({ address }) => {
         <ActionsSelect
           value={action}
           onChange={handleActionFilterChange}
-          actionTypes={actionTypes}
         />
       </div>
 

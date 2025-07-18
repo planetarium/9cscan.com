@@ -3,7 +3,6 @@ import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import {
   useGetBlockQuery,
   useGetTransactionsQuery,
-  useGetActionTypesQuery,
 } from '@/graphql-mimir/generated/graphql';
 import TransactionTable, { type Transaction } from '@/components/TransactionTable';
 import CopyBtn from '@/components/CopyBtn';
@@ -30,7 +29,7 @@ export default function BlockPage() {
     skip: !blockIndex,
   });
 
-  const { data: actionTypesData } = useGetActionTypesQuery();
+
 
   const transactionVariables: BlockPageTransactionsVariables = {
     skip: 0,
@@ -125,7 +124,7 @@ export default function BlockPage() {
     setActionFilter(action || '');
   }, [searchParams]);
 
-  const actionTypes = actionTypesData?.actionTypes || [];
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -260,11 +259,10 @@ export default function BlockPage() {
             <h2 className="text-2xl font-bold text-gray-800 mt-8 mb-4">Transactions</h2>
             <div className="bg-white border border-gray-200 rounded-lg">
               <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-                <ActionsSelect
-                  value={actionFilter}
-                  onChange={handleActionFilterChange}
-                  actionTypes={actionTypes}
-                />
+                                  <ActionsSelect
+                    value={actionFilter}
+                    onChange={handleActionFilterChange}
+                  />
                 <span className="text-sm text-gray-600">
                   Total {block.transactionCount} Transactions
                 </span>

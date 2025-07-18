@@ -10,7 +10,6 @@ import TransactionTable, { type Transaction } from '../../components/Transaction
 import ActionsSelect from '../../components/ActionsSelect';
 import {
   useGetTransactionsQuery,
-  useGetActionTypesQuery,
 } from '../../graphql-mimir/generated/graphql';
 
 const ITEMS_PER_PAGE = 20;
@@ -172,7 +171,7 @@ const AvatarTransactionList: React.FC<{ address: string }> = ({ address }) => {
   const [page, setPage] = React.useState(1);
   const [action, setAction] = React.useState('');
 
-  const { data: actionTypesData } = useGetActionTypesQuery();
+
 
   const transactionVariables = {
     skip: (page - 1) * ITEMS_PER_PAGE,
@@ -203,16 +202,14 @@ const AvatarTransactionList: React.FC<{ address: string }> = ({ address }) => {
   };
 
   const hasNextPage = transactionsData?.transactions?.pageInfo?.hasNextPage || false;
-  const actionTypes = actionTypesData?.actionTypes || [];
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <ActionsSelect
-          value={action}
-          onChange={handleActionFilterChange}
-          actionTypes={actionTypes}
-        />
+                      <ActionsSelect
+                value={action}
+                onChange={handleActionFilterChange}
+              />
       </div>
       <TransactionTable transactions={transactions} loading={transactionsLoading} />
       {!transactionsLoading && transactions.length > 0 && (

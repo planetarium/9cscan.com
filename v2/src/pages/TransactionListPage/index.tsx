@@ -1,33 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import {
-  useGetBlocksQuery,
-  useGetTransactionsQuery,
-  useGetActionTypesQuery,
-} from '@/graphql-mimir/generated/graphql';
+import { useGetTransactionsQuery, useGetBlocksQuery } from '@/graphql-mimir/generated/graphql';
 import TransactionTable, { type Transaction } from '@/components/TransactionTable';
 import ActionsSelect from '@/components/ActionsSelect';
+import Pagination from '@/components/common/Pagination';
 
 const ITEMS_PER_PAGE = 20;
-
-type TransactionListPageVariables = {
-  skip: number;
-  take: number;
-  actionTypeId?: string;
-};
 
 export default function TransactionListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [pageSize, setPageSize] = useState(ITEMS_PER_PAGE);
 
   const page = Number.parseInt(searchParams.get('page') || '1', 10);
   const action = searchParams.get('action') || '';
 
-  const { data: actionTypesData } = useGetActionTypesQuery();
-
-  const transactionVariables: TransactionListPageVariables = {
-    skip: (page - 1) * ITEMS_PER_PAGE,
-    take: ITEMS_PER_PAGE,
+  const transactionVariables = {
+    skip: (page - 1) * pageSize,
+    take: pageSize,
     ...(action ? { actionTypeId: action } : {}),
   };
 
@@ -39,6 +29,8 @@ export default function TransactionListPage() {
   const { data: blocksData } = useGetBlocksQuery({
     variables: { skip: 0, take: 1 },
   });
+
+  const latestBlockIndex = blocksData?.blocks?.items?.[0]?.object?.index || 0;
 
   useEffect(() => {
     if (transactionsData?.transactions?.items) {
@@ -53,7 +45,10 @@ export default function TransactionListPage() {
             inspection: {
               typeId: action.typeId || '',
               avatarAddress: transaction.firstAvatarAddressInActionArguments || '',
-              amount: transaction.firstNCGAmountInActionArguments || undefined,
+              amount: transaction.firstNCGAmountInActionArguments ? [{
+                ticker: 'NCG',
+                decimalPlaces: 2
+              }, Number(transaction.firstNCGAmountInActionArguments)] : undefined,
             },
           })),
         })
@@ -72,31 +67,39 @@ export default function TransactionListPage() {
     setSearchParams(newSearchParams);
   };
 
-  const handleActionFilterChange = (selectedAction: string) => {
+  const handleActionFilterChange = (actionType: string) => {
     const newSearchParams = new URLSearchParams();
-    if (selectedAction) {
-      newSearchParams.set('action', selectedAction);
+    if (actionType) {
+      newSearchParams.set('action', actionType);
     }
     setSearchParams(newSearchParams);
   };
 
+  const handleSizeChange = (size: number) => {
+    setPageSize(size);
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.delete('page');
+    setSearchParams(newSearchParams);
+  };
+
   const hasNextPage = transactionsData?.transactions?.pageInfo?.hasNextPage || false;
-  const latestBlockIndex = blocksData?.blocks?.items?.[0]?.object?.index || 0;
-  const actionTypes = actionTypesData?.actionTypes || [];
+  const hasPreviousPage = transactionsData?.transactions?.pageInfo?.hasPreviousPage || false;
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">Transactions</h1>
-          <ActionsSelect
-            value={action}
-            onChange={handleActionFilterChange}
-            actionTypes={actionTypes}
-          />
-        </div>
+      <div className="max-w-[1440px] mx-auto px-4 py-8">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Transactions</h1>
+          
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
+            <div className="flex items-center gap-4">
+              <ActionsSelect
+                value={action}
+                onChange={handleActionFilterChange}
+              />
+            </div>
+          </div>
 
-        <div className="bg-white border border-gray-200 rounded-lg">
           <TransactionTable
             loading={transactionsLoading}
             transactions={transactions}
@@ -104,35 +107,18 @@ export default function TransactionListPage() {
             latestBlockIndex={latestBlockIndex}
           />
 
-          {!transactionsLoading && transactions.length > 0 && (
-            <div className="px-6 py-4 border-t border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-600">Page {page}</div>
-
-                <div className="flex items-center space-x-2">
-                  <button
-                    type="button"
-                    onClick={() => handlePageChange(page - 1)}
-                    disabled={page <= 1}
-                    className="px-3 py-2 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Previous
-                  </button>
-
-                  <span className="px-3 py-2 text-sm text-gray-600">Page {page}</span>
-
-                  <button
-                    type="button"
-                    onClick={() => handlePageChange(page + 1)}
-                    disabled={!hasNextPage}
-                    className="px-3 py-2 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          <div className="mt-4">
+            <Pagination
+              size={pageSize}
+              page={page}
+              canNext={hasNextPage}
+              canPrev={hasPreviousPage}
+              onGoFirst={() => handlePageChange(1)}
+              onNext={() => handlePageChange(page + 1)}
+              onPrev={() => handlePageChange(page - 1)}
+              onUpdateSize={handleSizeChange}
+            />
+          </div>
         </div>
       </div>
     </div>
