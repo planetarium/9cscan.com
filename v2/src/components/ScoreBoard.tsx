@@ -47,20 +47,20 @@ export default function ScoreBoard({
   const { avgBlockTime, avgTx } = calculateStats(blocks);
   return (
     <div className="bg-white border border-gray-200 rounded-lg">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
-        <div className="lg:col-span-1">
+      <div className="flex flex-col lg:flex-row p-6">
+        <div className="w-full lg:w-1/4">
           <div className="space-y-6">
             <div>
-              <h5 className="text-sm font-bold text-gray-700 uppercase mb-3">WNCG Price</h5>
+              <h5 className="text-sm font-bold text-gray-500 uppercase mb-3">WNCG Price</h5>
               <div className="text-left">
                 {loading ? (
                   <div className="h-8 bg-gray-200 animate-pulse rounded" />
                 ) : (
-                  <div className="text-2xl font-bold">
+                  <div className="text-3xl font-bold">
                     ${WncgPrice.toFixed(2)}
-                    <span className="text-gray-500 text-sm font-normal ml-1">/WNCG</span>
+                    <span className="text-gray-800 text-sm font-normal ml-1">/WNCG</span>
                     <span
-                      className={`text-sm font-normal text-bright-blue ml-2 ${WncgChange24h < 0 ? 'text-red-500' : 'text-blue-500'}`}
+                      className={`text-sm font-bold text-bright-blue ml-2 ${WncgChange24h < 0 ? 'text-red-700' : 'text-blue-700'}`}
                     >
                       ({WncgChange24h.toFixed(2)}%)
                     </span>
@@ -70,12 +70,12 @@ export default function ScoreBoard({
             </div>
 
             <div>
-              <h5 className="text-sm font-bold text-gray-700 uppercase mb-3">Market Cap</h5>
+              <h5 className="text-sm font-bold text-gray-500 uppercase mb-3">Market Cap</h5>
               <div className="text-left">
                 {loading ? (
                   <div className="h-8 bg-gray-200 animate-pulse rounded" />
                 ) : (
-                  <div className="text-2xl font-bold">
+                  <div className="text-3xl font-bold">
                     ${formatNumber(Number(WncgMarketCap.toFixed()))}
                   </div>
                 )}
@@ -84,9 +84,11 @@ export default function ScoreBoard({
           </div>
         </div>
 
-        <div className="lg:col-span-1">
+        <div className="hidden lg:block w-px bg-gray-200 mx-6" />
+
+        <div className="w-full lg:w-2/4 mt-6 lg:mt-0">
           <div>
-            <h5 className="text-sm font-bold text-gray-700 uppercase mb-3">Network Performance</h5>
+            <h5 className="text-sm font-bold text-gray-500 uppercase mb-3">Network Performance</h5>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="text-center sm:text-left">
                 {loading ? (
@@ -116,9 +118,11 @@ export default function ScoreBoard({
           </div>
         </div>
 
-        <div className="lg:col-span-1">
+        <div className="hidden lg:block w-px bg-gray-200 mx-6" />
+
+        <div className="w-full lg:w-1/4 mt-6 lg:mt-0">
           <div>
-            <h5 className="text-sm font-bold text-gray-700 uppercase mb-6">Transaction History</h5>
+            <h5 className="text-sm font-bold text-gray-500 uppercase mb-6">Transaction History</h5>
             <TxHistoryChart blocks={blocks} loading={loading} />
           </div>
         </div>

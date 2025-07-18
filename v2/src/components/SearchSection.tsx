@@ -34,7 +34,7 @@ export default function SearchSection() {
           backgroundSize: '120%',
         }}
       />
-      <div className="relative z-10 px-4 py-8">
+      <div className="relative z-10 px-5 py-10">
         <div className="max-w-[1440px] px-4 mx-auto">
           <div className="md:w-2/3">
             <div className="search-form">
@@ -63,11 +63,14 @@ export default function SearchSection() {
                   <button
                     type="button"
                     onClick={handleSearch}
-                    className="absolute right-0 top-0 text-white rounded-r-xl flex items-center justify-center transition-colors"
+                    className="absolute right-0 top-0 text-white flex items-center justify-center transition-colors"
                     style={{
                       height: '60px',
-                      width: '64px',
-                      backgroundColor: '#2c3e50',
+                      width: '72px',
+                      backgroundColor: '#2c1e65',
+                      borderTopRightRadius: '0.73rem',
+                      borderBottomRightRadius: '0.73rem',
+                      border: 'none',
                     }}
                   >
                     <svg

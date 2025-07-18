@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 const navItems = [
   { name: 'Blocks', path: '/blocks' },
   { name: 'Transactions', path: '/transactions' },
-  { name: 'Stats', path: '/transactions' },
+  // { name: 'Stats', path: '/transactions' },
 ];
 
 export default function Header() {
@@ -11,10 +11,12 @@ export default function Header() {
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
-      <div className="max-w-[1440px] mx-auto flex items-center justify-between px-4 h-16">
+      <div className="max-w-[1440px] mx-auto flex items-center justify-between px-8 h-16">
         <Link to="/" className="flex items-center space-x-2">
           <img src="/full_logo.png" alt="logo" className="h-8" />
-          <span className="font-bold text-lg text-gray-800 hidden sm:inline">9cscan</span>
+          <span className="font-bold text-sm ml-2 mt-2 opacity-80 tracking-wider">
+            {import.meta.env.VITE_NETWORK_NAME || '9cscan'}
+          </span>
         </Link>
         <nav className="flex items-center space-x-6">
           {navItems.map((item) => (

@@ -70,9 +70,9 @@ export default function MainPage() {
     <div className="min-h-screen bg-gray-50">
       <SearchSection />
 
-      <div className="max-w-[1440px] min-w-xs mx-auto px-4 py-5">
+      <div className="max-w-[1440px] min-w-xs mx-auto px-4 py-10">
         <div className="mb-6">
-          <div className="flex items-center text-sm font-bold text-gray-700 uppercase">
+          <div className="flex items-center text-sm font-bold text-gray-500 uppercase">
             <span>Block Height</span>
             {loading ? (
               <div className="ml-2">
@@ -83,7 +83,7 @@ export default function MainPage() {
             )}
           </div>
 
-          <div className="mt-6">
+          <div className="mt-2">
             <ScoreBoard
               loading={loading}
               blocks={statsBlocks}
