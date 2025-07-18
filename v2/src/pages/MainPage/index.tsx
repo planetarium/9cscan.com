@@ -96,13 +96,13 @@ export default function MainPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <h4 className="text-lg font-semibold text-gray-800 mb-4">Latest Blocks</h4>
+            <h4 className="text-2xl font-semibold text-gray-800 mb-4">Latest Blocks</h4>
             <BlockTable loading={loading} blocks={latestBlocks10} />
             <div className="flex justify-center mt-4">
               <LinkButton
                 to="/blocks"
                 variant="outline"
-                className="w-full text-bright-blue border-bright-blue"
+                className="w-full text-bright-blue border-bright-blue font-light"
               >
                 View all blocks
               </LinkButton>
@@ -110,7 +110,7 @@ export default function MainPage() {
           </div>
 
           <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <h4 className="text-lg font-semibold text-gray-800 mb-4">Latest Transactions</h4>
+            <h4 className="text-2xl font-semibold text-gray-800 mb-4">Latest Transactions</h4>
             <TransactionTable
               loading={loading}
               transactions={latestTransactions10}
@@ -120,7 +120,7 @@ export default function MainPage() {
               <LinkButton
                 to="/transactions"
                 variant="outline"
-                className="w-full text-bright-blue border-bright-blue"
+                className="w-full text-bright-blue border-bright-blue font-light"
               >
                 View all transactions
               </LinkButton>

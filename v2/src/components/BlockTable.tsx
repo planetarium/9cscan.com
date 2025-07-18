@@ -38,13 +38,13 @@ export default function BlockTable({ loading, blocks, detail = false }: BlockTab
                 <TableCell>
                   <Link
                     href={`/block/${block.index}`}
-                    className="inline-block px-3 py-1 text-sm bg-blue-50 text-blue-600 border border-blue-200 rounded hover:bg-blue-100 transition-colors"
+                    className="inline-block px-3 py-1.5 text-xs bg-blue-50 text-bright-blue border border-bright-blue-light rounded hover:bg-blue-100 transition-colors"
                   >
                     {block.index}
                   </Link>
                 </TableCell>
                 {detail && (
-                  <TableCell className="text-gray-600 font-mono">
+                  <TableCell className="text-gray-600" style={{ fontFamily: 'Helvetica' }}>
                     {shortAddress(block.hash)}
                   </TableCell>
                 )}
@@ -56,13 +56,16 @@ export default function BlockTable({ loading, blocks, detail = false }: BlockTab
                     {block.transactionCount}
                   </Link>
                 </TableCell>
-                <TableCell className="text-blue-600 hover:text-blue-800">
+                <TableCell
+                  className="text-blue-600 hover:text-blue-800"
+                  style={{ fontFamily: 'Helvetica' }}
+                >
                   <Link href={`/account/${block.miner}?t=mined`} className="hover:underline">
                     {block.miner.substring(0, 8)}
                   </Link>
                 </TableCell>
                 {detail && (
-                  <TableCell className="text-gray-600 font-mono">
+                  <TableCell className="text-gray-600" style={{ fontFamily: 'Helvetica' }}>
                     {shortAddress(block.stateRootHash)}
                   </TableCell>
                 )}

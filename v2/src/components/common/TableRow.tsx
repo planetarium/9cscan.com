@@ -27,8 +27,13 @@ export default function TableRow({ children, className = '', onClick }: TableRow
 interface TableCellProps {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }
 
-export function TableCell({ children, className = '' }: TableCellProps) {
-  return <td className={`px-4 py-3 text-sm text-center ${className}`}>{children}</td>;
+export function TableCell({ children, className = '', style }: TableCellProps) {
+  return (
+    <td className={`px-4 py-3 text-sm text-center ${className}`} style={style}>
+      {children}
+    </td>
+  );
 }

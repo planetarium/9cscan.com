@@ -24,6 +24,7 @@ export default {
         'bright-green': '#26db96',
         'bright-yellow': '#f7f750',
         'bright-blue': '#53acd3',
+        'bright-blue-light': '#82d1ff',
         'bright-purple': '#db7cdc',
         'bright-cyan': '#33c3e1',
         'bright-white': '#e7e7e7',

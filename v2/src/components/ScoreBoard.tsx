@@ -87,32 +87,40 @@ export default function ScoreBoard({
         <div className="hidden lg:block w-px bg-gray-200 mx-6" />
 
         <div className="w-full lg:w-2/4 mt-6 lg:mt-0">
-          <div>
+          <div className="h-full flex flex-col">
             <h5 className="text-sm font-bold text-gray-500 uppercase mb-3">Network Performance</h5>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="text-center sm:text-left">
-                {loading ? (
-                  <div className="flex justify-center sm:justify-start mb-2">
-                    <LoadingSpinner size="sm" color="gray" />
-                  </div>
-                ) : (
-                  <div className="text-2xl font-bold mb-1">{avgBlockTime.toFixed(2)}s</div>
-                )}
-                <span className="text-sm text-gray-600">Avg Block Time</span>
-              </div>
 
-              <div className="text-center sm:text-left">
-                {loading ? (
-                  <div className="flex justify-center sm:justify-start mb-2">
-                    <LoadingSpinner size="sm" color="gray" />
+            <div className="flex-grow flex flex-col justify-center">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="flex flex-col justify-center">
+                  <div className="text-center sm:text-center">
+                    {loading ? (
+                      <div className="flex justify-center sm:justify-start mb-2">
+                        <LoadingSpinner size="sm" color="gray" />
+                      </div>
+                    ) : (
+                      <div className="text-3xl font-bold mb-1">{avgBlockTime.toFixed(2)}s</div>
+                    )}
+                    <span className="text-sm text-gray-600">Avg Block Time</span>
                   </div>
-                ) : (
-                  <div className="text-2xl font-bold mb-1">{avgTx.toFixed(2)}</div>
-                )}
-                <span className="text-sm text-gray-600">Avg Tx Per Block</span>
+                </div>
+
+                <div className="flex flex-col justify-center">
+                  <div className="text-center text-center">
+                    {loading ? (
+                      <div className="flex justify-center sm:justify-start mb-2">
+                        <LoadingSpinner size="sm" color="gray" />
+                      </div>
+                    ) : (
+                      <div className="text-3xl font-bold mb-1">{avgTx.toFixed(2)}</div>
+                    )}
+                    <span className="text-sm text-gray-600">Avg Tx Per Block</span>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="text-xs text-gray-500 mt-4 text-left sm:text-right lg:text-right">
+
+            <div className="text-xs text-gray-400 mt-4 text-left sm:text-right lg:text-right">
               Average over the last 100 blocks.
             </div>
           </div>

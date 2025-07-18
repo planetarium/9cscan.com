@@ -65,7 +65,10 @@ export default function TransactionTable({
           <tbody>
             {transactions.map((tx) => (
               <TableRow key={tx.id}>
-                <TableCell className="text-blue-600 hover:text-blue-800">
+                <TableCell
+                  className="text-blue-600 hover:text-blue-800"
+                  style={{ fontFamily: 'Helvetica' }}
+                >
                   <Link href={`/transaction/${tx.id}`} className="hover:underline">
                     {shortAddress(tx.id, 4, 4)}
                   </Link>
@@ -73,7 +76,7 @@ export default function TransactionTable({
                 <TableCell>
                   <Link
                     href={`/block/${tx.blockIndex}`}
-                    className="inline-block px-3 py-1 text-sm bg-blue-50 text-[#53acd3] border border-blue-200 rounded hover:bg-blue-100 transition-colors"
+                    className="inline-block px-3 py-1.5 text-xs bg-blue-50 text-[#53acd3] border border-bright-blue-light rounded hover:bg-blue-100 transition-colors"
                   >
                     {tx.blockIndex}
                   </Link>
@@ -90,7 +93,10 @@ export default function TransactionTable({
                   </TableCell>
                 )}
                 {!embedMode && (
-                  <TableCell className="text-blue-600 hover:text-blue-800">
+                  <TableCell
+                    className="text-blue-600 hover:text-blue-800"
+                    style={{ fontFamily: 'Helvetica' }}
+                  >
                     <Link href={`/account/${tx.signer}`} className="hover:underline">
                       {tx.signer.substring(0, 8)}
                     </Link>
@@ -118,7 +124,7 @@ export default function TransactionTable({
                         >
                           <button
                             type="button"
-                            className="w-3 h-3 mr-1 text-orange-600 hover:text-orange-800"
+                            className="w-3 h-3 mr-1 text-orange-300 hover:text-orange-800"
                             aria-label="Filter by action type"
                             title="Filter by action type"
                           >
