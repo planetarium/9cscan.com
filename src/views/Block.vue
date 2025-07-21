@@ -28,7 +28,7 @@
           </v-row>
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Transactions:</v-col>
-            <v-col cols="12" sm="9" class="item-value" v-if="!loading">{{block.transactionCount}} Transactions</v-col>
+            <v-col cols="12" sm="9" class="item-value" v-if="!loading">{{block.txCount}} Transactions</v-col>
           </v-row>
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Timestamp:</v-col>
@@ -89,9 +89,10 @@ export default {
     computed: {
         ...mapGetters('Block', ['latestBlockIndex']),
         filteredTxs() {
+          console.log(this.block)
             if (this.filter.action) {
                 return this.block.transactions.filter(tx => {
-                    return tx.actions.find(action => action['typeId'] == this.filter.action)
+                    return tx.object.actions.find(action => action.typeId == this.filter.action)
                 })
             }
             return this.block && this.block.transactions || []
@@ -127,8 +128,10 @@ export default {
         async init() {
             this.loading = true
             try {
-                const blockData = await this.$store.dispatch('Block/loadBlock', this.index)
-            this.block = blockData ? blockData.object : {}
+                const blockData = await this.$store.dispatch('Block/loadBlock', Number(this.index))
+                this.block = blockData ? blockData.object : {}
+                const transactions = await this.$store.dispatch('Block/loadBlockTransactions', Number(this.index))
+                this.block.transactions = transactions
             } catch(e) {
                 this.watchBlock()
             }

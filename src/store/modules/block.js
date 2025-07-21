@@ -115,6 +115,15 @@ export default {
                 throw error
             }
         },
+        async loadBlockTransactions({state}, index) {
+            try {
+                const response = await gqlClient.getTransactions(0, 50, { blockIndex: index })
+                return response.items
+            } catch (error) {
+                console.error('Failed to load block transactions:', error)
+                throw error
+            }
+        },
         async loadAccountTransactions({state}, address) {
             try {
                 const response = await gqlClient.getTransactions(0, 50, { signer: address })
