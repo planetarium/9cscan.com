@@ -44,8 +44,8 @@
             </td>
 
             <td v-if="!embedMode">
-              <router-link :to="{name: 'account', params: {address: tx.object.signer}}" :target="embedMode ? '_blank' : ''">
-                {{tx.object.signer.substr(0, 8)}}
+              <router-link :to="{name: 'account', params: {address: normalizeAddress(tx.object.signer)}}" :target="embedMode ? '_blank' : ''">
+                {{formatAddress(tx.object.signer).substr(0, 8)}}
               </router-link>
             </td>
             <td v-if="involved">
@@ -63,8 +63,8 @@
               </span>
             </td>
             <td v-if="detail || embedMode">
-              <router-link :to="{name: 'avatar', params: {address: tx.firstAvatarAddressInActionArguments}}" v-if="tx.firstAvatarAddressInActionArguments" :target="embedMode ? '_blank' : ''">
-                0x{{tx.firstAvatarAddressInActionArguments && tx.firstAvatarAddressInActionArguments.substr(0, 6)}}
+              <router-link :to="{name: 'avatar', params: {address: normalizeAddress(tx.firstAvatarAddressInActionArguments)}}" v-if="tx.firstAvatarAddressInActionArguments" :target="embedMode ? '_blank' : ''">
+                {{formatAddress(tx.firstAvatarAddressInActionArguments).substr(0, 8)}}
               </router-link>
             </td>
           </tr>

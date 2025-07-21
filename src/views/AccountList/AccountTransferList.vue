@@ -60,7 +60,7 @@ export default {
             try {
                 const pageNum = parseInt(page) || 1
                 const skip = (pageNum - 1) * this.size
-                const filter = { signer: this.address }
+                const filter = { signer: this.normalizeAddress(this.address) }
                 if (action) {
                     filter.actionType = action
                 }
@@ -82,7 +82,7 @@ export default {
           let {action} = this.$route.query
           let txs = []
           for (let i = 0; i < 100; i++) { //max 10K
-            const filter = { signer: this.address }
+            const filter = { signer: this.normalizeAddress(this.address) }
             if (action) {
                 filter.actionType = action
             }
@@ -97,8 +97,8 @@ export default {
             const amount = item.firstNCGAmountInActionArguments
             const sender = item.object?.signer
             const recipient = item.object?.updatedAddresses?.[0] || ''
-            item.from = sender
-            item.to = recipient
+            item.from = this.normalizeAddress(sender)
+            item.to = this.normalizeAddress(recipient)
             item.inOut = item.involved?.type === 'SIGNED' ? 'OUT' : 'IN'
             item.value = amount ? ((item.inOut === 'OUT' ? '-' : '') + amount) : ''
             item.valueTicker = amount ? 'NCG' : ''
@@ -108,7 +108,7 @@ export default {
             item.involved = item.involved?.type ?? ''
             return item
           })
-          const csvConfig = mkConfig({ useKeysAsHeaders: true, filename: `transfer-${action ?? 'all'}-${this.address}` });
+          const csvConfig = mkConfig({ useKeysAsHeaders: true, filename: `transfer-${action ?? 'all'}-${this.normalizeAddress(this.address)}` });
           const csv = generateCsv(csvConfig)(txs);
           download(csvConfig)(csv)
           console.log(txs)

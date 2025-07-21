@@ -50,14 +50,14 @@
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Signer:</v-col>
             <v-col cols="12" sm="9" class="item-value" v-if="!loading">
-              <router-link :to="{name: 'account', params:{address: tx.object.signer}}">{{tx.object.signer}}</router-link>
+              <router-link :to="{name: 'account', params:{address: normalizeAddress(tx.object.signer)}}">{{formatAddress(tx.object.signer)}}</router-link>
             </v-col>
           </v-row>
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Updated Addresses:</v-col>
             <v-col cols="12" sm="9" class="item-value" v-if="!loading">
               <span v-for="addr in tx.object.updatedAddresses">
-                <router-link :to="{name: 'account', params:{address:addr}}">{{addr}}</router-link>
+                <router-link :to="{name: 'account', params:{address:normalizeAddress(addr)}}">{{formatAddress(addr)}}</router-link>
                 <br></span>
             </v-col>
           </v-row>
@@ -91,7 +91,7 @@
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Avatar:</v-col>
             <v-col cols="12" sm="9" class="item-value">
-              <router-link :to="{name: 'avatar', params:{address: tx.firstAvatarAddressInActionArguments}}">{{ tx.firstAvatarAddressInActionArguments }}</router-link>
+              <router-link :to="{name: 'avatar', params:{address: normalizeAddress(tx.firstAvatarAddressInActionArguments)}}">{{ formatAddress(tx.firstAvatarAddressInActionArguments) }}</router-link>
             </v-col>
           </v-row>
           <v-row class="info-item ma-0" v-if="action.values">

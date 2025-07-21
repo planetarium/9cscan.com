@@ -25,7 +25,7 @@
             <v-col cols="12" sm="3" class="item-title"><span class="text-no-wrap">Nine Chronicles</span> Avatar:</v-col>
             <v-col cols="12" sm="9" class="item-value" v-if="!loading && !notFound">
               <div v-for="{avatar} in currentAvatars" :key="avatar.address">
-                <router-link :to="{name:'avatar', params: {address:avatar.address}}">{{avatar.address}} ({{avatar.name}})</router-link>
+                <router-link :to="{name:'avatar', params: {address:normalizeAddress(avatar.address)}}">{{formatAddress(avatar.address)}} ({{avatar.name}})</router-link>
               </div>
             </v-col>
           </v-row>
@@ -78,7 +78,7 @@ export default {
             account: {},
             loading: false,
             reloading: false,
-            address: this.$route.params.address && this.$route.params.address.toLowerCase(),
+            address: this.$route.params.address && this.normalizeAddress(this.$route.params.address),
             transactions: [],
             ivTransactions: [],
             minedBlocks: [],
@@ -110,7 +110,7 @@ export default {
     },
     async created() {
         this.$watch('$route.params.address', async () => {
-            this.address = this.$route.params.address
+            this.address = this.normalizeAddress(this.$route.params.address)
             this.loadAccount()
         })
         this.$watch('$route.query.t', async (q) => {
@@ -122,11 +122,11 @@ export default {
         async loadAccount() {
             this.loading = true
             try {
-                const agent = await gqlClient.getAgent(this.$route.params.address.toLowerCase())
+                const agent = await gqlClient.getAgent(this.normalizeAddress(this.$route.params.address))
                 console.log(agent)
                 if (agent) {
                     this.account = [agent]
-                    const ncgBalance = await gqlClient.getNCG(this.$route.params.address.toLowerCase())
+                    const ncgBalance = await gqlClient.getNCG(this.normalizeAddress(this.$route.params.address))
                     if (ncgBalance) {
                         this.account[0].goldBalance = ncgBalance
                     }
@@ -158,7 +158,7 @@ export default {
         },
         async checkIsAvatarAddress() {
             try {
-                const avatar = await gqlClient.getAvatar(this.$route.params.address.toLowerCase())
+                const avatar = await gqlClient.getAvatar(this.normalizeAddress(this.$route.params.address))
                 if (avatar) {
                     this.$router.replace({name: 'avatar', params: {address: this.$route.params.address}})
                 }
@@ -169,7 +169,7 @@ export default {
         async refreshAccount() {
             this.reloading = true
             try {
-                const ncgBalance = await gqlClient.getNCG(this.address.toLowerCase())
+                const ncgBalance = await gqlClient.getNCG(this.normalizeAddress(this.address))
                 if (this.account && this.account[0] && ncgBalance) {
                     this.account[0].goldBalance = ncgBalance
                 }

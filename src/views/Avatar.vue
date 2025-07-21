@@ -31,7 +31,7 @@
               </v-row>
               <v-row class="info-item ma-0">
                 <v-col cols="12" md="3" class="item-title">Account:</v-col>
-                <v-col cols="12" md="9" class="item-value"><router-link :to="{name: 'account', params: {address:account.avatar.agentAddress}}">{{account.avatar.agentAddress}}</router-link></v-col>
+                <v-col cols="12" md="9" class="item-value"><router-link :to="{name: 'account', params: {address:normalizeAddress(account.avatar.agentAddress)}}">{{formatAddress(account.avatar.agentAddress)}}</router-link></v-col>
               </v-row>
               <v-row class="info-item ma-0">
                 <v-col cols="12" md="3" class="item-title">CharacterId:</v-col>
@@ -71,7 +71,7 @@
           <v-progress-circular indeterminate></v-progress-circular>
         </div>
         <v-card-text v-else class="pa-0">
-          <account-transaction-list :address="account.avatar.agentAddress" :avatar="address"></account-transaction-list>
+          <account-transaction-list :address="normalizeAddress(account.avatar.agentAddress)" :avatar="address"></account-transaction-list>
         </v-card-text>
       </v-card>
     </div>
@@ -91,7 +91,7 @@ export default {
         return {
             account: null,
             loading: false,
-            address: this.$route.params.address.toLowerCase(),
+            address: this.normalizeAddress(this.$route.params.address),
             transactions: [],
             ivTransactions: [],
             minedBlocks: [],
@@ -105,7 +105,7 @@ export default {
     },
     async created() {
         this.$watch('$route.params.address', async () => {
-            this.address = this.$route.params.address.toLowerCase()
+            this.address = this.normalizeAddress(this.$route.params.address)
             this.loadAccount()
         })
         this.loadAccount()
@@ -114,8 +114,8 @@ export default {
         async loadAccount() {
             this.loading = true
             try {
-              const avatarData = await gqlClient.getAvatar(this.$route.params.address.toLowerCase())
-              const ncgBalance = await gqlClient.getNCG(avatarData.avatar.agentAddress.toLowerCase())
+              const avatarData = await gqlClient.getAvatar(this.normalizeAddress(this.$route.params.address))
+              const ncgBalance = await gqlClient.getNCG(this.normalizeAddress(avatarData.avatar.agentAddress))
                 if (avatarData && avatarData.avatar) {
                     this.account = {
                         address: avatarData.agent?.address || '',

@@ -38,8 +38,8 @@
               <router-link :to="{name: 'block', params: {index: block.object.index}, hash: '#tx'}">{{block.object.txCount}}</router-link>
             </td>
             <td>
-              <router-link :to="{name: 'account', query: {t: 'mined'}, params: {address: block.object.miner}}">
-                {{block.object.miner.substr(0, 8)}}
+              <router-link :to="{name: 'account', query: {t: 'mined'}, params: {address: normalizeAddress(block.object.miner)}}">
+                {{formatAddress(block.object.miner).substr(0, 8)}}
               </router-link>
             </td>
             <td v-if="detail">{{shortAddress(block.object.stateRootHash)}}</td>

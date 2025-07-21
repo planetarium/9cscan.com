@@ -62,7 +62,7 @@ export default {
       const result = await api.getArena(championshipId, round, query);
 
       this.participants = result;
-      this.before = result[result.length - 1].avatarAddress;
+      this.before = this.normalizeAddress(result[result.length - 1].avatarAddress);
 
       this.loading = false;
     },

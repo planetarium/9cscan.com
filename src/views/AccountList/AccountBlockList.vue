@@ -47,7 +47,7 @@ export default {
             try {
                 const pageNum = parseInt(page) || 1
                 const skip = (pageNum - 1) * this.size
-                const filter = { miner: this.miner }
+                const filter = { miner: this.normalizeAddress(this.miner) }
                 
                 console.log('Loading blocks:', { skip, size: this.size, filter })
                 const response = await gqlClient.getBlocks(skip, this.size, filter)

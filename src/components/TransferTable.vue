@@ -51,8 +51,8 @@
             </td>
             <td>
               <span v-if="tx?.actions?.[0]?.inspection?.['sender']">
-                <router-link :to="{name: 'account', params: {address: tx.actions[0].inspection['sender']}}">
-                  {{tx.actions[0].inspection['sender'].substr(0, 8)}}
+                <router-link :to="{name: 'account', params: {address: normalizeAddress(tx.actions[0].inspection['sender'])}}">
+                  {{formatAddress(tx.actions[0].inspection['sender'])}}
                 </router-link>
               </span>
             </td>
@@ -63,8 +63,8 @@
             </td>
             <td>
               <span v-if="tx?.actions?.[0]?.inspection?.['recipient']">
-                <router-link :to="{name: 'account', params: {address: tx.actions[0].inspection['recipient']}}">
-                  {{tx.actions[0].inspection['recipient'].substr(0, 8)}}
+                <router-link :to="{name: 'account', params: {address: normalizeAddress(tx.actions[0].inspection['recipient'])}}">
+                  {{formatAddress(tx.actions[0].inspection['recipient'])}}
                 </router-link>
               </span>
             </td>

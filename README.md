@@ -21,23 +21,8 @@ npm install
 
 You need to create the files below.
 ```
-.config
 .env.localhost
 .env.production
-```
-
-.config
-```
-{
-    # Required. AWS Region
-    "region": "",
-    # Required. AWS Credentials to upload s3 bucket
-    "credentials": {
-        "accessKeyId": "",
-        "secretAccessKey": ""
-    },
-    "s3WebBucketName": ""
-}
 ```
 
 .env.localhost , .env.production
@@ -45,19 +30,21 @@ You need to create the files below.
 VUE_APP_MODE= [DEVEL | PRODUCTION]
 VUE_APP_API_HOST=
 VUE_APP_WS_ENDPOINT=
-VUE_APP_9C_ASSET_HOST=[S3 WEB ENDPOINT]
 ```
 The above properties can be found in the `9cscan-cloud/.deploy` file.
 
 
 ### 3. Run local
 ```
-grunt serve
+npm run serve
 ```
 
 ### 4. Deploy
 ```
-grunt deploy 
+npm run build-odin
+npm run build-heimdall
+npm run build-thor
+npm run stage
 ```
 
 
