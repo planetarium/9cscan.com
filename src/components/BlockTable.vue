@@ -28,21 +28,21 @@
           </tr>
         </tbody>
         <transition-group name="list-complete" tag="tbody" v-else>
-          <tr v-for="block in blocks" :key="block.index" class="row-item">
+          <tr v-for="block in blocks" :key="block.object.index" class="row-item">
             <td>
-              <v-btn small class="rect pointlink-btn" outlined depressed :to="{name: 'block', params: {index: block.index}}">{{block.index}}</v-btn>
+              <v-btn small class="rect pointlink-btn" outlined depressed :to="{name: 'block', params: {index: block.object.index}}">{{block.object.index}}</v-btn>
             </td>
-            <td v-if="detail">{{shortAddress(block.hash)}}</td>
-            <td class="text-no-wrap">{{moment(block.timestamp).fromNow()}}</td>
+            <td v-if="detail">{{shortAddress(block.object.hash)}}</td>
+            <td class="text-no-wrap">{{moment(block.object.timestamp).fromNow()}}</td>
             <td>
-              <router-link :to="{name: 'block', params: {index: block.index}, hash: '#tx'}">{{block.transactionCount}}</router-link>
+              <router-link :to="{name: 'block', params: {index: block.object.index}, hash: '#tx'}">{{block.object.txCount}}</router-link>
             </td>
             <td>
-              <router-link :to="{name: 'account', query: {t: 'mined'}, params: {address: block.miner}}">
-                {{block.miner.substr(0, 8)}}
+              <router-link :to="{name: 'account', query: {t: 'mined'}, params: {address: block.object.miner}}">
+                {{block.object.miner.substr(0, 8)}}
               </router-link>
             </td>
-            <td v-if="detail">{{shortAddress(block.stateRootHash)}}</td>
+            <td v-if="detail">{{shortAddress(block.object.stateRootHash)}}</td>
           </tr>
         </transition-group>
       </template>

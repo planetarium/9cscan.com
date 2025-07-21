@@ -10,68 +10,68 @@
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Transaction Hash:</v-col>
             <v-col cols="12" sm="9" class="item-value" v-if="!loading">
-              {{id}}  <copy-btn :text="tx.id" icon x-small><v-icon small>mdi-content-copy</v-icon></copy-btn>
+              {{id}}  <copy-btn :text="tx.object.id" icon x-small><v-icon small>mdi-content-copy</v-icon></copy-btn>
             </v-col>
           </v-row>
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Status:</v-col>
-            <v-col cols="12" sm="9" class="item-value" v-if="!loading && (tx.id || tx.status)">
+            <v-col cols="12" sm="9" class="item-value" v-if="!loading && (tx.object.id || tx.object.txStatus)">
               <div v-if="statusLoading"><v-progress-circular indeterminate class="mr-2" size="12" width="2"></v-progress-circular></div>
               <div v-else>
-                <v-chip label small color="success" v-if="tx.status == 'SUCCESS'">SUCCESS</v-chip>
-                <v-chip label small color="error" v-else-if="tx.status == 'FAILED'" @click="refreshTxStatus">FAILED</v-chip>
-                <v-chip label small color="secondary" v-else-if="tx.status == 'INVALID' || tx.status == null" @click="refreshTxStatus">NOT FOUND</v-chip>
-                <v-chip label small color="warning" v-else @click="refreshTxStatus">{{tx.status}}</v-chip>
+                <v-chip label small color="success" v-if="tx.object.txStatus == 'SUCCESS'">SUCCESS</v-chip>
+                <v-chip label small color="error" v-else-if="tx.object.txStatus == 'FAILURE'">FAILURE</v-chip>
+                <v-chip label small color="secondary" v-else-if="tx.object.txStatus == 'INVALID' || tx.object.txStatus == null">NOT FOUND</v-chip>
+                <v-chip label small color="warning" v-else>{{tx.object.txStatus}}</v-chip>
               </div>
             </v-col>
-            <v-col cols="12" sm="9" class="item-value" v-else-if="!loading && !tx.id">
+            <v-col cols="12" sm="9" class="item-value" v-else-if="!loading && !tx.object.id">
               <v-chip label small color="warning"><v-progress-circular indeterminate class="mr-2" size="12" width="2"></v-progress-circular>WAITING</v-chip>
             </v-col>
           </v-row>
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Block:</v-col>
-            <v-col cols="12" sm="9" class="item-value" v-if="!loading && tx.id">
+            <v-col cols="12" sm="9" class="item-value" v-if="!loading && tx.object.id">
               <router-link :to="{name: 'block', params:{index:tx.blockIndex}}">{{tx.blockIndex}}</router-link>
               <v-chip small label class="ml-2" color="#eee"><strong class="mr-1">{{latestBlockIndex - tx.blockIndex + 1}}</strong> Block confirmations</v-chip>
             </v-col>
           </v-row>
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Age:</v-col>
-            <v-col cols="12" sm="9" class="item-value" v-if="!loading && tx.id">
-              <v-icon small>mdi-clock-outline</v-icon> {{moment(tx.blockTimestamp).fromNow()}} <span style="color:#777">({{ moment(tx.blockTimestamp) }}</span>
+            <v-col cols="12" sm="9" class="item-value" v-if="!loading && tx.object.id">
+              <v-icon small>mdi-clock-outline</v-icon> {{moment(tx.object.timestamp).fromNow()}} <span style="color:#777">({{ moment(tx.blockTimestamp) }}</span>
             </v-col>
           </v-row>
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Timestamp:</v-col>
-            <v-col cols="12" sm="9" class="item-value" v-if="!loading && tx.id">
-              {{ moment(tx.timestamp) }}
+            <v-col cols="12" sm="9" class="item-value" v-if="!loading && tx.object.id">
+              {{ moment(tx.object.timestamp) }}
             </v-col>
           </v-row>
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Signer:</v-col>
             <v-col cols="12" sm="9" class="item-value" v-if="!loading">
-              <router-link :to="{name: 'account', params:{address: tx.signer}}">{{tx.signer}}</router-link>
+              <router-link :to="{name: 'account', params:{address: tx.object.signer}}">{{tx.object.signer}}</router-link>
             </v-col>
           </v-row>
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Updated Addresses:</v-col>
             <v-col cols="12" sm="9" class="item-value" v-if="!loading">
-              <span v-for="addr in tx.updatedAddresses">
+              <span v-for="addr in tx.object.updatedAddresses">
                 <router-link :to="{name: 'account', params:{address:addr}}">{{addr}}</router-link>
                 <br></span>
             </v-col>
           </v-row>
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Signature:</v-col>
-            <v-col cols="12" sm="9" class="item-value" v-if="!loading">{{tx.signature}}</v-col>
+            <v-col cols="12" sm="9" class="item-value" v-if="!loading">{{tx.object.signature}}</v-col>
           </v-row>
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Public Key:</v-col>
-            <v-col cols="12" sm="9" class="item-value" v-if="!loading">{{tx.publicKey}}</v-col>
+            <v-col cols="12" sm="9" class="item-value" v-if="!loading">{{tx.object.publicKey}}</v-col>
           </v-row>
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Nonce:</v-col>
-            <v-col cols="12" sm="9" class="item-value" v-if="!loading">{{tx.nonce}}</v-col>
+            <v-col cols="12" sm="9" class="item-value" v-if="!loading">{{tx.object.nonce}}</v-col>
           </v-row>
         </v-card-text>
       </v-card>
@@ -80,7 +80,7 @@
       <v-card class="mt-4 border-none" outlined>
         <v-progress-linear indeterminate height="2" v-if="loading"></v-progress-linear>
         <v-divider></v-divider>
-        <v-card-text class="py-12" v-if="!tx.actions || tx.actions.length == 0">
+        <v-card-text class="py-12" v-if="!tx.object.actions || tx.object.actions.length == 0">
           No Action Data
         </v-card-text>
         <v-card-text class="pa-0" v-for="{inspection} in tx.actions" v-if="inspection">
@@ -148,7 +148,7 @@ export default {
     methods: {
         async init() {
             await this.loadTx()
-            if (!this.tx.id) {
+            if (!this.tx.object.id) {
                 this.watchBlock()
             }
         },
@@ -158,32 +158,23 @@ export default {
             let tx = await this.$store.dispatch('Block/loadTransaction', this.id)
             if (tx) {
               this.tx = tx
-              if (!tx.blockTimestamp) {
-                const block = await this.$store.dispatch('Block/loadBlock', tx.blockIndex)
-                tx.blockTimestamp = block.timestamp
+              if (!this.tx.blockTimestamp) {
+                const block = await this.$store.dispatch('Block/loadBlock', this.tx.blockIndex)
+                if (block) {
+                  this.tx.blockTimestamp = block.object.timestamp
+                }
               }
             } else {
               this.tx = {}
             }
-            if (!this.tx.status || this.tx.status == 'STAGING' || this.tx.status == 'INVALID') {
-                this.refreshTxStatus()
-            }
             this.loading = false
+            console.log(this.tx)
         },
-        async refreshTxStatus() {
-            try {
-                this.statusLoading = true
-                let status = await this.$store.dispatch('Block/loadTransactionStatus', this.id)
-                if (status) {
-                    Vue.set(this.tx, 'status', status)
-                }
-            } catch(e) {}
-            this.statusLoading = false
-        },
+
         watchBlock() {
             let cancelWatch = this.$watch('latestBlockIndex', async () => {
                 await this.loadTx()
-                if (this.tx.id) {
+                if (this.tx.object.id) {
                     cancelWatch()
                 }
                 console.log(this.latestBlockIndex)
