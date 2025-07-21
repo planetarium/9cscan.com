@@ -1,4 +1,5 @@
 import { gqlClient } from "../../mimir-gql/client"
+
 export default {
     namespaced: true,
     state() {
@@ -6,7 +7,6 @@ export default {
             loading: false,
             latestBlocks: [],
             latestTransactions: [],
-            syncTx: false,
             size: 20
         }
     },
@@ -44,9 +44,7 @@ export default {
         setSize(state, size) {
             state.size = size
         },
-        setSyncTx(state, sync) {
-            state.syncTx = sync
-        },
+
         setLoading(state, loading) {
             state.loading = loading
         },
@@ -82,28 +80,22 @@ export default {
             window.pollingTimer = setInterval(async () => {
                 try {
                     const blocksResponse = await gqlClient.getBlocks(0, 100)
-                    const blocks = blocksResponse.items
+                    const transactionsResponse = await gqlClient.getTransactions(0, state.size)
                     
-                    if (blocks.length > 0 && blocks[0].object.index > state.latestBlocks[0]?.object?.index) {
-                        commit('setLatestBlocks', blocks)
-                        
-                        if (state.syncTx) {
-                            const transactionsResponse = await gqlClient.getTransactions(0, state.size)
-                            const transactions = transactionsResponse.items
-                            commit('setLatestTransactions', transactions)
-                        }
-                    }
+                    const blocks = blocksResponse.items
+                    const transactions = transactionsResponse.items
+                    
+                    commit('setLatestBlocks', blocks)
+                    commit('setLatestTransactions', transactions)
                 } catch (error) {
-                    console.error('Failed to poll for updates:', error)
+                    console.error('Failed to poll data:', error)
                 }
             }, 8000)
         },
         setSize({commit}, size) {
             commit('setSize', size)
         },
-        syncTx({state, commit, dispatch}, onoff) {
-            commit('setSyncTx', onoff)
-        },
+
 
         async loadBlock({state}, index) {
             try {

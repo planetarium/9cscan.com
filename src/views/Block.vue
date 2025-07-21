@@ -28,7 +28,7 @@
           </v-row>
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Transactions:</v-col>
-            <v-col cols="12" sm="9" class="item-value" v-if="!loading">{{block.txCount}} Transactions</v-col>
+            <v-col cols="12" sm="9" class="item-value" v-if="!loading">{{block.transactionCount}} Transactions</v-col>
           </v-row>
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Timestamp:</v-col>

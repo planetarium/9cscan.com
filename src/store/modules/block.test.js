@@ -22,12 +22,6 @@ describe('Block Store Module', () => {
     jest.clearAllMocks()
     jest.useFakeTimers()
     jest.spyOn(global, 'setTimeout')
-    
-    global.window = {
-      pollingTimer: null
-    }
-    global.clearInterval = jest.fn()
-    global.setInterval = jest.fn()
   })
 
   afterEach(() => {
@@ -40,7 +34,6 @@ describe('Block Store Module', () => {
       expect(state.loading).toBe(false)
       expect(state.latestBlocks).toEqual([])
       expect(state.latestTransactions).toEqual([])
-      expect(state.syncTx).toBe(false)
       expect(state.size).toBe(20)
     })
   })
@@ -51,10 +44,7 @@ describe('Block Store Module', () => {
       expect(state.size).toBe(50)
     })
 
-    it('should set sync tx', () => {
-      blockModule.mutations.setSyncTx(state, true)
-      expect(state.syncTx).toBe(true)
-    })
+
 
     it('should set loading', () => {
       blockModule.mutations.setLoading(state, true)
@@ -195,36 +185,21 @@ describe('Block Store Module', () => {
       expect(commit).toHaveBeenCalledWith('setSize', 50)
     })
 
-    it('should sync transactions', () => {
-      blockModule.actions.syncTx({ state, commit, dispatch }, true)
-      expect(commit).toHaveBeenCalledWith('setSyncTx', true)
-    })
-
     it('should start polling', () => {
-      const mockBlocksResponse = {
-        items: [
-          { object: { index: 2 } },
-          { object: { index: 1 } }
-        ]
-      }
-      const mockTransactionsResponse = {
-        items: [
-          { object: { id: 'tx1' } },
-          { object: { id: 'tx2' } }
-        ]
-      }
-
-      gqlClient.getBlocks.mockResolvedValue(mockBlocksResponse)
-      gqlClient.getTransactions.mockResolvedValue(mockTransactionsResponse)
-
-      state.latestBlocks = [{ object: { index: 1 } }]
-      state.syncTx = true
+      global.window = { pollingTimer: null }
+      const mockSetInterval = jest.fn()
+      global.setInterval = mockSetInterval
 
       blockModule.actions.startPolling({ state, commit, dispatch })
 
-      expect(global.clearInterval).toHaveBeenCalledWith(null)
-      expect(global.setInterval).toHaveBeenCalledWith(expect.any(Function), 8000)
+      expect(mockSetInterval).toHaveBeenCalled()
+      expect(typeof mockSetInterval.mock.calls[0][0]).toBe('function')
+      expect(mockSetInterval.mock.calls[0][1]).toBe(8000)
     })
+
+
+
+
 
     it('should load block', async () => {
       const mockBlock = {

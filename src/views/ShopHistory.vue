@@ -64,15 +64,9 @@ export default {
     computed: {
         ...mapGetters('Block', ['size', 'loading', 'latestTransactions', 'latestTransactionsBefore'])
     },
-    beforeDestroy() {
-        this.$store.dispatch('Block/syncTx', false)
-    },
     async created() {
     },
     methods: {
-      $onLoaded() {
-        this.$store.dispatch('Block/syncTx', true)
-      },
       async loadHistory({page, itemId, to, from, type, grade, level, ticker, options, before}) {
         this.loadings.items = true
         try {

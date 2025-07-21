@@ -109,7 +109,6 @@ export default {
       this.init()
     },
     init() {
-      //   this.$store.dispatch('Block/syncTx', true)
       this.$watch('latestBlockIndex', () => {
         console.log('LATEST BLOCK INDEX UPDATED')
         this.updateCount()

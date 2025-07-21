@@ -126,17 +126,8 @@ export default {
       'loading',
     ]),
   },
-  beforeDestroy() {
-    this.$store.dispatch('Block/syncTx', false)
-  },
   async created() {},
   methods: {
-    $onLoaded() {
-      this.init()
-    },
-    init() {
-      this.$store.dispatch('Block/syncTx', true)
-    },
   },
 }
 </script>
