@@ -1,249 +1,53 @@
-import { GraphQLClient } from 'graphql-request'
-import { gql } from 'graphql-request'
+import * as queries from './queries'
+import {
+  WNCGPriceModel,
+  AgentModel,
+  AvatarModel,
+  BlockModel,
+  TransactionModel,
+  ActionTypeModel,
+  PaginatedResponseModel,
+  AvatarDataModel
+} from './models'
 
-let client
+const API_HOST = process.env.VUE_APP_API_HOST || 'http://localhost:5000/graphql'
 
-const createClient = () => {
-  if (!client) {
-    client = new GraphQLClient(process.env.VUE_APP_API_HOST || 'http://localhost:5000/graphql')
+const makeGraphQLRequest = async (query, variables = {}) => {
+  try {
+    const response = await fetch(API_HOST, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query,
+        variables
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const result = await response.json()
+    
+    if (result.errors) {
+      throw new Error(`GraphQL errors: ${JSON.stringify(result.errors)}`)
+    }
+
+    return result.data
+  } catch (error) {
+    console.error('GraphQL request failed:', error)
+    throw error
   }
-  return client
 }
 
-const GET_AVATAR_ADDRESSES = gql`
-  query GetAvatarAddresses($address: Address!) {
-    agent(address: $address) {
-      avatarAddresses {
-        key
-        value
-      }
-    }
-  }
-`
 
-const GET_AGENT = gql`
-  query GetAgent($agentAddress: Address!) {
-    agent(address: $agentAddress) {
-      address
-      monsterCollectionRound
-      version
-      avatarAddresses {
-        key
-        value
-      }
-    }
-  }
-`
-
-const GET_AVATARS_INFORMATION = gql`
-  fragment AvatarFields on AvatarState {
-    address
-    name
-    level
-  }
-
-  query GetAvatarsInformation(
-    $avatarAddress1: Address!
-    $avatarAddress2: Address!
-    $avatarAddress3: Address!
-  ) {
-    avatar1: avatar(address: $avatarAddress1) {
-      ...AvatarFields
-    }
-
-    avatar2: avatar(address: $avatarAddress2) {
-      ...AvatarFields
-    }
-    avatar3: avatar(address: $avatarAddress3) {
-      ...AvatarFields
-    }
-  }
-`
-
-const GET_NCG = gql`
-  query GetNCG($address: Address!) {
-    balance(address: $address, currencyTicker: "NCG")
-  }
-`
-
-const GET_BLOCKS = gql`
-  query GetBlocks($skip: Int!, $take: Int!) {
-    blocks(skip: $skip, take: $take) {
-      items {
-        id
-        object {
-          hash
-          index
-          miner
-          stateRootHash
-          timestamp
-          txCount
-        }
-      }
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-      }
-    }
-  }
-`
-
-const GET_BLOCK = gql`
-  query GetBlock($index: Long!) {
-    block(index: $index) {
-      id
-      object {
-        hash
-        index
-        miner
-        stateRootHash
-        timestamp
-        txCount
-      }
-    }
-  }
-`
-
-const GET_TRANSACTION = gql`
-  query GetTransaction($txId: String!) {
-    transaction(txId: $txId) {
-      blockHash
-      blockIndex
-      firstActionTypeId
-      firstAvatarAddressInActionArguments
-      firstNCGAmountInActionArguments
-      object {
-        id
-        nonce
-        publicKey
-        signature
-        signer
-        timestamp
-        txStatus
-        updatedAddresses
-        actions {
-          raw
-          typeId
-          values
-        }
-      }
-    }
-  }
-`
-
-const GET_TRANSACTIONS = gql`
-  query GetTransactions(
-    $skip: Int!
-    $take: Int!
-    $blockIndex: Long
-    $actionTypeId: String
-    $avatarAddress: Address
-    $signer: Address
-  ) {
-    transactions(
-      skip: $skip
-      take: $take
-      filter: {
-        blockIndex: $blockIndex
-        firstActionTypeId: $actionTypeId
-        firstAvatarAddressInActionArguments: $avatarAddress
-        signer: $signer
-      }
-    ) {
-      items {
-        blockHash
-        blockIndex
-        firstActionTypeId
-        firstAvatarAddressInActionArguments
-        firstNCGAmountInActionArguments
-        id
-        object {
-          id
-          nonce
-          publicKey
-          signature
-          signer
-          timestamp
-          txStatus
-          updatedAddresses
-          actions {
-            raw
-            typeId
-            values
-          }
-        }
-      }
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-      }
-    }
-  }
-`
-
-const GET_ACTION_TYPES = gql`
-  query GetActionTypes {
-    actionTypes {
-      id
-    }
-  }
-`
-
-const GET_BLOCKS_FOR_STATS = gql`
-  query GetBlocksForStats($skip: Int!, $take: Int!) {
-    blocks(skip: $skip, take: $take) {
-      items {
-        object {
-          index
-          timestamp
-          txCount
-        }
-      }
-    }
-  }
-`
-
-const GET_WNCG_PRICE = gql`
-  query GetWNCGPrice {
-    wncgPrice {
-      quote {
-        usd {
-          marketCap
-          price
-          percentChange24h
-        }
-      }
-    }
-  }
-`
-
-const GET_AVATAR = gql`
-  query GetAvatar($avatarAddress: Address!) {
-    avatar(address: $avatarAddress) {
-      address
-      agentAddress
-      blockIndex
-      characterId
-      combinationSlotAddresses
-      ear
-      exp
-      hair
-      lens
-      level
-      name
-      rankingMapAddress
-      tail
-      updatedAt
-      version
-    }
-    dailyRewardReceivedBlockIndex(address: $avatarAddress)
-  }
-`
 
 export const gqlClient = {
   async getAvatarAddresses(address) {
     try {
-      const data = await createClient().request(GET_AVATAR_ADDRESSES, { address })
+      const data = await makeGraphQLRequest(queries.GET_AVATAR_ADDRESSES, { address })
       return data.agent?.avatarAddresses || []
     } catch (error) {
       console.error('Error fetching avatar addresses:', error)
@@ -253,8 +57,8 @@ export const gqlClient = {
 
   async getAgent(agentAddress) {
     try {
-      const data = await createClient().request(GET_AGENT, { agentAddress })
-      return data.agent
+      const data = await makeGraphQLRequest(queries.GET_AGENT, { agentAddress })
+      return data.agent ? new AgentModel(data.agent) : null
     } catch (error) {
       console.error('Error fetching agent:', error)
       throw error
@@ -263,15 +67,15 @@ export const gqlClient = {
 
   async getAvatarsInformation(avatarAddress1, avatarAddress2, avatarAddress3) {
     try {
-      const data = await createClient().request(GET_AVATARS_INFORMATION, {
+      const data = await makeGraphQLRequest(queries.GET_AVATARS_INFORMATION, {
         avatarAddress1,
         avatarAddress2,
         avatarAddress3
       })
       return {
-        avatar1: data.avatar1,
-        avatar2: data.avatar2,
-        avatar3: data.avatar3
+        avatar1: data.avatar1 ? new AvatarModel(data.avatar1) : null,
+        avatar2: data.avatar2 ? new AvatarModel(data.avatar2) : null,
+        avatar3: data.avatar3 ? new AvatarModel(data.avatar3) : null
       }
     } catch (error) {
       console.error('Error fetching avatars information:', error)
@@ -281,7 +85,7 @@ export const gqlClient = {
 
   async getNCG(address) {
     try {
-      const data = await createClient().request(GET_NCG, { address })
+      const data = await makeGraphQLRequest(queries.GET_NCG, { address })
       return data.balance
     } catch (error) {
       console.error('Error fetching NCG balance:', error)
@@ -291,8 +95,8 @@ export const gqlClient = {
 
   async getBlocks(skip, take) {
     try {
-      const data = await createClient().request(GET_BLOCKS, { skip, take })
-      return data.blocks
+      const data = await makeGraphQLRequest(queries.GET_BLOCKS, { skip, take })
+      return new PaginatedResponseModel(data.blocks, BlockModel)
     } catch (error) {
       console.error('Error fetching blocks:', error)
       throw error
@@ -301,8 +105,8 @@ export const gqlClient = {
 
   async getBlock(index) {
     try {
-      const data = await createClient().request(GET_BLOCK, { index })
-      return data.block
+      const data = await makeGraphQLRequest(queries.GET_BLOCK, { index })
+      return data.block ? new BlockModel(data.block) : null
     } catch (error) {
       console.error('Error fetching block:', error)
       throw error
@@ -311,8 +115,8 @@ export const gqlClient = {
 
   async getTransaction(txId) {
     try {
-      const data = await createClient().request(GET_TRANSACTION, { txId })
-      return data.transaction
+      const data = await makeGraphQLRequest(queries.GET_TRANSACTION, { txId })
+      return data.transaction ? new TransactionModel(data.transaction) : null
     } catch (error) {
       console.error('Error fetching transaction:', error)
       throw error
@@ -322,8 +126,8 @@ export const gqlClient = {
   async getTransactions(skip, take, filters = {}) {
     try {
       const variables = { skip, take, ...filters }
-      const data = await createClient().request(GET_TRANSACTIONS, variables)
-      return data.transactions
+      const data = await makeGraphQLRequest(queries.GET_TRANSACTIONS, variables)
+      return new PaginatedResponseModel(data.transactions, TransactionModel)
     } catch (error) {
       console.error('Error fetching transactions:', error)
       throw error
@@ -332,8 +136,8 @@ export const gqlClient = {
 
   async getActionTypes() {
     try {
-      const data = await createClient().request(GET_ACTION_TYPES)
-      return data.actionTypes
+      const data = await makeGraphQLRequest(queries.GET_ACTION_TYPES)
+      return data.actionTypes.map(actionType => new ActionTypeModel(actionType))
     } catch (error) {
       console.error('Error fetching action types:', error)
       throw error
@@ -342,7 +146,7 @@ export const gqlClient = {
 
   async getBlocksForStats(skip, take) {
     try {
-      const data = await createClient().request(GET_BLOCKS_FOR_STATS, { skip, take })
+      const data = await makeGraphQLRequest(queries.GET_BLOCKS_FOR_STATS, { skip, take })
       return data.blocks
     } catch (error) {
       console.error('Error fetching blocks for stats:', error)
@@ -352,8 +156,8 @@ export const gqlClient = {
 
   async getWNCGPrice() {
     try {
-      const data = await createClient().request(GET_WNCG_PRICE)
-      return data.wncgPrice
+      const data = await makeGraphQLRequest(queries.GET_WNCG_PRICE)
+      return new WNCGPriceModel(data.wncgPrice)
     } catch (error) {
       console.error('Error fetching WNCG price:', error)
       throw error
@@ -362,11 +166,8 @@ export const gqlClient = {
 
   async getAvatar(avatarAddress) {
     try {
-      const data = await createClient().request(GET_AVATAR, { avatarAddress })
-      return {
-        avatar: data.avatar,
-        dailyRewardReceivedBlockIndex: data.dailyRewardReceivedBlockIndex
-      }
+      const data = await makeGraphQLRequest(queries.GET_AVATAR, { avatarAddress })
+      return new AvatarDataModel(data)
     } catch (error) {
       console.error('Error fetching avatar:', error)
       throw error

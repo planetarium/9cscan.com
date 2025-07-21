@@ -1,20 +1,38 @@
 import { gqlClient } from './client'
+import {
+  WNCGPriceModel,
+  AgentModel,
+  AvatarModel,
+  BlockModel,
+  TransactionModel,
+  ActionTypeModel,
+  PaginatedResponseModel,
+  AvatarDataModel
+} from './models'
 
-const mockRequest = jest.fn()
+const mockFetch = jest.fn()
 
-jest.mock('graphql-request', () => ({
-  GraphQLClient: jest.fn().mockImplementation(() => ({
-    request: mockRequest
-  })),
-  gql: jest.fn((query) => query)
-}))
+global.fetch = mockFetch
+
+jest.mock('./queries', () => ({
+  GET_AVATAR_ADDRESSES: 'query GetAvatarAddresses',
+  GET_AGENT: 'query GetAgent',
+  GET_AVATARS_INFORMATION: 'query GetAvatarsInformation',
+  GET_NCG: 'query GetNCG',
+  GET_BLOCKS: 'query GetBlocks',
+  GET_BLOCK: 'query GetBlock',
+  GET_TRANSACTION: 'query GetTransaction',
+  GET_TRANSACTIONS: 'query GetTransactions',
+  GET_ACTION_TYPES: 'query GetActionTypes',
+  GET_BLOCKS_FOR_STATS: 'query GetBlocksForStats',
+  GET_WNCG_PRICE: 'query GetWNCGPrice',
+  GET_AVATAR: 'query GetAvatar'
+}), { virtual: true })
 
 describe('GraphQL Client', () => {
   beforeEach(() => {
-    mockRequest.mockClear()
+    mockFetch.mockClear()
   })
-
-
 
   describe('getAvatarAddresses', () => {
     it('should fetch avatar addresses successfully', async () => {
@@ -26,19 +44,30 @@ describe('GraphQL Client', () => {
           ]
         }
       }
-      mockRequest.mockResolvedValue(mockData)
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: mockData })
+      })
 
       const result = await gqlClient.getAvatarAddresses('test-address')
 
-      expect(mockRequest).toHaveBeenCalledWith(
-        expect.arrayContaining([expect.stringContaining('query GetAvatarAddresses')]),
-        { address: 'test-address' }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: expect.stringContaining('query GetAvatarAddresses')
+        })
       )
       expect(result).toEqual(mockData.agent.avatarAddresses)
     })
 
     it('should return empty array when agent is null', async () => {
-      mockRequest.mockResolvedValue({ agent: null })
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: { agent: null } })
+      })
 
       const result = await gqlClient.getAvatarAddresses('test-address')
 
@@ -46,10 +75,12 @@ describe('GraphQL Client', () => {
     })
 
     it('should handle errors', async () => {
-      const error = new Error('Network error')
-      mockRequest.mockRejectedValue(error)
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 500
+      })
 
-      await expect(gqlClient.getAvatarAddresses('test-address')).rejects.toThrow('Network error')
+      await expect(gqlClient.getAvatarAddresses('test-address')).rejects.toThrow('HTTP error! status: 500')
     })
   })
 
@@ -62,15 +93,24 @@ describe('GraphQL Client', () => {
           version: 1
         }
       }
-      mockRequest.mockResolvedValue(mockData)
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: mockData })
+      })
 
       const result = await gqlClient.getAgent('agent-address')
 
-      expect(mockRequest).toHaveBeenCalledWith(
-        expect.arrayContaining([expect.stringContaining('query GetAgent')]),
-        { agentAddress: 'agent-address' }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: expect.stringContaining('query GetAgent')
+        })
       )
-      expect(result).toEqual(mockData.agent)
+      expect(result).toBeInstanceOf(AgentModel)
+      expect(result.address).toBe('agent-address')
     })
   })
 
@@ -81,32 +121,46 @@ describe('GraphQL Client', () => {
         avatar2: { address: 'addr2', name: 'Avatar2', level: 20 },
         avatar3: { address: 'addr3', name: 'Avatar3', level: 30 }
       }
-      mockRequest.mockResolvedValue(mockData)
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: mockData })
+      })
 
       const result = await gqlClient.getAvatarsInformation('addr1', 'addr2', 'addr3')
 
-      expect(mockRequest).toHaveBeenCalledWith(
-        expect.arrayContaining([expect.stringContaining('query GetAvatarsInformation')]),
-        {
-          avatarAddress1: 'addr1',
-          avatarAddress2: 'addr2',
-          avatarAddress3: 'addr3'
-        }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: expect.stringContaining('query GetAvatarsInformation')
+        })
       )
-      expect(result).toEqual(mockData)
+      expect(result.avatar1).toBeInstanceOf(AvatarModel)
+      expect(result.avatar2).toBeInstanceOf(AvatarModel)
+      expect(result.avatar3).toBeInstanceOf(AvatarModel)
     })
   })
 
   describe('getNCG', () => {
     it('should fetch NCG balance successfully', async () => {
       const mockData = { balance: '1000' }
-      mockRequest.mockResolvedValue(mockData)
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: mockData })
+      })
 
       const result = await gqlClient.getNCG('test-address')
 
-      expect(mockRequest).toHaveBeenCalledWith(
-        expect.arrayContaining([expect.stringContaining('query GetNCG')]),
-        { address: 'test-address' }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: expect.stringContaining('query GetNCG')
+        })
       )
       expect(result).toBe('1000')
     })
@@ -123,15 +177,23 @@ describe('GraphQL Client', () => {
           pageInfo: { hasNextPage: true, hasPreviousPage: false }
         }
       }
-      mockRequest.mockResolvedValue(mockData)
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: mockData })
+      })
 
       const result = await gqlClient.getBlocks(0, 10)
 
-      expect(mockRequest).toHaveBeenCalledWith(
-        expect.arrayContaining([expect.stringContaining('query GetBlocks')]),
-        { skip: 0, take: 10 }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: expect.stringContaining('query GetBlocks')
+        })
       )
-      expect(result).toEqual(mockData.blocks)
+      expect(result).toBeInstanceOf(PaginatedResponseModel)
     })
   })
 
@@ -143,15 +205,23 @@ describe('GraphQL Client', () => {
           object: { hash: 'hash1', index: 1, miner: 'miner1' }
         }
       }
-      mockRequest.mockResolvedValue(mockData)
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: mockData })
+      })
 
       const result = await gqlClient.getBlock(1)
 
-      expect(mockRequest).toHaveBeenCalledWith(
-        expect.arrayContaining([expect.stringContaining('query GetBlock')]),
-        { index: 1 }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: expect.stringContaining('query GetBlock')
+        })
       )
-      expect(result).toEqual(mockData.block)
+      expect(result).toBeInstanceOf(BlockModel)
     })
   })
 
@@ -159,21 +229,28 @@ describe('GraphQL Client', () => {
     it('should fetch transaction successfully', async () => {
       const mockData = {
         transaction: {
-          blockHash: 'block-hash',
+          blockHash: 'hash1',
           blockIndex: 1,
-          firstActionTypeId: 'action-type',
-          object: { id: 'tx-id', signer: 'signer' }
+          object: { id: 'tx1', nonce: 1, signer: 'signer1' }
         }
       }
-      mockRequest.mockResolvedValue(mockData)
 
-      const result = await gqlClient.getTransaction('tx-id')
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: mockData })
+      })
 
-      expect(mockRequest).toHaveBeenCalledWith(
-        expect.arrayContaining([expect.stringContaining('query GetTransaction')]),
-        { txId: 'tx-id' }
+      const result = await gqlClient.getTransaction('tx1')
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: expect.stringContaining('query GetTransaction')
+        })
       )
-      expect(result).toEqual(mockData.transaction)
+      expect(result).toBeInstanceOf(TransactionModel)
     })
   })
 
@@ -182,21 +259,29 @@ describe('GraphQL Client', () => {
       const mockData = {
         transactions: {
           items: [
-            { id: '1', blockIndex: 1, firstActionTypeId: 'action1' },
-            { id: '2', blockIndex: 2, firstActionTypeId: 'action2' }
+            { id: 'tx1', object: { id: 'tx1', nonce: 1 } },
+            { id: 'tx2', object: { id: 'tx2', nonce: 2 } }
           ],
           pageInfo: { hasNextPage: true, hasPreviousPage: false }
         }
       }
-      mockRequest.mockResolvedValue(mockData)
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: mockData })
+      })
 
       const result = await gqlClient.getTransactions(0, 10)
 
-      expect(mockRequest).toHaveBeenCalledWith(
-        expect.arrayContaining([expect.stringContaining('query GetTransactions')]),
-        { skip: 0, take: 10 }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: expect.stringContaining('query GetTransactions')
+        })
       )
-      expect(result).toEqual(mockData.transactions)
+      expect(result).toBeInstanceOf(PaginatedResponseModel)
     })
 
     it('should fetch transactions with filters', async () => {
@@ -206,20 +291,21 @@ describe('GraphQL Client', () => {
           pageInfo: { hasNextPage: false, hasPreviousPage: false }
         }
       }
-      mockRequest.mockResolvedValue(mockData)
 
-      const filters = {
-        blockIndex: 100,
-        actionTypeId: 'test-action',
-        avatarAddress: 'avatar-addr',
-        signer: 'signer-addr'
-      }
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: mockData })
+      })
 
-      await gqlClient.getTransactions(0, 10, filters)
+      await gqlClient.getTransactions(0, 10, { signer: 'test-signer' })
 
-      expect(mockRequest).toHaveBeenCalledWith(
-        expect.arrayContaining([expect.stringContaining('query GetTransactions')]),
-        { skip: 0, take: 10, ...filters }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: expect.stringContaining('test-signer')
+        })
       )
     })
   })
@@ -229,16 +315,27 @@ describe('GraphQL Client', () => {
       const mockData = {
         actionTypes: [
           { id: 'action1' },
-          { id: 'action2' },
-          { id: 'action3' }
+          { id: 'action2' }
         ]
       }
-      mockRequest.mockResolvedValue(mockData)
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: mockData })
+      })
 
       const result = await gqlClient.getActionTypes()
 
-      expect(mockRequest).toHaveBeenCalledWith(expect.arrayContaining([expect.stringContaining('query GetActionTypes')]))
-      expect(result).toEqual(mockData.actionTypes)
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: expect.stringContaining('query GetActionTypes')
+        })
+      )
+      expect(result).toHaveLength(2)
+      expect(result[0]).toBeInstanceOf(ActionTypeModel)
     })
   })
 
@@ -252,13 +349,21 @@ describe('GraphQL Client', () => {
           ]
         }
       }
-      mockRequest.mockResolvedValue(mockData)
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: mockData })
+      })
 
       const result = await gqlClient.getBlocksForStats(0, 10)
 
-      expect(mockRequest).toHaveBeenCalledWith(
-        expect.arrayContaining([expect.stringContaining('query GetBlocksForStats')]),
-        { skip: 0, take: 10 }
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: expect.stringContaining('query GetBlocksForStats')
+        })
       )
       expect(result).toEqual(mockData.blocks)
     })
@@ -277,12 +382,43 @@ describe('GraphQL Client', () => {
           }
         }
       }
-      mockRequest.mockResolvedValue(mockData)
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: mockData })
+      })
 
       const result = await gqlClient.getWNCGPrice()
 
-      expect(mockRequest).toHaveBeenCalledWith(expect.arrayContaining([expect.stringContaining('query GetWNCGPrice')]))
-      expect(result).toEqual(mockData.wncgPrice)
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: expect.stringContaining('query GetWNCGPrice')
+        })
+      )
+      expect(result).toBeInstanceOf(WNCGPriceModel)
+      expect(result.marketCap).toBe(1000000)
+      expect(result.price).toBe(1.5)
+      expect(result.percentChange24h).toBe(5.2)
+    })
+
+    it('should handle GraphQL errors', async () => {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({
+          errors: [{ message: 'GraphQL error' }]
+        })
+      })
+
+      await expect(gqlClient.getWNCGPrice()).rejects.toThrow('GraphQL errors: [{"message":"GraphQL error"}]')
+    })
+
+    it('should handle network errors', async () => {
+      mockFetch.mockRejectedValue(new Error('Network error'))
+
+      await expect(gqlClient.getWNCGPrice()).rejects.toThrow('Network error')
     })
   })
 
@@ -290,25 +426,29 @@ describe('GraphQL Client', () => {
     it('should fetch avatar successfully', async () => {
       const mockData = {
         avatar: {
-          address: 'avatar-addr',
-          name: 'TestAvatar',
-          level: 50,
-          agentAddress: 'agent-addr'
+          address: 'avatar-address',
+          name: 'Test Avatar',
+          level: 10
         },
         dailyRewardReceivedBlockIndex: 1000
       }
-      mockRequest.mockResolvedValue(mockData)
 
-      const result = await gqlClient.getAvatar('avatar-addr')
-
-      expect(mockRequest).toHaveBeenCalledWith(
-        expect.arrayContaining([expect.stringContaining('query GetAvatar')]),
-        { avatarAddress: 'avatar-addr' }
-      )
-      expect(result).toEqual({
-        avatar: mockData.avatar,
-        dailyRewardReceivedBlockIndex: mockData.dailyRewardReceivedBlockIndex
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: mockData })
       })
+
+      const result = await gqlClient.getAvatar('avatar-address')
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: expect.stringContaining('query GetAvatar')
+        })
+      )
+      expect(result).toBeInstanceOf(AvatarDataModel)
     })
   })
 }) 

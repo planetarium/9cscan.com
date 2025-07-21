@@ -1,4 +1,4 @@
-import api from "../../api"
+import { gqlClient } from "../../mimir-gql/client"
 export default {
     namespaced: true,
     state() {
@@ -8,9 +8,9 @@ export default {
     },
     getters: {
         WNCG: state => state.WNCG,
-        WncgMarketCap: state => state.WNCG.quote && state.WNCG.quote.USD && state.WNCG.quote.USD.market_cap || 0,
-        WncgPrice: state => state.WNCG.quote && state.WNCG.quote.USD && state.WNCG.quote.USD.price || 0,
-        WncgChange24h: state => state.WNCG.quote && state.WNCG.quote.USD && state.WNCG.quote.USD.percent_change_24h || 0,
+        WncgMarketCap: state => state.WNCG.marketCap || 0,
+        WncgPrice: state => state.WNCG.price || 0,
+        WncgChange24h: state => state.WNCG.percentChange24h || 0,
     },
     mutations: {
         setWNCG(state, data) {
@@ -19,8 +19,12 @@ export default {
     },
     actions: {
         async init({state, commit, dispatch}) {
-            let data = await api.getPrice()
-            commit('setWNCG', data)
+            try {
+                let data = await gqlClient.getWNCGPrice()
+                commit('setWNCG', data)
+            } catch (error) {
+                console.error('Failed to fetch WNCG price:', error)
+            }
             setTimeout(() => {
                 dispatch('init')
             }, 60000)
