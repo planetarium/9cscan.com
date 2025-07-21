@@ -24,7 +24,7 @@
           <v-row class="info-item ma-0" v-if="currentAvatars.length > 0">
             <v-col cols="12" sm="3" class="item-title"><span class="text-no-wrap">Nine Chronicles</span> Avatar:</v-col>
             <v-col cols="12" sm="9" class="item-value" v-if="!loading && !notFound">
-              <div v-for="{avatar} in currentAvatars">
+              <div v-for="{avatar} in currentAvatars" :key="avatar.address">
                 <router-link :to="{name:'avatar', params: {address:avatar.address}}">{{avatar.address}} ({{avatar.name}})</router-link>
               </div>
             </v-col>
@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import api from "../api"
+import { gqlClient } from "../mimir-gql/client"
 import {mapGetters} from "vuex"
 import TransactionTable from "@/components/TransactionTable";
 import AccountTransactionList from "@/views/AccountList/AccountTransactionList";
@@ -93,19 +93,18 @@ export default {
             return [...this.currentAvatars, ...this.oldAvatars]
         },
         currentAvatars() {
-            if (this.account && this.account[0]) {
-                let maxBlockIndex = _.max(this.account.filter(ac => ac.avatar).map(ac => ac.refreshBlockIndex))
-                return _.sortBy(this.account.filter(ac => ac.refreshBlockIndex == maxBlockIndex && ac.avatar), ({avatar}) => -avatar.blockIndex)
+            if (this.account && this.account[0] && this.account[0].avatarAddresses) {
+                return this.account[0].avatarAddresses.map(addr => ({
+                    avatar: {
+                        address: addr.value,
+                        name: addr.name || addr.key,
+                        blockIndex: 0
+                    }
+                }))
             }
             return []
         },
         oldAvatars() {
-            if (this.account && this.account[0]) {
-                let maxBlockIndex = _.max(this.account.filter(ac => ac.avatar).map(ac => ac.refreshBlockIndex))
-                let avatars = this.account.filter(ac => ac.refreshBlockIndex != maxBlockIndex && ac.avatar)
-                avatars.forEach(ac => ac['isOld'] = true)
-                return avatars
-            }
             return []
         }
     },
@@ -122,25 +121,61 @@ export default {
     methods: {
         async loadAccount() {
             this.loading = true
-            this.account = await api.getAccount({address:this.$route.params.address.toLowerCase()})
-            if (!this.account || this.account.length == 0) {
-                this.checkIsAvatarAddress()
-            } else {
-                let latestBlockIndex = _.max(this.account.map(a => a.refreshBlockIndex))
-                this.account = this.account.filter(a => a.refreshBlockIndex == latestBlockIndex)
+            try {
+                const agent = await gqlClient.getAgent(this.$route.params.address.toLowerCase())
+                console.log(agent)
+                if (agent) {
+                    this.account = [agent]
+                    const ncgBalance = await gqlClient.getNCG(this.$route.params.address.toLowerCase())
+                    if (ncgBalance) {
+                        this.account[0].goldBalance = ncgBalance
+                    }
+                    
+                    if (agent.avatarAddresses && agent.avatarAddresses.length > 0) {
+                        const avatarAddresses = agent.avatarAddresses.slice(0, 3)
+                        const avatarsInfo = await gqlClient.getAvatarsInformation(
+                            avatarAddresses[0]?.value || null,
+                            avatarAddresses[1]?.value || null,
+                            avatarAddresses[2]?.value || null
+                        )
+                        
+                        this.account[0].avatarAddresses = this.account[0].avatarAddresses.map((addr, index) => {
+                            const avatarInfo = [avatarsInfo.avatar1, avatarsInfo.avatar2, avatarsInfo.avatar3][index]
+                            return {
+                                ...addr,
+                                name: avatarInfo?.name || addr.key
+                            }
+                        })
+                    }
+                } else {
+                    this.checkIsAvatarAddress()
+                }
+            } catch (error) {
+                console.error('Failed to load account:', error)
+                this.account = []
             }
             this.loading = false
-            this.refreshAccount()
         },
         async checkIsAvatarAddress() {
-            let accounts = await api.getAccount({avatar:this.$route.params.address.toLowerCase()})
-            if (accounts && accounts[0]) {
-                this.$router.replace({name: 'avatar', params: {address: this.$route.params.address}})
+            try {
+                const avatar = await gqlClient.getAvatar(this.$route.params.address.toLowerCase())
+                if (avatar) {
+                    this.$router.replace({name: 'avatar', params: {address: this.$route.params.address}})
+                }
+            } catch (error) {
+                console.error('Failed to check avatar address:', error)
             }
         },
         async refreshAccount() {
             this.reloading = true
-            await api.refreshAccount(this.address.toLowerCase())
+            try {
+                const ncgBalance = await gqlClient.getNCG(this.address.toLowerCase())
+                if (this.account && this.account[0] && ncgBalance) {
+                    this.account[0].goldBalance = ncgBalance
+                }
+            } catch (error) {
+                console.error('Failed to refresh account:', error)
+            }
             this.reloading = false
         }
     }

@@ -91,7 +91,7 @@
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Avatar:</v-col>
             <v-col cols="12" sm="9" class="item-value">
-              <router-link :to="{name: 'avatar', params:{address: tx.firstAvatarAddressInActionArguments}}">0x{{ tx.firstAvatarAddressInActionArguments }}</router-link>
+              <router-link :to="{name: 'avatar', params:{address: tx.firstAvatarAddressInActionArguments}}">{{ tx.firstAvatarAddressInActionArguments }}</router-link>
             </v-col>
           </v-row>
           <v-row class="info-item ma-0" v-if="action.values">

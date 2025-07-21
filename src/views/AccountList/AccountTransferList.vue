@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import api from "@/api"
+import { gqlClient } from "@/mimir-gql/client"
 import {mapGetters} from "vuex"
 import TransactionTable from "@/components/TransactionTable";
 import PageListWrapper from "@/components/PageListWrapper";
@@ -58,43 +58,53 @@ export default {
         async loadTxs({page, action, before}) {
             this.loading = true
             try {
-                let {transactions, before:nextBefore} = await api.getAccountTransactions(this.address, {page, action, before, limit: this.size})
-                this.txs = transactions
-                this.before = nextBefore
+                const pageNum = parseInt(page) || 1
+                const skip = (pageNum - 1) * this.size
+                const filter = { signer: this.address }
+                if (action) {
+                    filter.actionType = action
+                }
+                
+                console.log('Loading transfer transactions:', { skip, size: this.size, filter })
+                const response = await gqlClient.getTransactions(skip, this.size, filter)
+                this.txs = response.items
+                this.before = response.pageInfo?.hasNextPage ? response.pageInfo.endCursor : null
+            } catch (error) {
+                console.error('Failed to load transfer transactions:', error)
+                this.txs = []
+                this.before = null
             } finally {
                 this.loading = false
             }
         },
         async downloadCSV() {
-          let before = ''
-          let page = 1
+          let skip = 0
           let {action} = this.$route.query
           let txs = []
           for (let i = 0; i < 100; i++) { //max 10K
-            let {transactions, before:nextBefore} = await api.getAccountTransactions(this.address, {page, action, before, limit: 100})
-            txs.push(...transactions)
-            before = nextBefore
-            page += 1
-            if (transactions.length < 100) break;
+            const filter = { signer: this.address }
+            if (action) {
+                filter.actionType = action
+            }
+            
+            const response = await gqlClient.getTransactions(skip, 100, filter)
+            txs.push(...response.items)
+            skip += 100
+            if (response.items.length < 100) break;
             this.csvProgress = txs.length;
           }
           txs = txs.map(item => {
-            const inspection = item.actions?.[0]?.inspection
-            const amount = inspection?.['amount']
-            const sender = inspection?.['sender']
-            const recipient = inspection?.['recipient']
+            const amount = item.firstNCGAmountInActionArguments
+            const sender = item.object?.signer
+            const recipient = item.object?.updatedAddresses?.[0] || ''
             item.from = sender
             item.to = recipient
             item.inOut = item.involved?.type === 'SIGNED' ? 'OUT' : 'IN'
-            item.value = amount ? ((item.inOut === 'OUT' ? '-' : '') + amount[1]) : ''
-            const decimal = Number(amount?.[0]?.['decimalPlaces'] ?? 0)
-            if (item.value && decimal > 0) {
-              item.value /= Math.pow(10, decimal)
-            }
-            item.valueTicker = amount ? amount[0].ticker : ''
-            item.actionType = item.actions?.[0]?.typeId ?? ''
-            item.actions = JSON.stringify(item.actions)
-            item.updatedAddresses = JSON.stringify(item.updatedAddresses)
+            item.value = amount ? ((item.inOut === 'OUT' ? '-' : '') + amount) : ''
+            item.valueTicker = amount ? 'NCG' : ''
+            item.actionType = item.object?.actions?.[0]?.typeId ?? ''
+            item.actions = JSON.stringify(item.object?.actions || [])
+            item.updatedAddresses = JSON.stringify(item.object?.updatedAddresses || [])
             item.involved = item.involved?.type ?? ''
             return item
           })

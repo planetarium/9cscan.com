@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import api from "@/api"
+import { gqlClient } from "@/mimir-gql/client"
 import {mapGetters} from "vuex"
 import BlockTable from "@/components/BlockTable";
 import PageListWrapper from "@/components/PageListWrapper";
@@ -45,9 +45,18 @@ export default {
         async loadBlocks({page, before}) {
             this.loading = true
             try {
-                let {blocks, before: nextBefore} = await api.getBlocks({page, before, miner:this.miner, limit: this.size})
-                this.blocks = blocks
-                this.before = String(nextBefore)
+                const pageNum = parseInt(page) || 1
+                const skip = (pageNum - 1) * this.size
+                const filter = { miner: this.miner }
+                
+                console.log('Loading blocks:', { skip, size: this.size, filter })
+                const response = await gqlClient.getBlocks(skip, this.size, filter)
+                this.blocks = response.items
+                this.before = response.pageInfo?.hasNextPage ? response.pageInfo.endCursor : null
+            } catch (error) {
+                console.error('Failed to load blocks:', error)
+                this.blocks = []
+                this.before = null
             } finally {
                 this.loading = false
             }
