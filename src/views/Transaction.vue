@@ -83,32 +83,29 @@
         <v-card-text class="py-12" v-if="!tx.object.actions || tx.object.actions.length == 0">
           No Action Data
         </v-card-text>
-        <v-card-text class="pa-0" v-for="action in tx.object.actions" v-if="action">
+        <v-card-text class="pa-0" v-for="(action, idx) in tx.object.actions" :key="idx" v-if="action">
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Type:</v-col>
-            <v-col cols="12" sm="9" class="item-value" v-if="!loading">
-              {{action.typeId}}
-            </v-col>
+            <v-col cols="12" sm="9" class="item-value">{{ action.typeId }}</v-col>
           </v-row>
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Avatar:</v-col>
-            <v-col cols="12" sm="9" class="item-value" v-if="!loading">
-              <router-link :to="{name: 'avatar', params:{address: inspection['avatarAddress']}}" v-if="inspection['avatarAddress']">{{inspection['avatarAddress']}}</router-link>
+            <v-col cols="12" sm="9" class="item-value">
+              <router-link :to="{name: 'avatar', params:{address: action.firstAvatarAddressInActionArguments}}">{{ action.firstAvatarAddressInActionArguments }}</router-link>
             </v-col>
           </v-row>
-          <v-row class="info-item ma-0">
+          <v-row class="info-item ma-0" v-if="action.values">
             <v-col cols="12" sm="3" class="item-title">Id:</v-col>
-            <v-col cols="12" sm="9" class="item-value" v-if="!loading">
-              {{inspection['id']}}
+            <v-col cols="12" sm="9" class="item-value" v-if="getParsedValues(action.values)['id']">
+              {{getParsedValues(action.values)['id']}}
             </v-col>
           </v-row>
-          <v-row class="info-item ma-0 data-row" v-for="k in Object.keys(inspection)" v-if="['txIdSeq', 'actionCount', 'typeId', 'timestamp', 'avatarAddress', 'id'].indexOf(k) == -1">
+          <v-row class="info-item ma-0 data-row" v-for="k in Object.keys(getParsedValues(action.values))" v-if="['id'].indexOf(k) == -1">
             <v-col cols="12" sm="3" class="item-title">{{k}}:</v-col>
-            <v-col cols="12" sm="9" class="item-value" v-if="!loading">
-              {{inspection[k]}}
+            <v-col cols="12" sm="9" class="item-value">
+              {{getParsedValues(action.values)[k]}}
             </v-col>
           </v-row>
-          <action-descriptor :type="inspection['typeId']" :data="inspection"></action-descriptor>
         </v-card-text>
       </v-card>
     </div>
@@ -178,6 +175,13 @@ export default {
                 }
             })
         },
+        getParsedValues(values) {
+            try {
+                return JSON.parse(values)
+            } catch (e) {
+                return {}
+            }
+        }
     }
 }
 </script>
