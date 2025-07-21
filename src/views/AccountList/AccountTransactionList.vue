@@ -37,7 +37,7 @@ import {download, generateCsv, mkConfig} from "export-to-csv";
 export default {
     name: 'AccountTransactionList',
     components: {ActionsSelect, PageListWrapper, TransactionTable},
-    props: ['address'],
+    props: ['address', 'avatar'],
     mixins: [],
     data() {
         return {
@@ -62,6 +62,9 @@ export default {
                 const pageNum = parseInt(page) || 1
                 const skip = (pageNum - 1) * this.size
                 const filter = { signer: this.address }
+                if (this.avatar) {
+                    filter.avatarAddress = this.avatar
+                }
                 if (action) {
                     filter.actionType = action
                 }

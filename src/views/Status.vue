@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <v-container fluid class="px-0">
     <div class="page-wide-wrap detail-page px-md-12">
       <h1 class="page-title px-4 px-md-0">Delay Status</h1>
@@ -78,4 +78,4 @@ export default {
 </script>
 
 <style scoped lang="scss">
-</style>
+</style> -->

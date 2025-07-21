@@ -20,21 +20,21 @@
             <a depressed class="menu-item" @click="go('transactions')" :class="{'selected': $route.name == 'transactions'}">
               Transactions
             </a>
-            <v-menu offset-y>
+            <!-- <v-menu offset-y>
               <template v-slot:activator="{on,attrs}">
                 <a depressed class="menu-item" :class="{'selected': $route.path.startsWith('/stats')}" v-bind="attrs" v-on="on">
                   Stats
                 </a>
               </template>
-              <div class="px-4 py-2" style="min-width: 150px;">
+              <div class="px-4 py-2" style="min-width: 150px;"> -->
 <!--                <a depressed class="menu-item py-2" @click="go('arena')" style="color: #333;font-size: 0.9em;font-weight: bold;display: flex;align-items: center">-->
 <!--                  <img src="/icons/Item/49900001.png" style="width: 20px;margin-right: 8px;" /> <span>Arena</span>-->
 <!--                </a>-->
-                <a depressed class="menu-item py-2" @click="go('shopHistory')" style="color: #333;font-size: 0.9em;font-weight: bold;display: flex;align-items: center">
+                <!-- <a depressed class="menu-item py-2" @click="go('shopHistory')" style="color: #333;font-size: 0.9em;font-weight: bold;display: flex;align-items: center">
                   <img src="/icons/Item/100000.png" style="width: 20px;margin-right: 8px;" /> <span>Shop History</span>
                 </a>
               </div>
-            </v-menu>
+            </v-menu> -->
           </v-toolbar-items>
           <v-spacer class="hidden-sm-and-up"></v-spacer>
           <v-btn text class="hidden-sm-and-up mr-8" :to="{name: 'index'}"><h3 class="logo theme-font"><img src="/logo_text.png" style="height: 34px;margin-top: 12px" /></h3></v-btn>
