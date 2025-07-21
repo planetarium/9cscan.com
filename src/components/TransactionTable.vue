@@ -52,20 +52,19 @@
               <v-chip label small color="success" :outlined="tx.involved['type'] == 'INVOLVED'" v-if="tx.involved">{{tx.involved['type']}}</v-chip>
             </td>
             <td>
-              <v-btn label small :to="{name: 'transaction', params: {id: tx.id}}" style="text-transform: none;height:26px;font-weight:500;letter-spacing: 0;color:#EBB077 !important;background-color: #FFFAF8 !important;font-weight: 600;padding:0 12px !important;" color="point" rounded outlined v-for="action in tx.actions" v-if="action.inspection" class="darken-1 px-2 mx-1" :target="embedMode ? '_blank' : ''">
-                <v-btn icon x-small color="point" :to="{query: {action: action.inspection['typeId']}, ...((detail || embedMode) ? {} : {name: 'transactions'})}" style="width:12px;" class="mr-1"><v-icon x-small>mdi-filter-variant</v-icon></v-btn>
-                {{action.inspection['typeId']}}
-                <span style="font-size: 10px;opacity:0.8;" v-if="action.inspection['productType']">({{action.inspection['productType']}})</span>
+              <v-btn label small :to="{name: 'transaction', params: {id: tx.id}}" style="text-transform: none;height:26px;font-weight:500;letter-spacing: 0;color:#EBB077 !important;background-color: #FFFAF8 !important;font-weight: 600;padding:0 12px !important;" color="point" rounded outlined v-for="action in tx.object.actions" v-if="action.typeId" class="darken-1 px-2 mx-1" :target="embedMode ? '_blank' : ''">
+                <v-btn icon x-small color="point" :to="{query: {action: action.typeId}, ...((detail || embedMode) ? {} : {name: 'transactions'})}" style="width:12px;" class="mr-1"><v-icon x-small>mdi-filter-variant</v-icon></v-btn>
+                {{action.typeId}}
               </v-btn>
             </td>
             <td v-if="detail">
-              <span v-if="tx?.actions?.[0]?.inspection?.['amount']">
-                <amount-label :asset-data="tx.actions[0].inspection['amount'][0]" :amount="tx.actions[0].inspection['amount'][1]" />
+              <span v-if="tx?.firstNCGAmountInActionArguments">
+                <amount-label :asset-data="'NCG'" :amount="tx.firstNCGAmountInActionArguments" />
               </span>
             </td>
             <td v-if="detail || embedMode">
-              <router-link :to="{name: 'avatar', params: {address: action.inspection['avatarAddress']}}" v-for="action in tx.actions" v-if="action.inspection" class="mx-1" :target="embedMode ? '_blank' : ''">
-                {{action.inspection['avatarAddress'] && action.inspection['avatarAddress'].substr(0, 8)}}
+              <router-link :to="{name: 'avatar', params: {address: tx.firstAvatarAddressInActionArguments}}" v-if="tx.firstAvatarAddressInActionArguments" :target="embedMode ? '_blank' : ''">
+                0x{{tx.firstAvatarAddressInActionArguments && tx.firstAvatarAddressInActionArguments.substr(0, 6)}}
               </router-link>
             </td>
           </tr>

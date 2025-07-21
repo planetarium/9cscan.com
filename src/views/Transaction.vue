@@ -19,7 +19,7 @@
               <div v-if="statusLoading"><v-progress-circular indeterminate class="mr-2" size="12" width="2"></v-progress-circular></div>
               <div v-else>
                 <v-chip label small color="success" v-if="tx.object.txStatus == 'SUCCESS'">SUCCESS</v-chip>
-                <v-chip label small color="error" v-else-if="tx.object.txStatus == 'FAILURE'" >FAILURE</v-chip>
+                <v-chip label small color="error" v-else-if="tx.object.txStatus == 'FAILED'" >FAILED</v-chip>
                 <v-chip label small color="secondary" v-else-if="tx.object.txStatus == 'INVALID' || tx.object.txStatus == null" >NOT FOUND</v-chip>
                 <v-chip label small color="warning" v-else >{{tx.object.txStatus}}</v-chip>
               </div>
@@ -91,7 +91,7 @@
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Avatar:</v-col>
             <v-col cols="12" sm="9" class="item-value">
-              <router-link :to="{name: 'avatar', params:{address: action.firstAvatarAddressInActionArguments}}">{{ action.firstAvatarAddressInActionArguments }}</router-link>
+              <router-link :to="{name: 'avatar', params:{address: tx.firstAvatarAddressInActionArguments}}">0x{{ tx.firstAvatarAddressInActionArguments }}</router-link>
             </v-col>
           </v-row>
           <v-row class="info-item ma-0" v-if="action.values">
