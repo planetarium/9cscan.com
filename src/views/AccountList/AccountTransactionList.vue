@@ -58,6 +58,7 @@ export default {
             this.loading = true
             try {
                 console.log('loadTxs called with:', { page, action, limit })
+                limit = parseInt(limit) || this.size
                 
                 const pageNum = parseInt(page) || 1
                 const skip = (pageNum - 1) * limit
@@ -69,7 +70,7 @@ export default {
                     filter.actionTypeId = action
                 }
                 
-                console.log('Loading transactions:', { skip, size: this.size, filter })
+                console.log('Loading transactions:', { skip, size: this.size, filter, limit, pageNum })
                 const response = await gqlClient.getTransactions(skip, this.size, filter)
                 this.txs = response.items
                 this.hasNextPage = response.pageInfo?.hasNextPage || false
