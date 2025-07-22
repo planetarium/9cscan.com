@@ -67,6 +67,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           path: dist
-          name: Dist
+          name: Dist-${{ matrix.mode }}
           retention-days: 3
           if-no-files-found: error
