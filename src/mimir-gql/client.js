@@ -45,16 +45,6 @@ const makeGraphQLRequest = async (query, variables = {}) => {
 
 
 export const gqlClient = {
-  async getAvatarAddresses(address) {
-    try {
-      const data = await makeGraphQLRequest(queries.GET_AVATAR_ADDRESSES, { address })
-      return data.agent?.avatarAddresses || []
-    } catch (error) {
-      console.error('Error fetching avatar addresses:', error)
-      throw error
-    }
-  },
-
   async getAgent(agentAddress) {
     try {
       const data = await makeGraphQLRequest(queries.GET_AGENT, { agentAddress })

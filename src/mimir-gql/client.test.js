@@ -15,7 +15,6 @@ const mockFetch = jest.fn()
 global.fetch = mockFetch
 
 jest.mock('./queries', () => ({
-  GET_AVATAR_ADDRESSES: 'query GetAvatarAddresses',
   GET_AGENT: 'query GetAgent',
   GET_NCG: 'query GetNCG',
   GET_BLOCKS: 'query GetBlocks',

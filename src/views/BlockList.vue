@@ -47,7 +47,7 @@ export default {
     async created() {
     },
     methods: {
-        async loadBlocks({page, limit}) {
+        async loadBlocks({page, before, limit}) {
             this.showLatest = (!page || page == 1)
             if (this.showLatest) return
 
