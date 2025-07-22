@@ -46,7 +46,6 @@
 </template>
 
 <script>
-import api from "../api"
 import {mapGetters} from "vuex"
 export default {
     name: 'Status',

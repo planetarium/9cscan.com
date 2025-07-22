@@ -19,8 +19,8 @@ export const GET_NCG = `
 `
 
 export const GET_BLOCKS = `
-  query GetBlocks($skip: Int!, $take: Int!) {
-    blocks(skip: $skip, take: $take) {
+  query GetBlocks($skip: Int!, $take: Int!, $miner: Address) {
+    blocks(skip: $skip, take: $take, filter: { miner: $miner }) {
       items {
         id
         object {

@@ -66,7 +66,6 @@
 </template>
 
 <script>
-import api from "../api"
 import {mapGetters} from "vuex"
 import BlockTable from "@/components/BlockTable";
 import TransactionTable from "@/components/TransactionTable";

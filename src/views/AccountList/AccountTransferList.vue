@@ -2,7 +2,7 @@
   <div>
     <page-list-wrapper title=""
                        :items="txs"
-                       :before="before"
+                       :hasNextPage="hasNextPage"
                        @loadItems="loadTxs"
                        :acceptFilter="['t', 'action']"
                        :loading="loading"
@@ -45,7 +45,7 @@ export default {
             csvProgress: 0,
             loading: false,
             txs: [],
-            before: null
+            hasNextPage: false
         }
     },
     computed: {
@@ -55,11 +55,11 @@ export default {
     async created() {
     },
     methods: {
-        async loadTxs({page, action, before}) {
+        async loadTxs({page, action, limit}) {
             this.loading = true
             try {
                 const pageNum = parseInt(page) || 1
-                const skip = (pageNum - 1) * this.size
+                const skip = (pageNum - 1) * limit
                 const filter = { signer: this.normalizeAddress(this.address) }
                 if (action) {
                     filter.actionTypeId = action
@@ -68,11 +68,11 @@ export default {
                 console.log('Loading transfer transactions:', { skip, size: this.size, filter })
                 const response = await gqlClient.getTransactions(skip, this.size, filter)
                 this.txs = response.items
-                this.before = response.pageInfo?.hasNextPage ? response.pageInfo.endCursor : null
+                this.hasNextPage = response.pageInfo?.hasNextPage || false
             } catch (error) {
                 console.error('Failed to load transfer transactions:', error)
                 this.txs = []
-                this.before = null
+                this.hasNextPage = false
             } finally {
                 this.loading = false
             }

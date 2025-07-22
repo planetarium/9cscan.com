@@ -6,7 +6,7 @@
         <v-col class="px-0">
           <page-list-wrapper title=""
                              :items="showLatest ? latestTransactions : txs"
-                             :before="showLatest ? latestTransactionsBefore : before"
+                             :hasNextPage="showLatest ? latestTransactionsBefore : hasNextPage"
                              @loadItems="loadTxs"
                              :acceptFilter="['action']"
                              :loading="showLatest ? loading : loadings.txs"
@@ -41,7 +41,7 @@ export default {
                 txs: false
             },
             txs: [],
-            before: null,
+            hasNextPage: false,
         }
     },
     computed: {
@@ -50,7 +50,7 @@ export default {
     async created() {
     },
     methods: {
-        async loadTxs({page, action, before}) {
+        async loadTxs({page, action}) {
             this.showLatest = !action && (!page || page == 1)
             if (this.showLatest) return
 
@@ -66,11 +66,11 @@ export default {
                 console.log('Loading transactions:', { skip, size: this.size, filter })
                 const response = await gqlClient.getTransactions(skip, this.size, filter)
                 this.txs = response.items
-                this.before = response.pageInfo?.hasNextPage ? response.pageInfo.endCursor : null
+                this.hasNextPage = response.pageInfo?.hasNextPage || false
             } catch (error) {
                 console.error('Failed to load transactions:', error)
                 this.txs = []
-                this.before = null
+                this.hasNextPage = false
             } finally {
                 this.loadings.txs = false
             }

@@ -75,9 +75,10 @@ export const gqlClient = {
     }
   },
 
-  async getBlocks(skip, take) {
+  async getBlocks(skip, take, filters = {}) {
     try {
-      const data = await makeGraphQLRequest(queries.GET_BLOCKS, { skip, take })
+      const variables = { skip, take, ...filters }
+      const data = await makeGraphQLRequest(queries.GET_BLOCKS, variables)
       return new PaginatedResponseModel(data.blocks, BlockModel)
     } catch (error) {
       console.error('Error fetching blocks:', error)

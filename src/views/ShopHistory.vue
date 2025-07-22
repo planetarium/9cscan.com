@@ -34,7 +34,6 @@
 </template>
 
 <script>
-import api from "../api"
 import {mapGetters} from "vuex"
 import TransactionTable from "@/components/TransactionTable";
 import PageListWrapper from "@/components/PageListWrapper";

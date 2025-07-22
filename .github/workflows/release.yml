@@ -1,0 +1,67 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    tags: ["*"]
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        mode:
+          - heimdall
+          - odin
+
+    environment:
+      name: ${{ github.ref_type == 'tag' && matrix.mode || format('internal-{0}', matrix.mode) }}
+
+    steps:
+      - uses: actions/checkout@v3.6.0
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: GitHubActions-${{ github.run_id }}
+          role-duration-seconds: 3000
+          aws-region: ap-northeast-2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install
+        run: npm install
+
+      - name: Make .env
+        run: |
+          echo "VUE_APP_MODE=PRODUCTION" >> .env
+          echo "VUE_APP_NETWORK_NAME=${{ matrix.mode }}" >> .env
+          echo "VUE_APP_API_HOST=${{ vars.MIMIR_HOST }}" >> .env
+          echo "VUE_APP_9C_ASSET_HOST=${{ vars.ASSET_HOST }}" >> .env
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload to S3
+        run: |
+          aws s3 cp ./dist ${{ vars.S3_URI }} --recursive
+
+      - uses: actions/upload-artifact@v3.1.2
+        with:
+          path: dist
+          name: Dist
+          retention-days: 3
+          if-no-files-found: error
