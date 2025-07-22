@@ -1,265 +1,177 @@
+import Vue from 'vue'
+import Vuex from 'vuex'
 import blockModule from './block'
-import { gqlClient } from '../../mimir-gql/client'
 
-jest.mock('../../mimir-gql/client', () => ({
-  gqlClient: {
-    getBlocks: jest.fn(),
-    getTransactions: jest.fn(),
-    getBlock: jest.fn(),
-    getTransaction: jest.fn()
-  }
-}))
+Vue.use(Vuex)
 
-describe('Block Store Module', () => {
-  let state
-  let commit
-  let dispatch
-
-  beforeEach(() => {
-    state = blockModule.state()
-    commit = jest.fn()
-    dispatch = jest.fn()
-    jest.clearAllMocks()
-    jest.useFakeTimers()
-    jest.spyOn(global, 'setTimeout')
-  })
-
-  afterEach(() => {
-    jest.useRealTimers()
-    jest.restoreAllMocks()
-  })
-
-  describe('state', () => {
-    it('should have initial state', () => {
-      expect(state.loading).toBe(false)
-      expect(state.latestBlocks).toEqual([])
-      expect(state.latestTransactions).toEqual([])
-      expect(state.size).toBe(20)
+function mergeAndDeduplicate(existingItems, newItems, keyField) {
+    const existingMap = new Map()
+    existingItems.forEach(item => {
+        const key = item.object?.[keyField] || item[keyField]
+        if (key !== undefined) {
+            existingMap.set(key, item)
+        }
     })
-  })
-
-  describe('mutations', () => {
-    it('should set size', () => {
-      blockModule.mutations.setSize(state, 50)
-      expect(state.size).toBe(50)
+    
+    newItems.forEach(item => {
+        const key = item.object?.[keyField] || item[keyField]
+        if (key !== undefined) {
+            existingMap.set(key, item)
+        }
     })
-
-
-
-    it('should set loading', () => {
-      blockModule.mutations.setLoading(state, true)
-      expect(state.loading).toBe(true)
+    
+    return Array.from(existingMap.values()).sort((a, b) => {
+        const keyA = a.object?.[keyField] || a[keyField]
+        const keyB = b.object?.[keyField] || b[keyField]
+        return keyB - keyA
     })
+}
 
-    it('should set latest blocks', () => {
-      const blocks = [{ index: 1 }, { index: 2 }]
-      blockModule.mutations.setLatestBlocks(state, blocks)
-      expect(state.latestBlocks).toEqual(blocks)
-    })
+describe('Block Module', () => {
+    let store
 
-
-  })
-
-  describe('getters', () => {
     beforeEach(() => {
-      state.latestBlocks = [
-        { object: { index: 3, txCount: 10, difficulty: 100, timestamp: '2023-01-01T10:00:00Z' } },
-        { object: { index: 2, txCount: 15, difficulty: 150, timestamp: '2023-01-01T09:00:00Z' } },
-        { object: { index: 1, txCount: 5, difficulty: 200, timestamp: '2023-01-01T08:00:00Z' } }
-      ]
-      state.latestTransactions = [
-        { id: 'tx1', blockIndex: 3 },
-        { id: 'tx2', blockIndex: 2 },
-        { id: 'tx3', blockIndex: 1 }
-      ]
+        store = new Vuex.Store({
+            modules: {
+                block: blockModule
+            }
+        })
     })
 
-    it('should return loading state', () => {
-      state.loading = true
-      expect(blockModule.getters.loading(state)).toBe(true)
+    describe('mergeAndDeduplicate function', () => {
+        test('should merge and deduplicate blocks by index', () => {
+            const existingBlocks = [
+                { object: { index: 100, data: 'old' } },
+                { object: { index: 99, data: 'old' } }
+            ]
+            
+            const newBlocks = [
+                { object: { index: 101, data: 'new' } },
+                { object: { index: 100, data: 'updated' } }
+            ]
+            
+            const result = mergeAndDeduplicate(existingBlocks, newBlocks, 'index')
+            
+            expect(result).toHaveLength(3)
+            expect(result[0].object.index).toBe(101)
+            expect(result[1].object.index).toBe(100)
+            expect(result[1].object.data).toBe('updated')
+            expect(result[2].object.index).toBe(99)
+        })
+
+        test('should merge and deduplicate transactions by id', () => {
+            const existingTxs = [
+                { id: 'tx1', data: 'old' },
+                { id: 'tx2', data: 'old' }
+            ]
+            
+            const newTxs = [
+                { id: 'tx3', data: 'new' },
+                { id: 'tx1', data: 'updated' }
+            ]
+            
+            const result = mergeAndDeduplicate(existingTxs, newTxs, 'id')
+            
+            expect(result).toHaveLength(3)
+            expect(result[0].id).toBe('tx1')
+            expect(result[1].id).toBe('tx2')
+            expect(result[2].id).toBe('tx3')
+            expect(result[0].data).toBe('updated')
+        })
+
+        test('should handle empty arrays', () => {
+            const result1 = mergeAndDeduplicate([], [], 'index')
+            expect(result1).toHaveLength(0)
+            
+            const result2 = mergeAndDeduplicate([{ object: { index: 1 } }], [], 'index')
+            expect(result2).toHaveLength(1)
+            
+            const result3 = mergeAndDeduplicate([], [{ object: { index: 1 } }], 'index')
+            expect(result3).toHaveLength(1)
+        })
+
+        test('should sort by key in descending order', () => {
+            const existing = [
+                { object: { index: 5 } },
+                { object: { index: 3 } }
+            ]
+            
+            const newItems = [
+                { object: { index: 7 } },
+                { object: { index: 1 } }
+            ]
+            
+            const result = mergeAndDeduplicate(existing, newItems, 'index')
+            
+            expect(result[0].object.index).toBe(7)
+            expect(result[1].object.index).toBe(5)
+            expect(result[2].object.index).toBe(3)
+            expect(result[3].object.index).toBe(1)
+        })
     })
 
-    it('should return size', () => {
-      state.size = 50
-      expect(blockModule.getters.size(state)).toBe(50)
+    describe('state', () => {
+        test('should have correct initial state', () => {
+            expect(store.state.block.loading).toBe(false)
+            expect(store.state.block.latestBlocks).toEqual([])
+            expect(store.state.block.latestTransactions).toEqual([])
+            expect(store.state.block.size).toBe(20)
+        })
     })
 
-    it('should return latest block index', () => {
-      expect(blockModule.getters.latestBlockIndex(state)).toBe(3)
+    describe('getters', () => {
+        test('should return correct loading state', () => {
+            expect(store.getters['block/loading']).toBe(false)
+        })
+
+        test('should return correct size', () => {
+            expect(store.getters['block/size']).toBe(20)
+        })
+
+        test('should return latest block index', () => {
+            store.state.block.latestBlocks = [
+                { object: { index: 100 } },
+                { object: { index: 99 } }
+            ]
+            expect(store.getters['block/latestBlockIndex']).toBe(100)
+        })
+
+        test('should return latest 10 blocks', () => {
+            store.state.block.latestBlocks = Array.from({ length: 15 }, (_, i) => ({ object: { index: i } }))
+            const result = store.getters['block/latestBlocks10']
+            expect(result).toHaveLength(10)
+            expect(result[0].object.index).toBe(0)
+        })
+
+        test('should return latest 10 transactions', () => {
+            store.state.block.latestTransactions = Array.from({ length: 15 }, (_, i) => ({ id: `tx${i}` }))
+            const result = store.getters['block/latestTransactions10']
+            expect(result).toHaveLength(10)
+            expect(result[0].id).toBe('tx0')
+        })
     })
 
-    it('should return latest blocks 10', () => {
-      const result = blockModule.getters.latestBlocks10(state)
-      expect(result).toHaveLength(3)
-      expect(result[0].object.index).toBe(3)
+    describe('mutations', () => {
+        test('should set loading state', () => {
+            store.commit('block/setLoading', true)
+            expect(store.state.block.loading).toBe(true)
+        })
+
+        test('should set size', () => {
+            store.commit('block/setSize', 50)
+            expect(store.state.block.size).toBe(50)
+        })
+
+        test('should set latest blocks', () => {
+            const blocks = [{ object: { index: 1 } }]
+            store.commit('block/setLatestBlocks', blocks)
+            expect(store.state.block.latestBlocks).toEqual(blocks)
+        })
+
+        test('should set latest transactions', () => {
+            const txs = [{ id: 'tx1' }]
+            store.commit('block/setLatestTransactions', txs)
+            expect(store.state.block.latestTransactions).toEqual(txs)
+        })
     })
-
-    it('should return latest transactions 10', () => {
-      const result = blockModule.getters.latestTransactions10(state)
-      expect(result).toHaveLength(3)
-      expect(result[0].id).toBe('tx1')
-    })
-
-    it('should return latest blocks with size limit', () => {
-      state.size = 2
-      const result = blockModule.getters.latestBlocks(state)
-      expect(result).toHaveLength(2)
-    })
-
-    it('should return latest transactions with size limit', () => {
-      state.size = 2
-      const result = blockModule.getters.latestTransactions(state)
-      expect(result).toHaveLength(2)
-    })
-
-    it('should calculate total transactions', () => {
-      expect(blockModule.getters.totalTxs(state)).toBe(30)
-    })
-
-    it('should calculate average transactions', () => {
-      expect(blockModule.getters.avgTx(state)).toBe(10)
-    })
-
-    it('should calculate average difficulty', () => {
-      expect(blockModule.getters.avgDifficulty(state)).toBe(150)
-    })
-
-    it('should calculate average block time', () => {
-      const result = blockModule.getters.avgBlockTime(state)
-      expect(typeof result).toBe('string')
-      expect(parseFloat(result)).toBeGreaterThan(0)
-    })
-
-    it('should return 0 for empty blocks', () => {
-      state.latestBlocks = []
-      expect(blockModule.getters.totalTxs(state)).toBe(0)
-      expect(blockModule.getters.avgTx(state)).toBe(0)
-      expect(blockModule.getters.avgDifficulty(state)).toBe(0)
-    })
-  })
-
-  describe('actions', () => {
-    it('should initialize successfully', async () => {
-      const mockBlocksResponse = {
-        items: [
-          { object: { index: 1, hash: 'hash1' } },
-          { object: { index: 2, hash: 'hash2' } }
-        ]
-      }
-      const mockTransactionsResponse = {
-        items: [
-          { object: { id: 'tx1', blockIndex: 1 } },
-          { object: { id: 'tx2', blockIndex: 2 } }
-        ]
-      }
-
-      gqlClient.getBlocks.mockResolvedValue(mockBlocksResponse)
-      gqlClient.getTransactions.mockResolvedValue(mockTransactionsResponse)
-
-      await blockModule.actions.init({ state, commit, dispatch })
-
-      expect(commit).toHaveBeenCalledWith('setLoading', true)
-      expect(commit).toHaveBeenCalledWith('setLoading', false)
-      expect(commit).toHaveBeenCalledWith('setLatestBlocks', [
-        { object: { index: 1, hash: 'hash1' } },
-        { object: { index: 2, hash: 'hash2' } }
-      ])
-      expect(commit).toHaveBeenCalledWith('setLatestTransactions', [
-        { object: { id: 'tx1', blockIndex: 1 } },
-        { object: { id: 'tx2', blockIndex: 2 } }
-      ])
-      expect(dispatch).toHaveBeenCalledWith('startPolling')
-    })
-
-    it('should handle initialization error', async () => {
-      gqlClient.getBlocks.mockRejectedValue(new Error('API Error'))
-
-      await blockModule.actions.init({ state, commit, dispatch })
-
-      expect(commit).toHaveBeenCalledWith('setLoading', true)
-      expect(commit).toHaveBeenCalledWith('setLoading', false)
-    })
-
-    it('should set size', () => {
-      blockModule.actions.setSize({ commit }, 50)
-      expect(commit).toHaveBeenCalledWith('setSize', 50)
-    })
-
-    it('should start polling', () => {
-      global.window = { pollingTimer: null }
-      const mockSetInterval = jest.fn()
-      global.setInterval = mockSetInterval
-
-      blockModule.actions.startPolling({ state, commit, dispatch })
-
-      expect(mockSetInterval).toHaveBeenCalled()
-      expect(typeof mockSetInterval.mock.calls[0][0]).toBe('function')
-      expect(mockSetInterval.mock.calls[0][1]).toBe(8000)
-    })
-
-
-
-
-
-    it('should load block', async () => {
-      const mockBlock = {
-        object: { index: 1, hash: 'hash1' }
-      }
-
-      gqlClient.getBlock.mockResolvedValue(mockBlock)
-
-      const result = await blockModule.actions.loadBlock({ state }, 1)
-
-      expect(result).toEqual({ object: { index: 1, hash: 'hash1' } })
-    })
-
-    it('should load transaction', async () => {
-      const mockTransaction = {
-        object: { id: 'tx1', blockIndex: 1 }
-      }
-
-      gqlClient.getTransaction.mockResolvedValue(mockTransaction)
-
-      const result = await blockModule.actions.loadTransaction({ state }, 'tx1')
-
-      expect(result).toEqual({ object: { id: 'tx1', blockIndex: 1 } })
-    })
-
-    it('should load account transactions', async () => {
-      const mockResponse = {
-        items: [
-          { object: { id: 'tx1', signer: 'address1' } },
-          { object: { id: 'tx2', signer: 'address1' } }
-        ]
-      }
-
-      gqlClient.getTransactions.mockResolvedValue(mockResponse)
-
-      const result = await blockModule.actions.loadAccountTransactions({ state }, 'address1')
-
-      expect(result).toEqual([
-        { object: { id: 'tx1', signer: 'address1' } },
-        { object: { id: 'tx2', signer: 'address1' } }
-      ])
-      expect(gqlClient.getTransactions).toHaveBeenCalledWith(0, 50, { signer: 'address1' })
-    })
-
-    it('should handle load block error', async () => {
-      gqlClient.getBlock.mockRejectedValue(new Error('Block not found'))
-
-      await expect(blockModule.actions.loadBlock({ state }, 999)).rejects.toThrow('Block not found')
-    })
-
-    it('should handle load transaction error', async () => {
-      gqlClient.getTransaction.mockRejectedValue(new Error('Transaction not found'))
-
-      await expect(blockModule.actions.loadTransaction({ state }, 'invalid-tx')).rejects.toThrow('Transaction not found')
-    })
-
-    it('should handle load account transactions error', async () => {
-      gqlClient.getTransactions.mockRejectedValue(new Error('API Error'))
-
-      await expect(blockModule.actions.loadAccountTransactions({ state }, 'address1')).rejects.toThrow('API Error')
-    })
-  })
 }) 

@@ -1,5 +1,28 @@
 import { gqlClient } from "../../mimir-gql/client"
 
+function mergeAndDeduplicate(existingItems, newItems, keyField) {
+    const existingMap = new Map()
+    existingItems.forEach(item => {
+        const key = item.object?.[keyField] || item[keyField]
+        if (key !== undefined) {
+            existingMap.set(key, item)
+        }
+    })
+    
+    newItems.forEach(item => {
+        const key = item.object?.[keyField] || item[keyField]
+        if (key !== undefined) {
+            existingMap.set(key, item)
+        }
+    })
+    
+    return Array.from(existingMap.values()).sort((a, b) => {
+        const keyA = a.object?.[keyField] || a[keyField]
+        const keyB = b.object?.[keyField] || b[keyField]
+        return keyB - keyA
+    })
+}
+
 export default {
     namespaced: true,
     state() {
@@ -79,14 +102,17 @@ export default {
             clearInterval(window.pollingTimer)
             window.pollingTimer = setInterval(async () => {
                 try {
-                    const blocksResponse = await gqlClient.getBlocks(0, 100)
+                    const blocksResponse = await gqlClient.getBlocks(0, 5)
                     const transactionsResponse = await gqlClient.getTransactions(0, state.size)
                     
-                    const blocks = blocksResponse.items
-                    const transactions = transactionsResponse.items
+                    const newBlocks = blocksResponse.items
+                    const newTransactions = transactionsResponse.items
                     
-                    commit('setLatestBlocks', blocks)
-                    commit('setLatestTransactions', transactions)
+                    const mergedBlocks = mergeAndDeduplicate(state.latestBlocks, newBlocks, 'index')
+                    const mergedTransactions = mergeAndDeduplicate(state.latestTransactions, newTransactions, 'id')
+                    
+                    commit('setLatestBlocks', mergedBlocks)
+                    commit('setLatestTransactions', mergedTransactions)
                 } catch (error) {
                     console.error('Failed to poll data:', error)
                 }
