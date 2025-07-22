@@ -65,24 +65,6 @@ export const gqlClient = {
     }
   },
 
-  async getAvatarsInformation(avatarAddress1, avatarAddress2, avatarAddress3) {
-    try {
-      const data = await makeGraphQLRequest(queries.GET_AVATARS_INFORMATION, {
-        avatarAddress1,
-        avatarAddress2,
-        avatarAddress3
-      })
-      return {
-        avatar1: data.avatar1 ? new AvatarModel(data.avatar1) : null,
-        avatar2: data.avatar2 ? new AvatarModel(data.avatar2) : null,
-        avatar3: data.avatar3 ? new AvatarModel(data.avatar3) : null
-      }
-    } catch (error) {
-      console.error('Error fetching avatars information:', error)
-      throw error
-    }
-  },
-
   async getNCG(address) {
     try {
       const data = await makeGraphQLRequest(queries.GET_NCG, { address })

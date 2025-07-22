@@ -17,7 +17,6 @@ global.fetch = mockFetch
 jest.mock('./queries', () => ({
   GET_AVATAR_ADDRESSES: 'query GetAvatarAddresses',
   GET_AGENT: 'query GetAgent',
-  GET_AVATARS_INFORMATION: 'query GetAvatarsInformation',
   GET_NCG: 'query GetNCG',
   GET_BLOCKS: 'query GetBlocks',
   GET_BLOCK: 'query GetBlock',
@@ -114,34 +113,7 @@ describe('GraphQL Client', () => {
     })
   })
 
-  describe('getAvatarsInformation', () => {
-    it('should fetch avatars information successfully', async () => {
-      const mockData = {
-        avatar1: { address: 'addr1', name: 'Avatar1', level: 10 },
-        avatar2: { address: 'addr2', name: 'Avatar2', level: 20 },
-        avatar3: { address: 'addr3', name: 'Avatar3', level: 30 }
-      }
 
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({ data: mockData })
-      })
-
-      const result = await gqlClient.getAvatarsInformation('addr1', 'addr2', 'addr3')
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: expect.stringContaining('query GetAvatarsInformation')
-        })
-      )
-      expect(result.avatar1).toBeInstanceOf(AvatarModel)
-      expect(result.avatar2).toBeInstanceOf(AvatarModel)
-      expect(result.avatar3).toBeInstanceOf(AvatarModel)
-    })
-  })
 
   describe('getNCG', () => {
     it('should fetch NCG balance successfully', async () => {

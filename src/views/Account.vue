@@ -25,7 +25,7 @@
             <v-col cols="12" sm="3" class="item-title"><span class="text-no-wrap">Nine Chronicles</span> Avatar:</v-col>
             <v-col cols="12" sm="9" class="item-value" v-if="!loading && !notFound">
               <div v-for="{avatar} in currentAvatars" :key="avatar.address">
-                <router-link :to="{name:'avatar', params: {address:normalizeAddress(avatar.address)}}">{{formatAddress(avatar.address)}} ({{avatar.name}})</router-link>
+                <router-link :to="{name:'avatar', params: {address:normalizeAddress(avatar.address)}}">{{normalizeAddress(avatar.address)}} ({{avatar.name}})</router-link>
               </div>
             </v-col>
           </v-row>
@@ -133,17 +133,16 @@ export default {
                     
                     if (agent.avatarAddresses && agent.avatarAddresses.length > 0) {
                         const avatarAddresses = agent.avatarAddresses.slice(0, 3)
-                        const avatarsInfo = await gqlClient.getAvatarsInformation(
-                            avatarAddresses[0]?.value || null,
-                            avatarAddresses[1]?.value || null,
-                            avatarAddresses[2]?.value || null
+                        const avatarsInfoPromises = avatarAddresses.map(addr => 
+                            gqlClient.getAvatar(addr.value).catch(() => null)
                         )
+                        const avatarsInfo = await Promise.all(avatarsInfoPromises)
                         
                         this.account[0].avatarAddresses = this.account[0].avatarAddresses.map((addr, index) => {
-                            const avatarInfo = [avatarsInfo.avatar1, avatarsInfo.avatar2, avatarsInfo.avatar3][index]
+                            const avatarInfo = avatarsInfo[index]
                             return {
                                 ...addr,
-                                name: avatarInfo?.name || addr.key
+                                name: avatarInfo?.avatar?.name || addr.key
                             }
                         })
                     }

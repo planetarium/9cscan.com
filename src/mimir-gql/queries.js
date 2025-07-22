@@ -1,14 +1,3 @@
-export const GET_AVATAR_ADDRESSES = `
-  query GetAvatarAddresses($address: Address!) {
-    agent(address: $address) {
-      avatarAddresses {
-        key
-        value
-      }
-    }
-  }
-`
-
 export const GET_AGENT = `
   query GetAgent($agentAddress: Address!) {
     agent(address: $agentAddress) {
@@ -19,31 +8,6 @@ export const GET_AGENT = `
         key
         value
       }
-    }
-  }
-`
-
-export const GET_AVATARS_INFORMATION = `
-  fragment AvatarFields on AvatarState {
-    address
-    name
-    level
-  }
-
-  query GetAvatarsInformation(
-    $avatarAddress1: Address!
-    $avatarAddress2: Address!
-    $avatarAddress3: Address!
-  ) {
-    avatar1: avatar(address: $avatarAddress1) {
-      ...AvatarFields
-    }
-
-    avatar2: avatar(address: $avatarAddress2) {
-      ...AvatarFields
-    }
-    avatar3: avatar(address: $avatarAddress3) {
-      ...AvatarFields
     }
   }
 `

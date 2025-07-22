@@ -31,7 +31,7 @@
               </v-row>
               <v-row class="info-item ma-0">
                 <v-col cols="12" md="3" class="item-title">Account:</v-col>
-                <v-col cols="12" md="9" class="item-value"><router-link :to="{name: 'account', params: {address:normalizeAddress(account.avatar.agentAddress)}}">{{formatAddress(account.avatar.agentAddress)}}</router-link></v-col>
+                <v-col cols="12" md="9" class="item-value"><router-link :to="{name: 'account', params: {address:normalizeAddress(account.avatar.agentAddress)}}">{{normalizeAddress(account.avatar.agentAddress)}}</router-link></v-col>
               </v-row>
               <v-row class="info-item ma-0">
                 <v-col cols="12" md="3" class="item-title">CharacterId:</v-col>

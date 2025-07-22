@@ -37,7 +37,7 @@
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Mined by:</v-col>
             <v-col cols="12" sm="9" class="item-value" v-if="!loading">
-              <router-link :to="{name: 'account', query: {t: 'mined'}, params: {address: normalizeAddress(block.miner)}}">{{formatAddress(block.miner)}}</router-link>
+              <router-link :to="{name: 'account', query: {t: 'mined'}, params: {address: normalizeAddress(block.miner)}}">{{normalizeAddress(block.miner)}}</router-link>
             </v-col>
           </v-row>
           <v-row class="info-item ma-0">
