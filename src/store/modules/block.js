@@ -40,7 +40,7 @@ export default {
         latestBlocks10: state => state.latestBlocks.slice(0, 10),
         latestTransactions10: state => state.latestTransactions.slice(0, 10),
         latestBlocks: state => state.latestBlocks.slice(0, state.size),
-        latestBlocksBefore: state => state.latestBlocks.length >= state.size && state.latestBlocks[state.size - 1].index || null,
+        latestBlocksBefore: state => state.latestBlocks.length >= state.size,
         latestTransactions: state => state.latestTransactions.slice(0, state.size),
         latestTransactionsBefore: state => {
             let txs = state.latestTransactions.slice(0, state.size)

@@ -25,8 +25,9 @@
           items: {
               type: Array
           },
-          before: {
-              default: null
+          hasNextPage: {
+              type: Boolean,
+              default: false
           },
           loading: {
               type: Boolean,
@@ -54,16 +55,16 @@
           return {
               page: 1,
               filter: {},
-              prevs: [],
+              pageHistory: [],
           }
       },
       computed: {
           ...mapGetters('Block', ['size']),
           canPrev() {
-              return this.prevs.length >= (this.page == 2 ? 1 : 2)
+              return this.page > 1
           },
           canNext() {
-              return this.size == this.items.length && this.before != null
+              return this.hasNextPage
           }
       },
       beforeDestroy() {
@@ -76,8 +77,7 @@
   
           this.resetFilter()
   
-          if (this.filter.page && this.filter.before) {
-              this.prevs.push(this.filter.before)
+          if (this.filter.page) {
               this.load()
           } else {
               this.goFirst()
@@ -87,7 +87,8 @@
           async resetFilter() {
               this.filter = {};
               this.page = 1;
-              ['page', 'before', 'limit', ...this.acceptFilter].forEach(f => {
+              this.pageHistory = [];
+              ['page', 'limit', ...this.acceptFilter].forEach(f => {
                   if (this.$route.query[f] != undefined) {
                       Vue.set(this.filter, f, this.$route.query[f])
                   }
@@ -106,36 +107,34 @@
                   }
               }
   
-  
               this.$router[this.routerReplace ? 'replace':'push']({query:this.filter}).catch(() => {
                   this.$emit('loadItems', this.$route.query)
               })
           },
           goFirst() {
-              this.prevs = []
+              this.pageHistory = []
               this.page = 1
               this.filter.limit = this.size
               this.filter.page = this.page
-              delete this.filter.before
               this.load()
           },
           next() {
               if (this.loading) return
-              this.prevs.push(this.before)
+              this.pageHistory.push(this.page)
               this.page = Number(this.page || 1) + 1
               this.filter.limit = this.size
               this.filter.page = this.page
-              this.filter.before = this.before
               this.load()
           },
           prev() {
               if (this.loading) return
-              this.prevs.pop()
-              this.page -= 1
-              this.filter.limit = this.size
-              this.filter.before = _.last(this.prevs)
-              this.filter.page -= 1
-              this.load()
+              const prevPage = this.pageHistory.pop()
+              if (prevPage) {
+                  this.page = prevPage
+                  this.filter.limit = this.size
+                  this.filter.page = this.page
+                  this.load()
+              }
           },
           changeSize(size, noReset = false) {
               this.filter.limit = size
