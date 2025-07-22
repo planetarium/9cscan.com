@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - ci-test
     tags: ["*"]
 
 permissions:
@@ -39,7 +40,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 16
           cache: "npm"
 
       - name: Install
@@ -49,23 +50,23 @@ jobs:
         run: |
           echo "VUE_APP_MODE=PRODUCTION" >> .env
           echo "VUE_APP_NETWORK_NAME=${{ matrix.mode }}" >> .env
-          echo "VUE_APP_API_HOST=${{ vars.MIMIR_HOST }}" >> .env
-          echo "VUE_APP_9C_ASSET_HOST=${{ vars.ASSET_HOST }}" >> .env
+          echo "VUE_APP_API_HOST=${{ secrets.MIMIR_HOST }}" >> .env
+          echo "VUE_APP_9C_ASSET_HOST=${{ secrets.ASSET_HOST }}" >> .env
 
       - name: Build
         run: npm run build
 
       - name: Upload to S3
         run: |
-          aws s3 cp ./dist ${{ vars.S3_URI }} --recursive
+          aws s3 cp ./dist ${{ secrets.S3_URI }} --recursive
 
       - name: Invalidate CloudFront Cache
         run: |
-          aws cloudfront create-invalidation --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
 
       - uses: actions/upload-artifact@v4
         with:
           path: dist
-          name: Dist
+          name: Dist-${{ matrix.mode }}
           retention-days: 3
           if-no-files-found: error
