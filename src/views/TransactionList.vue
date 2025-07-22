@@ -60,7 +60,7 @@ export default {
                 const skip = (pageNum - 1) * this.size
                 const filter = {}
                 if (action) {
-                    filter.actionType = action
+                    filter.actionTypeId = action
                 }
                 
                 console.log('Loading transactions:', { skip, size: this.size, filter })

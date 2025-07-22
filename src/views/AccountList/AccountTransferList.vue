@@ -62,7 +62,7 @@ export default {
                 const skip = (pageNum - 1) * this.size
                 const filter = { signer: this.normalizeAddress(this.address) }
                 if (action) {
-                    filter.actionType = action
+                    filter.actionTypeId = action
                 }
                 
                 console.log('Loading transfer transactions:', { skip, size: this.size, filter })
@@ -84,7 +84,7 @@ export default {
           for (let i = 0; i < 100; i++) { //max 10K
             const filter = { signer: this.normalizeAddress(this.address) }
             if (action) {
-                filter.actionType = action
+                filter.actionTypeId = action
             }
             
             const response = await gqlClient.getTransactions(skip, 100, filter)

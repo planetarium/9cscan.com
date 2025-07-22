@@ -59,6 +59,10 @@ Vue.prototype.moment = moment
 for (let name in utils) {
   Vue.prototype[name] = utils[name]
 }
+
+// Initialize action types
+store.dispatch('ActionTypes/initActionTypes')
+
 new Vue({
   vuetify: new Vuetify({
     theme: {

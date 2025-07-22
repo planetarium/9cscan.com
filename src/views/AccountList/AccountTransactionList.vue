@@ -66,7 +66,7 @@ export default {
                     filter.avatarAddress = this.normalizeAddress(this.avatar)
                 }
                 if (action) {
-                    filter.actionType = action
+                    filter.actionTypeId = action
                 }
                 
                 console.log('Loading transactions:', { skip, size: this.size, filter })
@@ -88,7 +88,7 @@ export default {
           for (let i = 0; i < 100; i++) { //max 10K
             const filter = { signer: this.normalizeAddress(this.address) }
             if (action) {
-                filter.actionType = action
+                filter.actionTypeId = action
             }
             
             const response = await gqlClient.getTransactions(skip, 100, filter)

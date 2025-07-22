@@ -35,23 +35,19 @@ export default {
     data() {
         return {
             onoff: false,
-            items: [],
             search: '',
         }
     },
     computed: {
+        items() {
+            return this.$store.getters['ActionTypes/actionTypeIds'];
+        },
         filteredItems() {
             if (this.search) {
                 return this.items.filter(item => item.indexOf(this.search) >= 0).map(item => ({value: item, label: item.replace(this.search, `<b>${this.search}</b>`)}))
             }
             return this.items.map(item => ({value: item, label: item}))
         },
-    },
-    async created() {
-        const actionTypeIdsResponse = await fetch(`https://9cscan.com/all_action_type_ids.txt`);
-        const actionTypeIds = (await actionTypeIdsResponse.text()).split('\n');
-
-        this.items = actionTypeIds;
     },
     methods: {
         open() {
