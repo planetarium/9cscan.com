@@ -28,7 +28,7 @@
             <td class="profile">
               <img :src="participant.imageUrl">
               <div class="profile-info">
-                <p class="name">{{ participant.name }}#{{ participant.avatarAddress.slice(2, 6).toUpperCase() }}</p>
+                <p class="name">{{ participant.name }}#{{ formatAddress(participant.avatarAddress).slice(2, 6).toUpperCase() }}</p>
                 <p class="level">Lv. {{ participant.avatarLevel }}</p>
               </div>
             </td>

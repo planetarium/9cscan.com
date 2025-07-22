@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <v-container fluid class="px-0 py-0">
     <div class="page-wide-wrap detail-page px-md-12">
       <h1 class="page-title px-4 px-md-0">Shop History</h1>
@@ -34,7 +34,6 @@
 </template>
 
 <script>
-import api from "../api"
 import {mapGetters} from "vuex"
 import TransactionTable from "@/components/TransactionTable";
 import PageListWrapper from "@/components/PageListWrapper";
@@ -64,15 +63,9 @@ export default {
     computed: {
         ...mapGetters('Block', ['size', 'loading', 'latestTransactions', 'latestTransactionsBefore'])
     },
-    beforeDestroy() {
-        this.$store.dispatch('Block/syncTx', false)
-    },
     async created() {
     },
     methods: {
-      $onLoaded() {
-        this.$store.dispatch('Block/syncTx', true)
-      },
       async loadHistory({page, itemId, to, from, type, grade, level, ticker, options, before}) {
         this.loadings.items = true
         try {
@@ -123,4 +116,4 @@ export default {
 </script>
 
 <style scoped lang="scss">
-</style>
+</style> -->

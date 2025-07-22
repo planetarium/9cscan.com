@@ -1,10 +1,10 @@
-<template>
+<!-- <template>
   <v-container fluid class="px-0">
     <div class="page-wide-wrap detail-page px-md-12">
       <h1 class="page-title px-4 px-md-0">Delay Status</h1>
       <v-card outlined class="mt-4 mb-8" v-if="latestBlocks && latestBlocks[0]">
         <v-card-title>
-          {{moment(latestBlocks[0].timestamp).fromNow()}}
+          {{moment(latestBlocks[0].object.timestamp).fromNow()}}
         </v-card-title>
       </v-card>
 
@@ -46,7 +46,6 @@
 </template>
 
 <script>
-import api from "../api"
 import {mapGetters} from "vuex"
 export default {
     name: 'Status',
@@ -78,4 +77,4 @@ export default {
 </script>
 
 <style scoped lang="scss">
-</style>
+</style> -->

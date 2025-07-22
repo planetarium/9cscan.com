@@ -6,7 +6,7 @@
         <v-col class="px-0">
           <page-list-wrapper title=""
                              :items="showLatest ? latestBlocks : blocks"
-                             :before="showLatest ? latestBlocksBefore : before"
+                             :hasNextPage="showLatest ? latestBlocksBefore : hasNextPage"
                              @loadItems="loadBlocks"
                              :loading="showLatest ? loading : loadings.blocks"
           >
@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import api from "../api"
+import { gqlClient } from "../mimir-gql/client"
 import {mapGetters} from "vuex"
 import BlockTable from "@/components/BlockTable";
 import TransactionTable from "@/components/TransactionTable";
@@ -38,7 +38,7 @@ export default {
                 blocks: false
             },
             blocks: [],
-            before: null
+            hasNextPage: false
         }
     },
     computed: {
@@ -47,15 +47,23 @@ export default {
     async created() {
     },
     methods: {
-        async loadBlocks({page, before, limit}) {
+        async loadBlocks({page, limit}) {
             this.showLatest = (!page || page == 1)
             if (this.showLatest) return
 
             this.loadings.blocks = true
             try {
-                let {blocks, before: nextBefore} = await api.getBlocks({page, before, limit: this.size})
-                this.blocks = blocks
-                this.before = String(nextBefore)
+                const pageNum = parseInt(page) || 1
+                const skip = (pageNum - 1) * limit
+                
+                console.log('Loading blocks:', { skip, size: this.size })
+                const response = await gqlClient.getBlocks(skip, this.size)
+                this.blocks = response.items
+                this.hasNextPage = response.pageInfo?.hasNextPage || false
+            } catch (error) {
+                console.error('Failed to load blocks:', error)
+                this.blocks = []
+                this.hasNextPage = false
             } finally {
                 this.loadings.blocks = false
             }

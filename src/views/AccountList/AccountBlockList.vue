@@ -2,7 +2,7 @@
   <v-container fluid class="px-0 py-0">
     <page-list-wrapper title=""
                        :items="blocks"
-                       :before="before"
+                       :hasNextPage="hasNextPage"
                        flat
                        @loadItems="loadBlocks"
                        :accept-filter="['t']"
@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import api from "@/api"
+import { gqlClient } from "@/mimir-gql/client"
 import {mapGetters} from "vuex"
 import BlockTable from "@/components/BlockTable";
 import PageListWrapper from "@/components/PageListWrapper";
@@ -32,8 +32,7 @@ export default {
             page: Number(this.$route.query.t == 'mined' && this.$route.query.page || 1),
             filter: null,
             blocks: [],
-            before: this.$route.query.t == 'mined' && this.$route.query.before || null,
-            prevs: []
+            hasNextPage: false
         }
     },
     computed: {
@@ -42,12 +41,21 @@ export default {
     async created() {
     },
     methods: {
-        async loadBlocks({page, before}) {
+        async loadBlocks({page, limit}) {
             this.loading = true
             try {
-                let {blocks, before: nextBefore} = await api.getBlocks({page, before, miner:this.miner, limit: this.size})
-                this.blocks = blocks
-                this.before = String(nextBefore)
+                const pageNum = parseInt(page) || 1
+                const skip = (pageNum - 1) * limit
+                const filter = { miner: this.normalizeAddress(this.miner) }
+                
+                console.log('Loading blocks:', { skip, size: this.size, filter })
+                const response = await gqlClient.getBlocks(skip, this.size, filter)
+                this.blocks = response.items
+                this.hasNextPage = response.pageInfo?.hasNextPage || false
+            } catch (error) {
+                console.error('Failed to load blocks:', error)
+                this.blocks = []
+                this.hasNextPage = false
             } finally {
                 this.loading = false
             }

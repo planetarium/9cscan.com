@@ -15,7 +15,7 @@
             <v-col cols="12" md="auto">
               <router-link :to="{name: 'blocks'}" class="menu mb-md-2">Blocks</router-link>
               <router-link :to="{name: 'transactions'}" class="menu mb-md-2">Transactions</router-link>
-              <router-link :to="{name: 'status'}" class="menu mb-md-2">Status</router-link>
+              <!-- <router-link :to="{name: 'status'}" class="menu mb-md-2">Status</router-link> -->
             </v-col>
             <v-col cols="12" md="auto">
               <a class="menu mb-md-2" href="https://nine-chronicles.com/" target="_blank">Nine Chronicles</a>

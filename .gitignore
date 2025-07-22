@@ -1,11 +1,11 @@
 .DS_Store
 node_modules
 /dist
-.config*
 *.iml
 
 # local env files
 .env*
+.env
 
 # Npm
 package-lock.json

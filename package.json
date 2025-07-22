@@ -4,11 +4,9 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --mode localhost --port 3000",
-    "build-odin": "vue-cli-service build --mode planet0",
-    "build-heimdall": "vue-cli-service build --mode planet1",
-    "build-thor": "vue-cli-service build --mode planet2",
-    "stage": "vue-cli-service build --mode stage",
-    "lint": "vue-cli-service lint"
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "test": "jest"
   },
   "dependencies": {
     "@mdi/font": "^5.9.55",
@@ -17,7 +15,8 @@
     "bignumber.js": "^9.0.1",
     "chart.js": "^3.5.1",
     "countup.js": "^2.0.8",
-    "export-to-csv": "^1.2.1",
+    "export-to-csv": "1.2.1",
+    "graphql": "^16.11.0",
     "jquery": "^3.6.0",
     "moment": "^2.29.1",
     "underscore": "^1.13.1",
@@ -27,16 +26,14 @@
     "vuex": "^3.6.2"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.28.0",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.8.0",
     "eslint-plugin-vue": "^6.2.2",
-    "grunt": "^1.0.4",
-    "grunt-aws-s3": "^2.0.2",
-    "grunt-cli": "^1.2.0",
-    "grunt-run": "^0.8.1",
+    "jest": "^30.0.4",
     "sass": "^1.52.3",
     "sass-loader": "^10.1.1",
     "vue-template-compiler": "^2.6.11"

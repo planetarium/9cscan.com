@@ -61,7 +61,7 @@ export default {
     methods: {
         update() {
             if (!this.chart) return
-            let blocks = this.latestBlocksFull.map(b => ({timestamp: b.timestamp, txc: b.transactionCount, index: b.index})).reverse()
+            let blocks = this.latestBlocksFull.map(b => ({timestamp: b.object.timestamp, txc: b.object.txCount, index: b.object.index})).reverse()
             if (blocks && blocks.length > 0) {
                 blocks = blocks.splice(10 - (blocks[0].index % 10))
                 this.chart.data.labels = _.chunk(blocks, 10).map(bs => bs[0].index + '~' + _.last(bs).index)

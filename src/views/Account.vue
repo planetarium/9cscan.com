@@ -24,8 +24,8 @@
           <v-row class="info-item ma-0" v-if="currentAvatars.length > 0">
             <v-col cols="12" sm="3" class="item-title"><span class="text-no-wrap">Nine Chronicles</span> Avatar:</v-col>
             <v-col cols="12" sm="9" class="item-value" v-if="!loading && !notFound">
-              <div v-for="{avatar} in currentAvatars">
-                <router-link :to="{name:'avatar', params: {address:avatar.address}}">{{avatar.address}} ({{avatar.name}})</router-link>
+              <div v-for="{avatar} in currentAvatars" :key="avatar.address">
+                <router-link :to="{name:'avatar', params: {address:normalizeAddress(avatar.address)}}">{{normalizeAddress(avatar.address)}} ({{avatar.name}})</router-link>
               </div>
             </v-col>
           </v-row>
@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import api from "../api"
+import { gqlClient } from "../mimir-gql/client"
 import {mapGetters} from "vuex"
 import TransactionTable from "@/components/TransactionTable";
 import AccountTransactionList from "@/views/AccountList/AccountTransactionList";
@@ -78,7 +78,7 @@ export default {
             account: {},
             loading: false,
             reloading: false,
-            address: this.$route.params.address && this.$route.params.address.toLowerCase(),
+            address: this.$route.params.address && this.normalizeAddress(this.$route.params.address),
             transactions: [],
             ivTransactions: [],
             minedBlocks: [],
@@ -93,25 +93,24 @@ export default {
             return [...this.currentAvatars, ...this.oldAvatars]
         },
         currentAvatars() {
-            if (this.account && this.account[0]) {
-                let maxBlockIndex = _.max(this.account.filter(ac => ac.avatar).map(ac => ac.refreshBlockIndex))
-                return _.sortBy(this.account.filter(ac => ac.refreshBlockIndex == maxBlockIndex && ac.avatar), ({avatar}) => -avatar.blockIndex)
+            if (this.account && this.account[0] && this.account[0].avatarAddresses) {
+                return this.account[0].avatarAddresses.map(addr => ({
+                    avatar: {
+                        address: addr.value,
+                        name: addr.name || addr.key,
+                        blockIndex: 0
+                    }
+                }))
             }
             return []
         },
         oldAvatars() {
-            if (this.account && this.account[0]) {
-                let maxBlockIndex = _.max(this.account.filter(ac => ac.avatar).map(ac => ac.refreshBlockIndex))
-                let avatars = this.account.filter(ac => ac.refreshBlockIndex != maxBlockIndex && ac.avatar)
-                avatars.forEach(ac => ac['isOld'] = true)
-                return avatars
-            }
             return []
         }
     },
     async created() {
         this.$watch('$route.params.address', async () => {
-            this.address = this.$route.params.address
+            this.address = this.normalizeAddress(this.$route.params.address)
             this.loadAccount()
         })
         this.$watch('$route.query.t', async (q) => {
@@ -122,25 +121,60 @@ export default {
     methods: {
         async loadAccount() {
             this.loading = true
-            this.account = await api.getAccount({address:this.$route.params.address.toLowerCase()})
-            if (!this.account || this.account.length == 0) {
-                this.checkIsAvatarAddress()
-            } else {
-                let latestBlockIndex = _.max(this.account.map(a => a.refreshBlockIndex))
-                this.account = this.account.filter(a => a.refreshBlockIndex == latestBlockIndex)
+            try {
+                const agent = await gqlClient.getAgent(this.normalizeAddress(this.$route.params.address))
+                console.log(agent)
+                if (agent) {
+                    this.account = [agent]
+                    const ncgBalance = await gqlClient.getNCG(this.normalizeAddress(this.$route.params.address))
+                    if (ncgBalance) {
+                        this.account[0].goldBalance = ncgBalance
+                    }
+                    
+                    if (agent.avatarAddresses && agent.avatarAddresses.length > 0) {
+                        const avatarAddresses = agent.avatarAddresses.slice(0, 3)
+                        const avatarsInfoPromises = avatarAddresses.map(addr => 
+                            gqlClient.getAvatar(addr.value).catch(() => null)
+                        )
+                        const avatarsInfo = await Promise.all(avatarsInfoPromises)
+                        
+                        this.account[0].avatarAddresses = this.account[0].avatarAddresses.map((addr, index) => {
+                            const avatarInfo = avatarsInfo[index]
+                            return {
+                                ...addr,
+                                name: avatarInfo?.avatar?.name || addr.key
+                            }
+                        })
+                    }
+                } else {
+                    this.checkIsAvatarAddress()
+                }
+            } catch (error) {
+                console.error('Failed to load account:', error)
+                this.account = []
             }
             this.loading = false
-            this.refreshAccount()
         },
         async checkIsAvatarAddress() {
-            let accounts = await api.getAccount({avatar:this.$route.params.address.toLowerCase()})
-            if (accounts && accounts[0]) {
-                this.$router.replace({name: 'avatar', params: {address: this.$route.params.address}})
+            try {
+                const avatar = await gqlClient.getAvatar(this.normalizeAddress(this.$route.params.address))
+                if (avatar) {
+                    this.$router.replace({name: 'avatar', params: {address: this.$route.params.address}})
+                }
+            } catch (error) {
+                console.error('Failed to check avatar address:', error)
             }
         },
         async refreshAccount() {
             this.reloading = true
-            await api.refreshAccount(this.address.toLowerCase())
+            try {
+                const ncgBalance = await gqlClient.getNCG(this.normalizeAddress(this.address))
+                if (this.account && this.account[0] && ncgBalance) {
+                    this.account[0].goldBalance = ncgBalance
+                }
+            } catch (error) {
+                console.error('Failed to refresh account:', error)
+            }
             this.reloading = false
         }
     }

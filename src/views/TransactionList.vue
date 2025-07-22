@@ -6,7 +6,7 @@
         <v-col class="px-0">
           <page-list-wrapper title=""
                              :items="showLatest ? latestTransactions : txs"
-                             :before="showLatest ? latestTransactionsBefore : before"
+                             :hasNextPage="showLatest ? latestTransactionsBefore : hasNextPage"
                              @loadItems="loadTxs"
                              :acceptFilter="['action']"
                              :loading="showLatest ? loading : loadings.txs"
@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import api from "../api"
+import { gqlClient } from "../mimir-gql/client"
 import {mapGetters} from "vuex"
 import TransactionTable from "@/components/TransactionTable";
 import PageListWrapper from "@/components/PageListWrapper";
@@ -41,30 +41,36 @@ export default {
                 txs: false
             },
             txs: [],
-            before: null,
+            hasNextPage: false,
         }
     },
     computed: {
         ...mapGetters('Block', ['size', 'loading', 'latestTransactions', 'latestTransactionsBefore'])
     },
-    beforeDestroy() {
-        this.$store.dispatch('Block/syncTx', false)
-    },
     async created() {
     },
     methods: {
-        $onLoaded() {
-            this.$store.dispatch('Block/syncTx', true)
-        },
-        async loadTxs({page, action, before}) {
+        async loadTxs({page, action}) {
             this.showLatest = !action && (!page || page == 1)
             if (this.showLatest) return
 
             this.loadings.txs = true
             try {
-                let {transactions, before:nextBefore} = await api.getTransactions({page, action, before, limit: this.size})
-                this.txs = transactions
-                this.before = nextBefore
+                const pageNum = parseInt(page) || 1
+                const skip = (pageNum - 1) * this.size
+                const filter = {}
+                if (action) {
+                    filter.actionTypeId = action
+                }
+                
+                console.log('Loading transactions:', { skip, size: this.size, filter })
+                const response = await gqlClient.getTransactions(skip, this.size, filter)
+                this.txs = response.items
+                this.hasNextPage = response.pageInfo?.hasNextPage || false
+            } catch (error) {
+                console.error('Failed to load transactions:', error)
+                this.txs = []
+                this.hasNextPage = false
             } finally {
                 this.loadings.txs = false
             }

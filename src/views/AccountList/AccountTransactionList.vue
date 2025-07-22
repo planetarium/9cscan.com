@@ -2,7 +2,7 @@
   <div>
     <page-list-wrapper title=""
                        :items="txs"
-                       :before="before"
+                       :hasNextPage="hasNextPage"
                        @loadItems="loadTxs"
                        :acceptFilter="['t', 'action']"
                        :loading="loading"
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import api from "@/api"
+import { gqlClient } from "@/mimir-gql/client"
 import {mapGetters} from "vuex"
 import TransactionTable from "@/components/TransactionTable";
 import PageListWrapper from "@/components/PageListWrapper";
@@ -37,14 +37,14 @@ import {download, generateCsv, mkConfig} from "export-to-csv";
 export default {
     name: 'AccountTransactionList',
     components: {ActionsSelect, PageListWrapper, TransactionTable},
-    props: ['address'],
+    props: ['address', 'avatar'],
     mixins: [],
     data() {
         return {
             loading: false,
             csvProgress: 0,
             txs: [],
-            before: null
+            hasNextPage: false
         }
     },
     computed: {
@@ -54,44 +54,60 @@ export default {
     async created() {
     },
     methods: {
-        async loadTxs({page, action, before}) {
+        async loadTxs({page, action, limit}) {
             this.loading = true
             try {
-                let {transactions, before:nextBefore} = await api.getAccountTransactions(this.address, {page, action, before, limit: this.size})
-                this.txs = transactions
-                this.before = nextBefore
+                console.log('loadTxs called with:', { page, action, limit })
+                
+                const pageNum = parseInt(page) || 1
+                const skip = (pageNum - 1) * limit
+                const filter = { signer: this.normalizeAddress(this.address) }
+                if (this.avatar) {
+                    filter.avatarAddress = this.normalizeAddress(this.avatar)
+                }
+                if (action) {
+                    filter.actionTypeId = action
+                }
+                
+                console.log('Loading transactions:', { skip, size: this.size, filter })
+                const response = await gqlClient.getTransactions(skip, this.size, filter)
+                this.txs = response.items
+                this.hasNextPage = response.pageInfo?.hasNextPage || false
+            } catch (error) {
+                console.error('Failed to load transactions:', error)
+                this.txs = []
+                this.hasNextPage = false
             } finally {
                 this.loading = false
             }
         },
         async downloadCSV() {
-          let before = ''
-          let page = 1
+          let skip = 0
           let {action} = this.$route.query
           let txs = []
           for (let i = 0; i < 100; i++) { //max 10K
-            let {transactions, before:nextBefore} = await api.getAccountTransactions(this.address, {page, action, before, limit: 100})
-            txs.push(...transactions)
-            before = nextBefore
-            page += 1
-            if (transactions.length < 100) break;
+            const filter = { signer: this.normalizeAddress(this.address) }
+            if (action) {
+                filter.actionTypeId = action
+            }
+            
+            const response = await gqlClient.getTransactions(skip, 100, filter)
+            txs.push(...response.items)
+            skip += 100
+            if (response.items.length < 100) break;
             this.csvProgress = txs.length;
           }
           txs = txs.map(item => {
-            const amount = item.actions?.[0]?.inspection?.['amount']
-            item.amount = amount ? amount[1] : ''
-            const decimal = Number(amount?.[0]?.['decimalPlaces'] ?? 0)
-            if (item.amount && decimal > 0) {
-              item.amount /= Math.pow(10, decimal)
-            }
-            item.amountTicker = amount ? amount[0].ticker : ''
-            item.actionType = item.actions?.[0]?.typeId ?? ''
-            item.actions = JSON.stringify(item.actions)
-            item.updatedAddresses = JSON.stringify(item.updatedAddresses)
+            const amount = item.firstNCGAmountInActionArguments
+            item.amount = amount || ''
+            item.amountTicker = amount ? 'NCG' : ''
+            item.actionType = item.object?.actions?.[0]?.typeId ?? ''
+            item.actions = JSON.stringify(item.object?.actions || [])
+            item.updatedAddresses = JSON.stringify(item.object?.updatedAddresses || [])
             item.involved = item.involved?.type ?? ''
             return item
           })
-          const csvConfig = mkConfig({ useKeysAsHeaders: true, filename: `transactions-${action ?? 'all'}-${this.address}` });
+          const csvConfig = mkConfig({ useKeysAsHeaders: true, filename: `transactions-${action ?? 'all'}-${this.normalizeAddress(this.address)}` });
           const csv = generateCsv(csvConfig)(txs);
           download(csvConfig)(csv)
           console.log(txs)

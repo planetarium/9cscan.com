@@ -31,7 +31,7 @@
               </v-row>
               <v-row class="info-item ma-0">
                 <v-col cols="12" md="3" class="item-title">Account:</v-col>
-                <v-col cols="12" md="9" class="item-value"><router-link :to="{name: 'account', params: {address:account.address}}">{{account.address}}</router-link></v-col>
+                <v-col cols="12" md="9" class="item-value"><router-link :to="{name: 'account', params: {address:normalizeAddress(account.avatar.agentAddress)}}">{{normalizeAddress(account.avatar.agentAddress)}}</router-link></v-col>
               </v-row>
               <v-row class="info-item ma-0">
                 <v-col cols="12" md="3" class="item-title">CharacterId:</v-col>
@@ -39,7 +39,7 @@
               </v-row>
               <v-row class="info-item ma-0">
                 <v-col cols="12" md="3" class="item-title">Daily Reward Index:</v-col>
-                <v-col cols="12" md="9" class="item-value"><router-link :to="{name: 'block', params: {index: account.avatar.dailyRewardReceivedIndex}}">{{account.avatar.dailyRewardReceivedIndex}}</router-link></v-col>
+                <v-col cols="12" md="9" class="item-value"><router-link :to="{name: 'block', params: {index: account.dailyRewardReceivedIndex}}">{{account.dailyRewardReceivedIndex}}</router-link></v-col>
               </v-row>
               <v-row class="info-item ma-0">
                 <v-col cols="12" md="3" class="item-title">Block:</v-col>
@@ -71,7 +71,7 @@
           <v-progress-circular indeterminate></v-progress-circular>
         </div>
         <v-card-text v-else class="pa-0">
-          <account-transaction-list :address="address"></account-transaction-list>
+          <account-transaction-list :address="normalizeAddress(account.avatar.agentAddress)" :avatar="address"></account-transaction-list>
         </v-card-text>
       </v-card>
     </div>
@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import api from "../api"
+import { gqlClient } from "../mimir-gql/client"
 import {mapGetters} from "vuex"
 import CopyBtn from "@/components/btn/CopyBtn";
 import AccountTransactionList from "@/views/AccountList/AccountTransactionList";
@@ -91,7 +91,7 @@ export default {
         return {
             account: null,
             loading: false,
-            address: this.$route.params.address.toLowerCase(),
+            address: this.normalizeAddress(this.$route.params.address),
             transactions: [],
             ivTransactions: [],
             minedBlocks: [],
@@ -104,14 +104,29 @@ export default {
         notFound() {return !this.loading && !this.account},
     },
     async created() {
+        this.$watch('$route.params.address', async () => {
+            this.address = this.normalizeAddress(this.$route.params.address)
+            this.loadAccount()
+        })
         this.loadAccount()
     },
     methods: {
         async loadAccount() {
             this.loading = true
-            let accounts = await api.getAccount({avatar:this.$route.params.address.toLowerCase()})
-            if (accounts && accounts[0]) {
-                this.account = accounts.find(ac => ac.avatar && ac.avatar.address.toLowerCase() == this.address.toLowerCase())
+            try {
+              const avatarData = await gqlClient.getAvatar(this.normalizeAddress(this.$route.params.address))
+              const ncgBalance = await gqlClient.getNCG(this.normalizeAddress(avatarData.avatar.agentAddress))
+                if (avatarData && avatarData.avatar) {
+                    this.account = {
+                        address: avatarData.agent?.address || '',
+                        goldBalance: ncgBalance || 0,
+                        avatar: avatarData.avatar,
+                        dailyRewardReceivedIndex: avatarData.dailyRewardReceivedIndex || 0
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load avatar:', error)
+                this.account = null
             }
             this.loading = false
         },

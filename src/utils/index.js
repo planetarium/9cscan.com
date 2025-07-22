@@ -2,6 +2,7 @@ import BigNumber from "bignumber.js"
 import Vue from "vue"
 import {decode} from "bencodex"
 import Event from "@/store/event"
+import { normalizeAddress, formatAddress } from "./address"
 
 let methods = {
     e18Number(eth, fixed=8) {
@@ -48,6 +49,8 @@ let methods = {
             + '..'
             + address.substr(address.length - right, right)
     },
+    normalizeAddress,
+    formatAddress,
     parseBencodex(hex) {
         let decoded = decode(Buffer.from(hex, 'hex'))
         const parse = (v) => {
