@@ -1,5 +1,7 @@
 {
   "name": "internal-heimdall-9cscan",
   "compatibility_date": "2025-07-23",
-  "pages_build_output_dir": "./dist"
+  "assets": {
+    "directory": "./dist/"
+  }
 } 
