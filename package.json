@@ -8,6 +8,9 @@
     "lint": "vue-cli-service lint",
     "test": "jest"
   },
+  "engines": {
+    "node": ">=22.17.0"
+  },
   "dependencies": {
     "@mdi/font": "^5.9.55",
     "axios": "^0.21.1",
