@@ -38,13 +38,13 @@
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Age:</v-col>
             <v-col cols="12" sm="9" class="item-value" v-if="!loading && tx.object.id">
-              <v-icon small>mdi-clock-outline</v-icon> {{moment(tx.object.timestamp).fromNow()}} <span style="color:#777">({{ moment(tx.object.timestamp) }}</span>
+              <v-icon small>mdi-clock-outline</v-icon> {{moment(tx.object.blockTimestamp || tx.object.timestamp).fromNow()}} <span style="color:#777">({{ moment(tx.object.blockTimestamp || tx.object.timestamp) }}</span>
             </v-col>
           </v-row>
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Timestamp:</v-col>
             <v-col cols="12" sm="9" class="item-value" v-if="!loading && tx.object.id">
-              {{ moment(tx.object.timestamp) }}
+              {{ moment(tx.object.blockTimestamp || tx.object.timestamp) }}
             </v-col>
           </v-row>
           <v-row class="info-item ma-0">

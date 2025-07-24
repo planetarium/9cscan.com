@@ -18,6 +18,7 @@
             :embed-mode="isEmbedMode"
             :detail="!isEmbedMode"
             involved
+            :agent-address="address"
             :loading="loading"></transaction-table>
       </template>
     </page-list-wrapper>

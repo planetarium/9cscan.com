@@ -38,7 +38,7 @@
               </router-link>
             </td>
             <td><v-btn class="rect pointlink-btn" outlined small depressed  :target="embedMode ? '_blank' : ''" :to="{name: 'block', params: {index: tx.blockIndex}}">{{tx.blockIndex}}</v-btn></td>
-            <td class="text-no-wrap">{{moment(tx.object.timestamp).fromNow()}}</td>
+            <td class="text-no-wrap">{{moment(tx.object.blockTimestamp || tx.object.timestamp).fromNow()}}</td>
             <td v-if="detail">
               <v-chip label small outlined text-color="#555"><strong class="mr-1">{{latestBlockIndex - tx.blockIndex + 1}}</strong> Confirms</v-chip>
             </td>
@@ -49,7 +49,9 @@
               </router-link>
             </td>
             <td v-if="involved">
-              <v-chip label small color="success" :outlined="tx.involved['type'] == 'INVOLVED'" v-if="tx.involved">{{tx.involved['type']}}</v-chip>
+              <v-chip label small color="success" :outlined="normalizeAddress(tx.object.signer) !== normalizeAddress(agentAddress)">
+                {{normalizeAddress(tx.object.signer) === normalizeAddress(agentAddress) ? 'SIGNED' : 'INVOLVED'}}
+              </v-chip>
             </td>
             <td>
               <v-btn label small :to="{name: 'transaction', params: {id: tx.id}}" style="text-transform: none;height:26px;font-weight:500;letter-spacing: 0;color:#EBB077 !important;background-color: #FFFAF8 !important;font-weight: 600;padding:0 12px !important;" color="point" rounded outlined v-for="(action, index) in tx.object.actions" :key="`${tx.id}-action-${index}`" v-if="action.typeId" class="darken-1 px-2 mx-1" :target="embedMode ? '_blank' : ''">
@@ -97,6 +99,10 @@ export default {
         involved: {
             type: Boolean,
             default: false
+        },
+        agentAddress: {
+            type: String,
+            default: ''
         },
         embedMode: {
             type:Boolean,
