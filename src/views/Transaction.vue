@@ -80,10 +80,10 @@
       <v-card class="mt-4 border-none" outlined>
         <v-progress-linear indeterminate height="2" v-if="loading"></v-progress-linear>
         <v-divider></v-divider>
-        <v-card-text class="py-12" v-if="!tx.object.actions || tx.object.actions.length == 0">
+        <v-card-text class="py-12" v-if="!hasActions">
           No Action Data
         </v-card-text>
-        <v-card-text class="pa-0" v-for="(action, idx) in tx.object.actions" :key="idx" v-if="action">
+        <v-card-text class="pa-0" v-for="(action, idx) in actions" :key="idx" v-if="action">
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Type:</v-col>
             <v-col cols="12" sm="9" class="item-value">{{ action.typeId }}</v-col>
@@ -132,7 +132,13 @@ export default {
         }
     },
     computed: {
-      ...mapGetters('Block', ['latestBlockIndex'])
+      ...mapGetters('Block', ['latestBlockIndex']),
+      hasActions() {
+        return this.tx.object && this.tx.object.actions && this.tx.object.actions.length > 0
+      },
+      actions() {
+        return this.tx.object && this.tx.object.actions ? this.tx.object.actions : []
+      }
     },
     async created() {
         this.$watch('$route.params.id', async () => {

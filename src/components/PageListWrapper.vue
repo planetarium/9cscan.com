@@ -3,11 +3,11 @@
       <v-card class="px-sm-4 px-1 py-2" style="border:0;" :outlined="!flat" :flat="flat">
         <v-card-title class="d-flex align-start px-2 justify-space-between align-sm-center flex-column flex-sm-row">
           <h4>{{ title }}<slot :filter="filter" name="title-after"></slot></h4>
-          <pagination :size="size" :can-prev="canPrev" :can-next="canNext" :page="page" @updateSize="changeSize" @goFirst="goFirst" @prev="prev" @next="next"></pagination>
+          <pagination :skip="skip" :take="take" :has-previous-page="hasPreviousPage" :has-next-page="hasNextPage" @updateSize="changeSize" @goFirst="goFirst" @prev="prev" @next="next"></pagination>
         </v-card-title>
         <slot :items="items" :loading="loading"></slot>
         <v-card-actions class="d-flex justify-end">
-          <pagination :size="size" :can-prev="canPrev" :can-next="canNext" :page="page" @updateSize="changeSize" @goFirst="goFirst" @prev="prev" @next="next"></pagination>
+          <pagination :skip="skip" :take="take" :has-previous-page="hasPreviousPage" :has-next-page="hasNextPage" @updateSize="changeSize" @goFirst="goFirst" @prev="prev" @next="next"></pagination>
         </v-card-actions>
       </v-card>
     </div>
@@ -26,6 +26,10 @@
               type: Array
           },
           hasNextPage: {
+              type: Boolean,
+              default: false
+          },
+          hasPreviousPage: {
               type: Boolean,
               default: false
           },
@@ -53,19 +57,13 @@
       mixins: [],
       data() {
           return {
-              page: 1,
+              skip: 0,
+              take: this.size,
               filter: {},
-              pageHistory: [],
           }
       },
       computed: {
           ...mapGetters('Block', ['size']),
-          canPrev() {
-              return this.page > 1
-          },
-          canNext() {
-              return this.hasNextPage
-          }
       },
       beforeDestroy() {
       },
@@ -77,7 +75,7 @@
   
           this.resetFilter()
   
-          if (this.filter.page) {
+          if (this.filter.skip) {
               this.load()
           } else {
               this.goFirst()
@@ -86,24 +84,24 @@
       methods: {
           async resetFilter() {
               this.filter = {};
-              this.page = 1;
-              this.pageHistory = [];
-              ['page', 'limit', ...this.acceptFilter].forEach(f => {
+              this.skip = 0;
+              this.take = this.size;
+              ['skip', 'take', ...this.acceptFilter].forEach(f => {
                   if (this.$route.query[f] != undefined) {
                       Vue.set(this.filter, f, this.$route.query[f])
                   }
               })
-              if (this.filter['page']) {
-                  this.page = Number(this.filter['page'])
+              if (this.filter['skip']) {
+                  this.skip = Number(this.filter['skip'])
               }
-              this.changeSize(this.filter.limit || 20, true)
+              this.changeSize(Number(this.filter.take) || 20, true)
           },
   
           async load() {
-              if (this.filter['page'] == 1) {
-                  delete this.filter['page']
-                  if (this.filter['limit'] == 20) {
-                      delete this.filter['limit']
+              if (this.filter['skip'] == 0) {
+                  delete this.filter['skip']
+                  if (this.filter['take'] == 20) {
+                      delete this.filter['take']
                   }
               }
   
@@ -112,32 +110,35 @@
               })
           },
           goFirst() {
-              this.pageHistory = []
-              this.page = 1
-              this.filter.limit = this.size
-              this.filter.page = this.page
+              this.skip = 0
+              this.take = this.size
+              this.filter.take = this.size
+              this.filter.skip = this.skip
               this.load()
           },
           next() {
               if (this.loading) return
-              this.pageHistory.push(this.page)
-              this.page = Number(this.page || 1) + 1
-              this.filter.limit = this.size
-              this.filter.page = this.page
+              this.skip = this.skip + this.size
+              this.take = this.size
+              this.filter.take = this.size
+              this.filter.skip = this.skip
               this.load()
           },
           prev() {
-              if (this.loading) return
-              const prevPage = this.pageHistory.pop()
-              if (prevPage) {
-                  this.page = prevPage
-                  this.filter.limit = this.size
-                  this.filter.page = this.page
-                  this.load()
-              }
+            if (this.loading) return
+            if ((this.skip - this.size) < 0) {
+                this.skip = 0
+            } else {
+                this.skip = this.skip - this.size
+            }
+            this.take = this.size
+            this.filter.take = this.size
+            this.filter.skip = this.skip
+            this.load()
           },
           changeSize(size, noReset = false) {
-              this.filter.limit = size
+              this.filter.take = size
+              this.take = size
               this.$store.dispatch('Block/setSize', Number(size || 20))
               if (!noReset) {
                   this.goFirst()

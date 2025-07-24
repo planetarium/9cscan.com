@@ -6,7 +6,8 @@
         <v-col class="px-0">
           <page-list-wrapper title=""
                              :items="showLatest ? latestTransactions : txs"
-                             :hasNextPage="showLatest ? latestTransactionsBefore : hasNextPage"
+                             :hasNextPage="hasNextPage"
+                             :hasPreviousPage="hasPreviousPage"
                              @loadItems="loadTxs"
                              :acceptFilter="['action']"
                              :loading="showLatest ? loading : loadings.txs"
@@ -41,7 +42,8 @@ export default {
                 txs: false
             },
             txs: [],
-            hasNextPage: false,
+            hasNextPage: true,
+            hasPreviousPage: false,
         }
     },
     computed: {
@@ -50,27 +52,29 @@ export default {
     async created() {
     },
     methods: {
-        async loadTxs({page, action}) {
-            this.showLatest = !action && (!page || page == 1)
+        async loadTxs({skip, take, action}) {
+            this.showLatest = !action && (!skip || skip == 0)
             if (this.showLatest) return
 
             this.loadings.txs = true
             try {
-                const pageNum = parseInt(page) || 1
-                const skip = (pageNum - 1) * this.size
+                const skipNum = parseInt(skip) || 0
+                const takeNum = parseInt(take) || this.size
                 const filter = {}
                 if (action) {
                     filter.actionTypeId = action
                 }
                 
-                console.log('Loading transactions:', { skip, size: this.size, filter })
-                const response = await gqlClient.getTransactions(skip, this.size, filter)
+                console.log('Loading transactions:', { skip: skipNum, take: takeNum, filter })
+                const response = await gqlClient.getTransactions(skipNum, takeNum, filter)
                 this.txs = response.items
                 this.hasNextPage = response.pageInfo?.hasNextPage || false
+                this.hasPreviousPage = response.pageInfo?.hasPreviousPage || false
             } catch (error) {
                 console.error('Failed to load transactions:', error)
                 this.txs = []
                 this.hasNextPage = false
+                this.hasPreviousPage = false
             } finally {
                 this.loadings.txs = false
             }

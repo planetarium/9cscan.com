@@ -128,8 +128,8 @@ export class ActionTypeModel {
 
 export class PageInfoModel {
   constructor(data) {
-    this.hasNextPage = data?.hasNextPage || false
-    this.hasPreviousPage = data?.hasPreviousPage || false
+    this.hasNextPage = data?.hasNextPage ? Boolean(data.hasNextPage) : false
+    this.hasPreviousPage = data?.hasPreviousPage ? Boolean(data.hasPreviousPage) : false
   }
 }
 

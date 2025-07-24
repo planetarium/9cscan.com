@@ -72,7 +72,7 @@
             </td>
             <td>
               <span v-if="tx.firstNCGAmountInActionArguments">
-                <amount-label :asset-data="{ticker: 'NCG'}" :minus="normalizeAddress(tx.object.signer) === normalizeAddress(tx.firstSenderInActionArguments)" :amount="tx.firstNCGAmountInActionArguments" />
+                <amount-label :asset-data="{ticker: 'NCG'}" :minus="normalizeAddress(tx.object.signer) === normalizeAddress(tx.firstSenderInActionArguments)" :amount="parseFloat(tx.firstNCGAmountInActionArguments)" />
               </span>
             </td>
           </tr>
