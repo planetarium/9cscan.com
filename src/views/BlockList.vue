@@ -6,7 +6,8 @@
         <v-col class="px-0">
           <page-list-wrapper title=""
                              :items="showLatest ? latestBlocks : blocks"
-                             :hasNextPage="showLatest ? latestBlocksBefore : hasNextPage"
+                             :hasNextPage="hasNextPage"
+                             :hasPreviousPage="hasPreviousPage"
                              @loadItems="loadBlocks"
                              :loading="showLatest ? loading : loadings.blocks"
           >
@@ -38,32 +39,35 @@ export default {
                 blocks: false
             },
             blocks: [],
-            hasNextPage: false
+            hasNextPage: true,
+            hasPreviousPage: false
         }
     },
     computed: {
-        ...mapGetters('Block', ['size', 'loading', 'latestBlocks', 'latestBlocksBefore'])
+        ...mapGetters('Block', ['size', 'loading', 'latestBlocks'])
     },
     async created() {
     },
     methods: {
-        async loadBlocks({page, limit}) {
-            this.showLatest = (!page || page == 1)
+        async loadBlocks({skip, take}) {
+            this.showLatest = (!skip || skip == 0)
             if (this.showLatest) return
 
             this.loadings.blocks = true
             try {
-                const pageNum = parseInt(page) || 1
-                const skip = (pageNum - 1) * limit
+                const skipNum = parseInt(skip) || 0
+                const takeNum = parseInt(take) || this.size
                 
-                console.log('Loading blocks:', { skip, size: this.size })
-                const response = await gqlClient.getBlocks(skip, this.size)
+                const response = await gqlClient.getBlocks(skipNum, takeNum)
+                console.log(response.pageInfo.hasNextPage, response.pageInfo.hasPreviousPage, skip, take)
                 this.blocks = response.items
                 this.hasNextPage = response.pageInfo?.hasNextPage || false
+                this.hasPreviousPage = response.pageInfo?.hasPreviousPage || false
             } catch (error) {
                 console.error('Failed to load blocks:', error)
                 this.blocks = []
                 this.hasNextPage = false
+                this.hasPreviousPage = false
             } finally {
                 this.loadings.blocks = false
             }

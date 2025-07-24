@@ -3,7 +3,7 @@ export function normalizeAddress(address) {
   
   let normalized = address.toString()
   
-  if (normalized === '') return '0x'
+  if (normalized === '') return ''
   
   if (!normalized.startsWith('0x')) {
     normalized = '0x' + normalized

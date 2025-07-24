@@ -38,13 +38,13 @@
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Age:</v-col>
             <v-col cols="12" sm="9" class="item-value" v-if="!loading && tx.object.id">
-              <v-icon small>mdi-clock-outline</v-icon> {{moment(tx.object.timestamp).fromNow()}} <span style="color:#777">({{ moment(tx.blockTimestamp) }}</span>
+              <v-icon small>mdi-clock-outline</v-icon> {{moment(tx.object.blockTimestamp || tx.object.timestamp).fromNow()}} <span style="color:#777">({{ moment(tx.object.blockTimestamp || tx.object.timestamp) }}</span>
             </v-col>
           </v-row>
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Timestamp:</v-col>
             <v-col cols="12" sm="9" class="item-value" v-if="!loading && tx.object.id">
-              {{ moment(tx.object.timestamp) }}
+              {{ moment(tx.object.blockTimestamp || tx.object.timestamp) }}
             </v-col>
           </v-row>
           <v-row class="info-item ma-0">
@@ -80,10 +80,10 @@
       <v-card class="mt-4 border-none" outlined>
         <v-progress-linear indeterminate height="2" v-if="loading"></v-progress-linear>
         <v-divider></v-divider>
-        <v-card-text class="py-12" v-if="!tx.object.actions || tx.object.actions.length == 0">
+        <v-card-text class="py-12" v-if="!hasActions">
           No Action Data
         </v-card-text>
-        <v-card-text class="pa-0" v-for="(action, idx) in tx.object.actions" :key="idx" v-if="action">
+        <v-card-text class="pa-0" v-for="(action, idx) in actions" :key="idx" v-if="action">
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Type:</v-col>
             <v-col cols="12" sm="9" class="item-value">{{ action.typeId }}</v-col>
@@ -100,7 +100,7 @@
               {{getParsedValues(action.values)['id']}}
             </v-col>
           </v-row>
-          <v-row class="info-item ma-0 data-row" v-for="k in Object.keys(getParsedValues(action.values))" v-if="['id'].indexOf(k) == -1">
+          <v-row class="info-item ma-0 data-row" v-for="(k, index) in Object.keys(getParsedValues(action.values))" :key="`${action.typeId}-${k}-${index}`" v-if="['id'].indexOf(k) == -1">
             <v-col cols="12" sm="3" class="item-title">{{k}}:</v-col>
             <v-col cols="12" sm="9" class="item-value">
               {{getParsedValues(action.values)[k]}}
@@ -132,7 +132,13 @@ export default {
         }
     },
     computed: {
-      ...mapGetters('Block', ['latestBlockIndex'])
+      ...mapGetters('Block', ['latestBlockIndex']),
+      hasActions() {
+        return this.tx.object && this.tx.object.actions && this.tx.object.actions.length > 0
+      },
+      actions() {
+        return this.tx.object && this.tx.object.actions ? this.tx.object.actions : []
+      }
     },
     async created() {
         this.$watch('$route.params.id', async () => {
@@ -154,10 +160,10 @@ export default {
             let tx = await this.$store.dispatch('Block/loadTransaction', this.id)
             if (tx) {
               this.tx = tx
-              if (!this.tx.blockTimestamp) {
+              if (!this.tx.object.timestamp) {
                 const block = await this.$store.dispatch('Block/loadBlock', this.tx.blockIndex)
                 if (block) {
-                  this.tx.blockTimestamp = block.object.timestamp
+                  this.tx.object.timestamp = block.object.timestamp
                 }
               }
             } else {

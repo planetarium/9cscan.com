@@ -1,24 +1,24 @@
 import { gqlClient } from "../../mimir-gql/client"
 
-function mergeAndDeduplicate(existingItems, newItems, keyField) {
+function mergeAndDeduplicate(existingItems, newItems, uniqueField, sortField) {
     const existingMap = new Map()
     existingItems.forEach(item => {
-        const key = item.object?.[keyField] || item[keyField]
+        const key = item.object?.[uniqueField] || item[uniqueField]
         if (key !== undefined) {
             existingMap.set(key, item)
         }
     })
     
     newItems.forEach(item => {
-        const key = item.object?.[keyField] || item[keyField]
+        const key = item.object?.[uniqueField] || item[uniqueField]
         if (key !== undefined) {
             existingMap.set(key, item)
         }
     })
     
     return Array.from(existingMap.values()).sort((a, b) => {
-        const keyA = a.object?.[keyField] || a[keyField]
-        const keyB = b.object?.[keyField] || b[keyField]
+        const keyA = a.object?.[sortField] || a[sortField]
+        const keyB = b.object?.[sortField] || b[sortField]
         return keyB - keyA
     })
 }
@@ -40,16 +40,7 @@ export default {
         latestBlocks10: state => state.latestBlocks.slice(0, 10),
         latestTransactions10: state => state.latestTransactions.slice(0, 10),
         latestBlocks: state => state.latestBlocks.slice(0, state.size),
-        latestBlocksBefore: state => state.latestBlocks.length >= state.size,
         latestTransactions: state => state.latestTransactions.slice(0, state.size),
-        latestTransactionsBefore: state => {
-            let txs = state.latestTransactions.slice(0, state.size)
-            if (txs.length > 0) {
-                let lastBlockIndex = txs[txs.length - 1].blockIndex
-                let count = txs.filter(tx => tx.blockIndex == lastBlockIndex).length
-                return lastBlockIndex + '/' + count
-            }
-        },
         latestBlocksFull: state => state.latestBlocks,
         totalTxs: state => state.latestBlocks.length > 0 && state.latestBlocks.map(b => b.object?.txCount || 0).reduce((a,b) => a+b) || 0,
         avgTx: state => state.latestBlocks.length > 0 && state.latestBlocks.map(b => b.object?.txCount || 0).reduce((a,b) => a+b)/state.latestBlocks.length || 0,
@@ -67,9 +58,11 @@ export default {
         setSize(state, size) {
             state.size = size
         },
-
         setLoading(state, loading) {
             state.loading = loading
+        },
+        setLatestBlockIndex(state, index) {
+            state.latestBlockIndex = index
         },
         setLatestBlocks(state, blocks) {
             state.latestBlocks = blocks
@@ -77,7 +70,6 @@ export default {
         setLatestTransactions(state, txs) {
             state.latestTransactions = txs
         },
-
     },
     actions: {
         async init({state, commit, dispatch}) {
@@ -92,6 +84,7 @@ export default {
                 commit('setLoading', false)
                 commit('setLatestBlocks', blocks)
                 commit('setLatestTransactions', transactions)
+                commit('setLatestBlockIndex', blocks[0].object.index)
                 dispatch('startPolling')
             } catch (error) {
                 console.error('Failed to initialize block data:', error)
@@ -102,21 +95,27 @@ export default {
             clearInterval(window.pollingTimer)
             window.pollingTimer = setInterval(async () => {
                 try {
-                    const blocksResponse = await gqlClient.getBlocks(0, 5)
-                    const transactionsResponse = await gqlClient.getTransactions(0, state.size)
+                    const blocksResponse = await gqlClient.getBlocks(0, 1)
+
+                    if (state.latestBlockIndex >= blocksResponse.items[0].object.index) {
+                        return
+                    }
+                    
+                    const transactionsResponse = await gqlClient.getTransactions(0, blocksResponse.items[0].object.txCount)
                     
                     const newBlocks = blocksResponse.items
                     const newTransactions = transactionsResponse.items
                     
-                    const mergedBlocks = mergeAndDeduplicate(state.latestBlocks, newBlocks, 'index')
-                    const mergedTransactions = mergeAndDeduplicate(state.latestTransactions, newTransactions, 'id')
+                    const mergedBlocks = mergeAndDeduplicate(state.latestBlocks, newBlocks, 'hash', 'index')
+                    const mergedTransactions = mergeAndDeduplicate(state.latestTransactions, newTransactions, 'id', 'blockIndex')
                     
+                    commit('setLatestBlockIndex', mergedBlocks[0].object.index)
                     commit('setLatestBlocks', mergedBlocks)
                     commit('setLatestTransactions', mergedTransactions)
                 } catch (error) {
                     console.error('Failed to poll data:', error)
                 }
-            }, 8000)
+            }, 3500)
         },
         setSize({commit}, size) {
             commit('setSize', size)

@@ -90,6 +90,8 @@ export class TransactionModel {
     this.firstActionTypeId = data?.firstActionTypeId || ''
     this.firstAvatarAddressInActionArguments = data?.firstAvatarAddressInActionArguments || ''
     this.firstNCGAmountInActionArguments = data?.firstNCGAmountInActionArguments || ''
+    this.firstRecipientInActionArguments = data?.firstRecipientInActionArguments || ''
+    this.firstSenderInActionArguments = data?.firstSenderInActionArguments || ''
     this.id = data?.id || ''
     this.object = data?.object ? new TransactionObjectModel(data.object) : null
   }
@@ -103,6 +105,7 @@ export class TransactionObjectModel {
     this.signature = data?.signature || ''
     this.signer = data?.signer || ''
     this.timestamp = data?.timestamp || ''
+    this.blockTimestamp = data?.blockTimestamp || ''
     this.txStatus = data?.txStatus || ''
     this.updatedAddresses = data?.updatedAddresses || []
     this.actions = (data?.actions || []).map(action => new ActionModel(action))
@@ -125,8 +128,8 @@ export class ActionTypeModel {
 
 export class PageInfoModel {
   constructor(data) {
-    this.hasNextPage = data?.hasNextPage || false
-    this.hasPreviousPage = data?.hasPreviousPage || false
+    this.hasNextPage = data?.hasNextPage ? Boolean(data.hasNextPage) : false
+    this.hasPreviousPage = data?.hasPreviousPage ? Boolean(data.hasPreviousPage) : false
   }
 }
 
