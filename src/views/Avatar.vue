@@ -39,7 +39,7 @@
               </v-row>
               <v-row class="info-item ma-0">
                 <v-col cols="12" md="3" class="item-title">Daily Reward Index:</v-col>
-                <v-col cols="12" md="9" class="item-value"><router-link :to="{name: 'block', params: {index: account.dailyRewardReceivedIndex}}">{{account.dailyRewardReceivedIndex}}</router-link></v-col>
+                <v-col cols="12" md="9" class="item-value"><router-link :to="{name: 'block', params: {index: account.dailyRewardReceivedBlockIndex}}">{{account.dailyRewardReceivedBlockIndex}}</router-link></v-col>
               </v-row>
               <v-row class="info-item ma-0">
                 <v-col cols="12" md="3" class="item-title">Block:</v-col>
@@ -121,7 +121,7 @@ export default {
                         address: avatarData.agent?.address || '',
                         goldBalance: ncgBalance || 0,
                         avatar: avatarData.avatar,
-                        dailyRewardReceivedIndex: avatarData.dailyRewardReceivedIndex || 0
+                        dailyRewardReceivedBlockIndex: avatarData.dailyRewardReceivedBlockIndex || 0
                     }
                 }
             } catch (error) {

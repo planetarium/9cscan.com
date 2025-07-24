@@ -3,6 +3,7 @@
     <page-list-wrapper title=""
                        :items="blocks"
                        :hasNextPage="hasNextPage"
+                       :hasPreviousPage="hasPreviousPage"
                        flat
                        @loadItems="loadBlocks"
                        :accept-filter="['t']"
@@ -32,7 +33,8 @@ export default {
             page: Number(this.$route.query.t == 'mined' && this.$route.query.page || 1),
             filter: null,
             blocks: [],
-            hasNextPage: false
+            hasNextPage: false,
+            hasPreviousPage: false
         }
     },
     computed: {
@@ -41,21 +43,23 @@ export default {
     async created() {
     },
     methods: {
-        async loadBlocks({page, limit}) {
+        async loadBlocks({skip, take}) {
             this.loading = true
             try {
-                const pageNum = parseInt(page) || 1
-                const skip = (pageNum - 1) * limit
+                const skipNum = parseInt(skip) || 0
+                const takeNum = parseInt(take) || this.size
                 const filter = { miner: this.normalizeAddress(this.miner) }
                 
-                console.log('Loading blocks:', { skip, size: this.size, filter })
-                const response = await gqlClient.getBlocks(skip, this.size, filter)
+                console.log('Loading blocks:', { skip: skipNum, take: takeNum, filter })
+                const response = await gqlClient.getBlocks(skipNum, takeNum, filter)
                 this.blocks = response.items
                 this.hasNextPage = response.pageInfo?.hasNextPage || false
+                this.hasPreviousPage = response.pageInfo?.hasPreviousPage || false
             } catch (error) {
                 console.error('Failed to load blocks:', error)
                 this.blocks = []
                 this.hasNextPage = false
+                this.hasPreviousPage = false
             } finally {
                 this.loading = false
             }

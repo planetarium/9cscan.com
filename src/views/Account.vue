@@ -122,14 +122,21 @@ export default {
         async loadAccount() {
             this.loading = true
             try {
-                const agent = await gqlClient.getAgent(this.normalizeAddress(this.$route.params.address))
-                console.log(agent)
+              let agent = null
+                try {
+                  agent = await gqlClient.getAgent(this.normalizeAddress(this.$route.params.address))
+                } catch (error) {
+                  console.error('Failed to load agent:', error)
+                }
+
+                const ncgBalance = await gqlClient.getNCG(this.normalizeAddress(this.$route.params.address))
+
                 if (agent) {
                     this.account = [agent]
-                    const ncgBalance = await gqlClient.getNCG(this.normalizeAddress(this.$route.params.address))
+
                     if (ncgBalance) {
                         this.account[0].goldBalance = ncgBalance
-                    }
+                    } 
                     
                     if (agent.avatarAddresses && agent.avatarAddresses.length > 0) {
                         const avatarAddresses = agent.avatarAddresses.slice(0, 3)
@@ -147,6 +154,12 @@ export default {
                         })
                     }
                 } else {
+                  this.account = [{}]
+
+                  if (ncgBalance) {
+                      this.account[0].goldBalance = ncgBalance
+                  } 
+
                     this.checkIsAvatarAddress()
                 }
             } catch (error) {
