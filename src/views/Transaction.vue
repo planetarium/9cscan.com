@@ -38,7 +38,7 @@
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Age:</v-col>
             <v-col cols="12" sm="9" class="item-value" v-if="!loading && tx.object.id">
-              <v-icon small>mdi-clock-outline</v-icon> {{moment(tx.object.timestamp).fromNow()}} <span style="color:#777">({{ moment(tx.blockTimestamp) }}</span>
+              <v-icon small>mdi-clock-outline</v-icon> {{moment(tx.object.timestamp).fromNow()}} <span style="color:#777">({{ moment(tx.object.timestamp) }}</span>
             </v-col>
           </v-row>
           <v-row class="info-item ma-0">
@@ -100,7 +100,7 @@
               {{getParsedValues(action.values)['id']}}
             </v-col>
           </v-row>
-          <v-row class="info-item ma-0 data-row" v-for="k in Object.keys(getParsedValues(action.values))" v-if="['id'].indexOf(k) == -1">
+          <v-row class="info-item ma-0 data-row" v-for="(k, index) in Object.keys(getParsedValues(action.values))" :key="`${action.typeId}-${k}-${index}`" v-if="['id'].indexOf(k) == -1">
             <v-col cols="12" sm="3" class="item-title">{{k}}:</v-col>
             <v-col cols="12" sm="9" class="item-value">
               {{getParsedValues(action.values)[k]}}
@@ -154,10 +154,10 @@ export default {
             let tx = await this.$store.dispatch('Block/loadTransaction', this.id)
             if (tx) {
               this.tx = tx
-              if (!this.tx.blockTimestamp) {
+              if (!this.tx.object.timestamp) {
                 const block = await this.$store.dispatch('Block/loadBlock', this.tx.blockIndex)
                 if (block) {
-                  this.tx.blockTimestamp = block.object.timestamp
+                  this.tx.object.timestamp = block.object.timestamp
                 }
               }
             } else {

@@ -44,6 +44,7 @@ export default {
         async loadBlocks({page, limit}) {
             this.loading = true
             try {
+                limit = parseInt(limit) || this.size
                 const pageNum = parseInt(page) || 1
                 const skip = (pageNum - 1) * limit
                 const filter = { miner: this.normalizeAddress(this.miner) }

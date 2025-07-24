@@ -58,6 +58,7 @@ export default {
         async loadTxs({page, action, limit}) {
             this.loading = true
             try {
+                limit = parseInt(limit) || this.size
                 const pageNum = parseInt(page) || 1
                 const skip = (pageNum - 1) * limit
                 const filter = { signer: this.normalizeAddress(this.address) }

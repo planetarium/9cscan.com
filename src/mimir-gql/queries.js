@@ -64,12 +64,15 @@ export const GET_TRANSACTION = `
       firstActionTypeId
       firstAvatarAddressInActionArguments
       firstNCGAmountInActionArguments
+      firstRecipientInActionArguments
+      firstSenderInActionArguments
       object {
         id
         nonce
         publicKey
         signature
         signer
+        blockTimestamp
         timestamp
         txStatus
         updatedAddresses
@@ -108,6 +111,8 @@ export const GET_TRANSACTIONS = `
         firstActionTypeId
         firstAvatarAddressInActionArguments
         firstNCGAmountInActionArguments
+        firstRecipientInActionArguments
+        firstSenderInActionArguments
         id
         object {
           id
@@ -115,6 +120,7 @@ export const GET_TRANSACTIONS = `
           publicKey
           signature
           signer
+          blockTimestamp
           timestamp
           txStatus
           updatedAddresses

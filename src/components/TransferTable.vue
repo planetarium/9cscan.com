@@ -38,39 +38,38 @@
               </router-link>
             </td>
             <td><v-btn class="rect pointlink-btn" outlined small depressed  :target="embedMode ? '_blank' : ''" :to="{name: 'block', params: {index: tx.blockIndex}}">{{tx.blockIndex}}</v-btn></td>
-            <td class="text-no-wrap">{{moment(tx.blockTimestamp || tx.timestamp).fromNow()}}</td>
+            <td class="text-no-wrap">{{moment(tx.object.timestamp).fromNow()}}</td>
             <td>
               <v-chip label small outlined text-color="#555"><strong class="mr-1">{{latestBlockIndex - tx.blockIndex + 1}}</strong> Confirms</v-chip>
             </td>
             <td>
-              <v-btn label small :to="{name: 'transaction', params: {id: tx.id}}" style="text-transform: none;height:20px;font-weight:500;letter-spacing: 0" color="point" rounded outlined v-for="action in tx.actions" v-if="action.inspection" class="darken-1 px-2 mx-1" :target="embedMode ? '_blank' : ''">
-                <v-btn icon x-small color="point" :to="{query: {action: action.inspection['typeId']}, ...((detail || embedMode) ? {} : {name: 'transactions'})}" style="width:12px;" class="mr-1"><v-icon x-small>mdi-filter-variant</v-icon></v-btn>
-                {{action.inspection['typeId']}}
-                <span style="font-size: 10px;opacity:0.8;" v-if="action.inspection['productType']">({{action.inspection['productType']}})</span>
+              <v-btn label small :to="{name: 'transaction', params: {id: tx.id}}" style="text-transform: none;height:26px;font-weight:500;letter-spacing: 0;color:#EBB077 !important;background-color: #FFFAF8 !important;font-weight: 600;padding:0 12px !important;" color="point" rounded outlined v-for="(action, index) in tx.object.actions" :key="`${tx.id}-action-${index}`" v-if="action.typeId" class="darken-1 px-2 mx-1" :target="embedMode ? '_blank' : ''">
+                <v-btn icon x-small color="point" :to="{query: {action: action.typeId}, ...((detail || embedMode) ? {} : {name: 'transactions'})}" style="width:12px;" class="mr-1"><v-icon x-small>mdi-filter-variant</v-icon></v-btn>
+                {{action.typeId}}
               </v-btn>
             </td>
             <td>
-              <span v-if="tx?.actions?.[0]?.inspection?.['sender']">
-                <router-link :to="{name: 'account', params: {address: normalizeAddress(tx.actions[0].inspection['sender'])}}">
-                  {{formatAddress(tx.actions[0].inspection['sender'])}}
+              <span v-if="tx.firstSenderInActionArguments">
+                <router-link :to="{name: 'account', params: {address: normalizeAddress(tx.firstSenderInActionArguments)}}">
+                  {{normalizeAddress(tx.firstSenderInActionArguments).substr(0, 8)}}
                 </router-link>
               </span>
             </td>
             <td>
-              <v-chip label small color="success" :outlined="tx.involved['type'] == 'INVOLVED'" v-if="tx.involved">
-                {{tx.involved['type'] === 'INVOLVED' ? 'IN' : 'OUT'}}
+              <v-chip label small color="success" :outlined="normalizeAddress(tx.object.signer) === normalizeAddress(tx.firstRecipientInActionArguments)">
+                {{normalizeAddress(tx.object.signer) === normalizeAddress(tx.firstRecipientInActionArguments) ? 'IN' : 'OUT'}}
               </v-chip>
             </td>
             <td>
-              <span v-if="tx?.actions?.[0]?.inspection?.['recipient']">
-                <router-link :to="{name: 'account', params: {address: normalizeAddress(tx.actions[0].inspection['recipient'])}}">
-                  {{formatAddress(tx.actions[0].inspection['recipient'])}}
+              <span v-if="tx.firstRecipientInActionArguments">
+                <router-link :to="{name: 'account', params: {address: normalizeAddress(tx.firstRecipientInActionArguments)}}">
+                  {{normalizeAddress(tx.firstRecipientInActionArguments).substr(0, 8)}}
                 </router-link>
               </span>
             </td>
             <td>
-              <span v-if="tx?.actions?.[0]?.inspection?.['amount']">
-                <amount-label :asset-data="tx.actions[0].inspection['amount'][0]" :minus="tx.involved['type'] === 'SIGNED'" :amount="tx.actions[0].inspection['amount'][1]" />
+              <span v-if="tx.firstNCGAmountInActionArguments">
+                <amount-label :asset-data="{ticker: 'NCG'}" :minus="normalizeAddress(tx.object.signer) === normalizeAddress(tx.firstSenderInActionArguments)" :amount="tx.firstNCGAmountInActionArguments" />
               </span>
             </td>
           </tr>
