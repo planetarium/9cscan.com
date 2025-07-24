@@ -1,5 +1,5 @@
 {
-  "name": "internal-odin-9cscan",
+  "name": "internal-heimdall-9cscan",
   "compatibility_date": "2025-07-23",
   "assets": {
     "directory": "./dist/",
