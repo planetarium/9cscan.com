@@ -56,7 +56,7 @@
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Updated Addresses:</v-col>
             <v-col cols="12" sm="9" class="item-value" v-if="!loading">
-              <span v-for="addr in tx.extractedActionValues.involvedAddresses">
+              <span v-for="addr in tx.extractedActionValues?.involvedAddresses">
                 <router-link :to="{name: 'account', params:{address:normalizeAddress(addr)}}">{{normalizeAddress(addr)}}</router-link>
                 <br></span>
             </v-col>
@@ -91,7 +91,7 @@
           <v-row class="info-item ma-0">
             <v-col cols="12" sm="3" class="item-title">Avatar:</v-col>
             <v-col cols="12" sm="9" class="item-value">
-              <router-link :to="{name: 'avatar', params:{address: normalizeAddress(tx.extractedActionValues.avatarAddress)}}">{{ normalizeAddress(tx.extractedActionValues.avatarAddress) }}</router-link>
+              <router-link :to="{name: 'avatar', params:{address: normalizeAddress(tx.extractedActionValues?.avatarAddress)}}">{{ normalizeAddress(tx.extractedActionValues?.avatarAddress) }}</router-link>
             </v-col>
           </v-row>
           <v-row class="info-item ma-0" v-if="action.values">
