@@ -60,13 +60,13 @@
               </v-btn>
             </td>
             <td v-if="detail">
-              <span v-if="tx?.firstNCGAmountInActionArguments">
-                {{ tx.firstNCGAmountInActionArguments }} NCG
+              <span v-if="tx?.extractedActionValues?.recipients?.length > 0">
+                <amount-label :minus="normalizeAddress(tx.object.signer) === normalizeAddress(agentAddress)" :amountValue="tx.extractedActionValues.recipients[0].amount" />
               </span>
             </td>
             <td v-if="detail || embedMode">
-              <router-link :to="{name: 'avatar', params: {address: normalizeAddress(tx.firstAvatarAddressInActionArguments)}}" v-if="tx.firstAvatarAddressInActionArguments" :target="embedMode ? '_blank' : ''">
-                {{formatAddress(tx.firstAvatarAddressInActionArguments).substr(0, 8)}}
+              <router-link :to="{name: 'avatar', params: {address: normalizeAddress(tx.extractedActionValues.avatarAddress)}}" v-if="tx.extractedActionValues.avatarAddress" :target="embedMode ? '_blank' : ''">
+                {{formatAddress(tx.extractedActionValues.avatarAddress).substr(0, 8)}}
               </router-link>
             </td>
           </tr>

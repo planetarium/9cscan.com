@@ -49,30 +49,30 @@
               </v-btn>
             </td>
             <td>
-              <span v-if="tx.firstSenderInActionArguments">
-                <router-link :to="{name: 'account', params: {address: normalizeAddress(tx.firstSenderInActionArguments)}}">
-                  {{normalizeAddress(tx.firstSenderInActionArguments).substr(0, 8)}}
+              <span v-if="tx.extractedActionValues.sender">
+                <router-link :to="{name: 'account', params: {address: normalizeAddress(tx.extractedActionValues.sender)}}">
+                  {{normalizeAddress(tx.extractedActionValues.sender).substr(0, 8)}}
                 </router-link>
               </span>
             </td>
             <td>
               <v-chip v-if="involved" label small color="success" :outlined="normalizeAddress(tx.object.signer) !== normalizeAddress(agentAddress)">
-                {{normalizeAddress(tx.object.signer) === normalizeAddress(agentAddress) ? 'SIGNED' : 'INVOLVED'}}
+                {{normalizeAddress(tx.extractedActionValues.sender) === normalizeAddress(agentAddress) ? 'SIGNED' : 'INVOLVED'}}
               </v-chip>
-              <v-chip v-else label small color="success" :outlined="normalizeAddress(tx.object.signer) === normalizeAddress(tx.firstRecipientInActionArguments)">
-                {{normalizeAddress(tx.object.signer) === normalizeAddress(tx.firstRecipientInActionArguments) ? 'IN' : 'OUT'}}
+              <v-chip v-else label small color="success" :outlined="normalizeAddress(tx.extractedActionValues.sender) !== normalizeAddress(agentAddress)">
+                {{normalizeAddress(tx.extractedActionValues.sender) === normalizeAddress(agentAddress) ? 'OUT' : 'IN'}}
               </v-chip>
             </td>
             <td>
-              <span v-if="tx.firstRecipientInActionArguments">
-                <router-link :to="{name: 'account', params: {address: normalizeAddress(tx.firstRecipientInActionArguments)}}">
-                  {{normalizeAddress(tx.firstRecipientInActionArguments).substr(0, 8)}}
+              <span v-if="tx.extractedActionValues.recipients.length > 0">
+                <router-link :to="{name: 'account', params: {address: normalizeAddress(tx.extractedActionValues.recipients[0].recipient)}}">
+                  {{normalizeAddress(tx.extractedActionValues.recipients[0].recipient).substr(0, 8)}}
                 </router-link>
               </span>
             </td>
             <td>
-              <span v-if="tx.firstNCGAmountInActionArguments">
-                <amount-label :asset-data="{ticker: 'NCG'}" :minus="normalizeAddress(tx.object.signer) === normalizeAddress(tx.firstSenderInActionArguments)" :amount="parseFloat(tx.firstNCGAmountInActionArguments)" />
+              <span v-if="tx.extractedActionValues.recipients.length > 0">
+                <amount-label :minus="normalizeAddress(tx.object.signer) === normalizeAddress(agentAddress)" :amountValue="tx.extractedActionValues.recipients[0].amount" />
               </span>
             </td>
           </tr>

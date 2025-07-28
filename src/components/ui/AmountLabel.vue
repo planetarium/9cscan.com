@@ -1,17 +1,14 @@
 <template>
   <span class="amount">
-    {{ncgFormat(decimalAmount)}} <span class="ticker">{{ticker}}</span>
+    {{minus ? '-' : ''}}{{amount}} <span class="ticker">{{ticker}}</span>
   </span>
 </template>
 <script>
 export default {
   name: 'AmountLabel',
   props: {
-    assetData: {
-      type: Object
-    },
-    amount: {
-      type: Number
+    amountValue: {
+      type: String
     },
     minus: {
       type: Boolean,
@@ -26,15 +23,10 @@ export default {
   },
   computed: {
     ticker() {
-      return this.assetData?.['ticker'] || ""
+      return this.amountValue.split(' ')[1] || ""
     },
-    decimalAmount() {
-      const decimal = Number(this.assetData?.['decimalPlaces'] ?? 0)
-      let amount = this.amount * (this.minus ? -1 : 1)
-      if (decimal > 0) {
-        amount /= Math.pow(10, decimal)
-        return amount.toFixed(2)
-      }
+    amount() {
+      const amount = this.amountValue.split(' ')[0]
       return amount
     }
   },

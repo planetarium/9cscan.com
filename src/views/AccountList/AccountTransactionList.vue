@@ -73,7 +73,14 @@ export default {
                 }
                 
                 console.log('Loading transactions:', { skip: skipNum, take: takeNum, filter })
-                const response = await gqlClient.getTransactions(skipNum, takeNum, filter)
+                
+                let response
+                if (this.avatar) {
+                    response = await gqlClient.getTransactionsIncludeInvolvedAvatarAddress(skipNum, takeNum, filter)
+                } else {
+                    response = await gqlClient.getTransactionsIncludeInvolvedAddress(skipNum, takeNum, filter)
+                }
+                
                 this.txs = response.items
                 this.hasNextPage = response.pageInfo?.hasNextPage || false
                 this.hasPreviousPage = response.pageInfo?.hasPreviousPage || false
@@ -96,7 +103,13 @@ export default {
                 filter.actionTypeId = action
             }
             
-            const response = await gqlClient.getTransactions(skip, 100, filter)
+            let response
+            if (this.avatar) {
+                response = await gqlClient.getTransactionsIncludeInvolvedAvatarAddress(skip, 100, filter)
+            } else {
+                response = await gqlClient.getTransactionsIncludeInvolvedAddress(skip, 100, filter)
+            }
+            
             txs.push(...response.items)
             skip += 100
             if (response.items.length < 100) break;

@@ -11,7 +11,10 @@ import {
   ActionTypeModel,
   PageInfoModel,
   PaginatedResponseModel,
-  AvatarDataModel
+  AvatarDataModel,
+  RecipientModel,
+  ExtractedActionValuesModel,
+  InvolvedModel
 } from './models'
 
 describe('WNCGPriceModel', () => {
@@ -275,9 +278,38 @@ describe('TransactionModel', () => {
     const data = {
       blockHash: 'block-hash',
       blockIndex: 1000,
-      firstActionTypeId: 'action-type',
-      firstAvatarAddressInActionArguments: 'avatar-address',
-      firstNCGAmountInActionArguments: '100',
+      blockTimestamp: '2023-01-01T00:00:00Z',
+      id: 'tx-id',
+      object: {
+        id: 'tx-id',
+        signer: 'signer-address'
+      },
+      extractedActionValues: {
+        avatarAddress: 'avatar-address',
+        sender: 'sender-address',
+        typeId: 'action-type'
+      },
+      involved: {
+        type: 'SIGNED',
+        address: 'test-address'
+      }
+    }
+    
+    const model = new TransactionModel(data)
+    
+    expect(model.blockHash).toBe('block-hash')
+    expect(model.blockIndex).toBe(1000)
+    expect(model.blockTimestamp).toBe('2023-01-01T00:00:00Z')
+    expect(model.id).toBe('tx-id')
+    expect(model.object).toBeInstanceOf(TransactionObjectModel)
+    expect(model.extractedActionValues).toBeInstanceOf(ExtractedActionValuesModel)
+    expect(model.involved).toBeInstanceOf(InvolvedModel)
+  })
+
+  it('should handle missing extractedActionValues and involved gracefully', () => {
+    const data = {
+      blockHash: 'block-hash',
+      blockIndex: 1000,
       id: 'tx-id',
       object: {
         id: 'tx-id',
@@ -289,18 +321,10 @@ describe('TransactionModel', () => {
     
     expect(model.blockHash).toBe('block-hash')
     expect(model.blockIndex).toBe(1000)
-    expect(model.firstActionTypeId).toBe('action-type')
-    expect(model.firstAvatarAddressInActionArguments).toBe('avatar-address')
-    expect(model.firstNCGAmountInActionArguments).toBe('100')
     expect(model.id).toBe('tx-id')
     expect(model.object).toBeInstanceOf(TransactionObjectModel)
-  })
-
-  it('should handle missing object gracefully', () => {
-    const model = new TransactionModel({ id: 'tx-id' })
-    
-    expect(model.id).toBe('tx-id')
-    expect(model.object).toBeNull()
+    expect(model.extractedActionValues).toBeNull()
+    expect(model.involved).toBeNull()
   })
 })
 
@@ -400,5 +424,79 @@ describe('AvatarDataModel', () => {
     
     expect(model.avatar).toBeNull()
     expect(model.dailyRewardReceivedBlockIndex).toBe(0)
+  })
+}) 
+
+describe('RecipientModel', () => {
+  it('should create RecipientModel with valid data', () => {
+    const data = { amount: '100', recipient: 'test-recipient' }
+    const model = new RecipientModel(data)
+    
+    expect(model.amount).toBe('100')
+    expect(model.recipient).toBe('test-recipient')
+  })
+
+  it('should handle missing data gracefully', () => {
+    const model = new RecipientModel({})
+    
+    expect(model.amount).toBe('')
+    expect(model.recipient).toBe('')
+  })
+})
+
+describe('ExtractedActionValuesModel', () => {
+  it('should create ExtractedActionValuesModel with valid data', () => {
+    const data = {
+      avatarAddress: 'avatar-address',
+      fungibleAssetValues: ['asset1', 'asset2'],
+      involvedAddresses: ['addr1', 'addr2'],
+      involvedAvatarAddresses: ['avatar1', 'avatar2'],
+      sender: 'sender-address',
+      typeId: 'action-type',
+      recipients: [
+        { amount: '100', recipient: 'recipient1' },
+        { amount: '200', recipient: 'recipient2' }
+      ]
+    }
+    const model = new ExtractedActionValuesModel(data)
+    
+    expect(model.avatarAddress).toBe('avatar-address')
+    expect(model.fungibleAssetValues).toEqual(['asset1', 'asset2'])
+    expect(model.involvedAddresses).toEqual(['addr1', 'addr2'])
+    expect(model.involvedAvatarAddresses).toEqual(['avatar1', 'avatar2'])
+    expect(model.sender).toBe('sender-address')
+    expect(model.typeId).toBe('action-type')
+    expect(model.recipients).toHaveLength(2)
+    expect(model.recipients[0]).toBeInstanceOf(RecipientModel)
+    expect(model.recipients[1]).toBeInstanceOf(RecipientModel)
+  })
+
+  it('should handle missing data gracefully', () => {
+    const model = new ExtractedActionValuesModel({})
+    
+    expect(model.avatarAddress).toBe('')
+    expect(model.fungibleAssetValues).toEqual([])
+    expect(model.involvedAddresses).toEqual([])
+    expect(model.involvedAvatarAddresses).toEqual([])
+    expect(model.sender).toBe('')
+    expect(model.typeId).toBe('')
+    expect(model.recipients).toEqual([])
+  })
+})
+
+describe('InvolvedModel', () => {
+  it('should create InvolvedModel with valid data', () => {
+    const data = { type: 'SIGNED', address: 'test-address' }
+    const model = new InvolvedModel(data)
+    
+    expect(model.type).toBe('SIGNED')
+    expect(model.address).toBe('test-address')
+  })
+
+  it('should handle missing data gracefully', () => {
+    const model = new InvolvedModel({})
+    
+    expect(model.type).toBe('')
+    expect(model.address).toBe('')
   })
 }) 

@@ -69,7 +69,7 @@ export default {
                 }
                 
                 console.log('Loading transfer transactions:', { skip: skipNum, take: takeNum, filter })
-                const response = await gqlClient.getTransactions(skipNum, takeNum, filter)
+                const response = await gqlClient.getTransactionsIncludeInvolvedAddress(skipNum, takeNum, filter)
                 this.txs = response.items
                 this.hasNextPage = response.pageInfo?.hasNextPage || false
                 this.hasPreviousPage = response.pageInfo?.hasPreviousPage || false
@@ -92,7 +92,7 @@ export default {
                 filter.actionTypeId = action
             }
             
-            const response = await gqlClient.getTransactions(skip, 100, filter)
+            const response = await gqlClient.getTransactionsIncludeInvolvedAddress(skip, 100, filter)
             txs.push(...response.items)
             skip += 100
             if (response.items.length < 100) break;
@@ -121,7 +121,6 @@ export default {
           this.csvProgress = undefined;
         },
         changeActionFilter(action) {
-          console.log('hoho', action)
             this.$router.push({
                 param: {t: 'transfer', address: this.address},
                 query: action ? {action, t: 'transfer'} : {}

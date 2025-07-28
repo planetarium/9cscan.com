@@ -61,18 +61,14 @@ export const GET_TRANSACTION = `
     transaction(txId: $txId) {
       blockHash
       blockIndex
-      firstActionTypeId
-      firstAvatarAddressInActionArguments
-      firstNCGAmountInActionArguments
-      firstRecipientInActionArguments
-      firstSenderInActionArguments
+      blockTimestamp
+      id
       object {
         id
         nonce
         publicKey
         signature
         signer
-        blockTimestamp
         timestamp
         txStatus
         updatedAddresses
@@ -81,38 +77,40 @@ export const GET_TRANSACTION = `
           typeId
           values
         }
+        blockTimestamp
+      }
+      extractedActionValues {
+        avatarAddress
+        fungibleAssetValues
+        involvedAddresses
+        involvedAvatarAddresses
+        sender
+        typeId
+        recipients {
+          amount
+          recipient
+        }
       }
     }
   }
 `
 
 export const GET_TRANSACTIONS = `
-  query GetTransactions(
-    $skip: Int!
-    $take: Int!
-    $blockIndex: Long
-    $actionTypeId: String
-    $avatarAddress: Address
-    $signer: Address
-  ) {
+  query GetTransactions($skip: Int!, $take: Int!, $blockIndex: Long, $actionTypeId: String) {
     transactions(
       skip: $skip
       take: $take
       filter: {
         blockIndex: $blockIndex
-        firstActionTypeId: $actionTypeId
-        firstAvatarAddressInActionArguments: $avatarAddress
-        signer: $signer
+        actionTypeId: $actionTypeId
+        includeInvolvedAddress: false
+        includeInvolvedAvatarAddress: false
       }
     ) {
       items {
         blockHash
         blockIndex
-        firstActionTypeId
-        firstAvatarAddressInActionArguments
-        firstNCGAmountInActionArguments
-        firstRecipientInActionArguments
-        firstSenderInActionArguments
+        blockTimestamp
         id
         object {
           id
@@ -120,7 +118,6 @@ export const GET_TRANSACTIONS = `
           publicKey
           signature
           signer
-          blockTimestamp
           timestamp
           txStatus
           updatedAddresses
@@ -128,6 +125,129 @@ export const GET_TRANSACTIONS = `
             raw
             typeId
             values
+          }
+          blockTimestamp
+        }
+        extractedActionValues {
+          avatarAddress
+          fungibleAssetValues
+          involvedAddresses
+          involvedAvatarAddresses
+          sender
+          typeId
+          recipients {
+            amount
+            recipient
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+      }
+    }
+  }
+`
+
+export const GET_TRANSACTIONS_INCLUDE_INVOLVED_ADDRESS = `
+  query GetTransactionsIncludeInvolvedAddress($skip: Int!, $take: Int!, $blockIndex: Long, $actionTypeId: String, $signer: Address) {
+    transactions(
+      skip: $skip
+      take: $take
+      filter: {
+        blockIndex: $blockIndex
+        signer: $signer
+        actionTypeId: $actionTypeId
+        includeInvolvedAddress: true
+        includeInvolvedAvatarAddress: false
+      }
+    ) {
+      items {
+        blockHash
+        blockIndex
+        blockTimestamp
+        id
+        object {
+          id
+          nonce
+          publicKey
+          signature
+          signer
+          timestamp
+          txStatus
+          updatedAddresses
+          actions {
+            raw
+            typeId
+            values
+          }
+          blockTimestamp
+        }
+        extractedActionValues {
+          avatarAddress
+          fungibleAssetValues
+          involvedAddresses
+          involvedAvatarAddresses
+          sender
+          typeId
+          recipients {
+            amount
+            recipient
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+      }
+    }
+  }
+`
+
+export const GET_TRANSACTIONS_INCLUDE_INVOLVED_AVATAR_ADDRESS = `
+  query GetTransactionsIncludeInvolvedAvatarAddress($skip: Int!, $take: Int!, $blockIndex: Long, $actionTypeId: String, $avatarAddress: Address) {
+    transactions(
+      skip: $skip
+      take: $take
+      filter: {
+        blockIndex: $blockIndex
+        actionTypeId: $actionTypeId
+        avatarAddress: $avatarAddress
+        includeInvolvedAddress: false
+        includeInvolvedAvatarAddress: true
+      }
+    ) {
+      items {
+        blockHash
+        blockIndex
+        blockTimestamp
+        id
+        object {
+          id
+          nonce
+          publicKey
+          signature
+          signer
+          timestamp
+          txStatus
+          updatedAddresses
+          actions {
+            raw
+            typeId
+            values
+          }
+          blockTimestamp
+        }
+        extractedActionValues {
+          avatarAddress
+          fungibleAssetValues
+          involvedAddresses
+          involvedAvatarAddresses
+          sender
+          typeId
+          recipients {
+            amount
+            recipient
           }
         }
       }
