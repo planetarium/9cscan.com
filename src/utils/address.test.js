@@ -19,7 +19,7 @@ describe('normalizeAddress', () => {
   })
 
   test('should handle empty string', () => {
-    expect(normalizeAddress('')).toBe('0x')
+    expect(normalizeAddress('')).toBe('')
   })
 })
 

@@ -170,7 +170,12 @@ export default {
         },
         async checkIsAvatarAddress() {
             try {
-                const avatar = await gqlClient.getAvatar(this.normalizeAddress(this.$route.params.address))
+                let avatar;
+                try {
+                    avatar = await gqlClient.getAvatar(this.normalizeAddress(this.$route.params.address))
+                } catch (error) {
+                    console.error('Failed to load avatar:', error)
+                }
                 if (avatar) {
                     this.$router.replace({name: 'avatar', params: {address: this.$route.params.address}})
                 }
