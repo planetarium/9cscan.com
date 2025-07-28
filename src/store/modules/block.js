@@ -61,9 +61,6 @@ export default {
         setLoading(state, loading) {
             state.loading = loading
         },
-        setLatestBlockIndex(state, index) {
-            state.latestBlockIndex = index
-        },
         setLatestBlocks(state, blocks) {
             state.latestBlocks = blocks
         },
@@ -84,7 +81,6 @@ export default {
                 commit('setLoading', false)
                 commit('setLatestBlocks', blocks)
                 commit('setLatestTransactions', transactions)
-                commit('setLatestBlockIndex', blocks[0].object.index)
                 dispatch('startPolling')
             } catch (error) {
                 console.error('Failed to initialize block data:', error)
@@ -109,7 +105,6 @@ export default {
                     const mergedBlocks = mergeAndDeduplicate(state.latestBlocks, newBlocks, 'hash', 'index')
                     const mergedTransactions = mergeAndDeduplicate(state.latestTransactions, newTransactions, 'id', 'blockIndex')
                     
-                    commit('setLatestBlockIndex', mergedBlocks[0].object.index)
                     commit('setLatestBlocks', mergedBlocks)
                     commit('setLatestTransactions', mergedTransactions)
                 } catch (error) {

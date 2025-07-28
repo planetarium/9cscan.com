@@ -21,6 +21,8 @@ jest.mock('./queries', () => ({
   GET_BLOCK: 'query GetBlock',
   GET_TRANSACTION: 'query GetTransaction',
   GET_TRANSACTIONS: 'query GetTransactions',
+  GET_TRANSACTIONS_INCLUDE_INVOLVED_ADDRESS: 'query GetTransactionsIncludeInvolvedAddress',
+  GET_TRANSACTIONS_INCLUDE_INVOLVED_AVATAR_ADDRESS: 'query GetTransactionsIncludeInvolvedAvatarAddress',
   GET_ACTION_TYPES: 'query GetActionTypes',
   GET_BLOCKS_FOR_STATS: 'query GetBlocksForStats',
   GET_WNCG_PRICE: 'query GetWNCGPrice',
@@ -30,56 +32,6 @@ jest.mock('./queries', () => ({
 describe('GraphQL Client', () => {
   beforeEach(() => {
     mockFetch.mockClear()
-  })
-
-  describe('getAvatarAddresses', () => {
-    it('should fetch avatar addresses successfully', async () => {
-      const mockData = {
-        agent: {
-          avatarAddresses: [
-            { key: 'key1', value: 'value1' },
-            { key: 'key2', value: 'value2' }
-          ]
-        }
-      }
-
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({ data: mockData })
-      })
-
-      const result = await gqlClient.getAvatarAddresses('test-address')
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: expect.stringContaining('query GetAvatarAddresses')
-        })
-      )
-      expect(result).toEqual(mockData.agent.avatarAddresses)
-    })
-
-    it('should return empty array when agent is null', async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({ data: { agent: null } })
-      })
-
-      const result = await gqlClient.getAvatarAddresses('test-address')
-
-      expect(result).toEqual([])
-    })
-
-    it('should handle errors', async () => {
-      mockFetch.mockResolvedValue({
-        ok: false,
-        status: 500
-      })
-
-      await expect(gqlClient.getAvatarAddresses('test-address')).rejects.toThrow('HTTP error! status: 500')
-    })
   })
 
   describe('getAgent', () => {
@@ -110,9 +62,129 @@ describe('GraphQL Client', () => {
       expect(result).toBeInstanceOf(AgentModel)
       expect(result.address).toBe('agent-address')
     })
+
+    it('should return null when agent is not found', async () => {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: { agent: null } })
+      })
+
+      const result = await gqlClient.getAgent('agent-address')
+
+      expect(result).toBeNull()
+    })
+
+    it('should handle errors', async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 500
+      })
+
+      await expect(gqlClient.getAgent('agent-address')).rejects.toThrow('HTTP error! status: 500')
+    })
   })
 
+  describe('getTransactionsIncludeInvolvedAddress', () => {
+    it('should fetch transactions with involved address successfully', async () => {
+      const mockData = {
+        transactions: {
+          items: [
+            {
+              id: 'tx1',
+              blockIndex: 100,
+              object: {
+                signer: 'test-address',
+                actions: []
+              }
+            }
+          ],
+          pageInfo: {
+            hasNextPage: false,
+            hasPreviousPage: false
+          }
+        }
+      }
 
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: mockData })
+      })
+
+      const result = await gqlClient.getTransactionsIncludeInvolvedAddress(0, 10, { signer: 'test-address' })
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: expect.stringContaining('query GetTransactionsIncludeInvolvedAddress')
+        })
+      )
+      expect(result).toBeInstanceOf(PaginatedResponseModel)
+      expect(result.items).toHaveLength(1)
+      expect(result.items[0]).toBeInstanceOf(TransactionModel)
+    })
+
+    it('should handle errors', async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 500
+      })
+
+      await expect(gqlClient.getTransactionsIncludeInvolvedAddress(0, 10, { signer: 'test-address' })).rejects.toThrow('HTTP error! status: 500')
+    })
+  })
+
+  describe('getTransactionsIncludeInvolvedAvatarAddress', () => {
+    it('should fetch transactions with involved avatar address successfully', async () => {
+      const mockData = {
+        transactions: {
+          items: [
+            {
+              id: 'tx1',
+              blockIndex: 100,
+              object: {
+                signer: 'test-address',
+                actions: []
+              }
+            }
+          ],
+          pageInfo: {
+            hasNextPage: false,
+            hasPreviousPage: false
+          }
+        }
+      }
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: mockData })
+      })
+
+      const result = await gqlClient.getTransactionsIncludeInvolvedAvatarAddress(0, 10, { avatarAddress: 'test-avatar' })
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: expect.stringContaining('query GetTransactionsIncludeInvolvedAvatarAddress')
+        })
+      )
+      expect(result).toBeInstanceOf(PaginatedResponseModel)
+      expect(result.items).toHaveLength(1)
+      expect(result.items[0]).toBeInstanceOf(TransactionModel)
+    })
+
+    it('should handle errors', async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 500
+      })
+
+      await expect(gqlClient.getTransactionsIncludeInvolvedAvatarAddress(0, 10, { avatarAddress: 'test-avatar' })).rejects.toThrow('HTTP error! status: 500')
+    })
+  })
 
   describe('getNCG', () => {
     it('should fetch NCG balance successfully', async () => {
