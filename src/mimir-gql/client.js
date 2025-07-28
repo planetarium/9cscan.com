@@ -107,6 +107,28 @@ export const gqlClient = {
     }
   },
 
+  async getTransactionsIncludeInvolvedAddress(skip, take, filters = {}) {
+    try {
+      const variables = { skip, take, ...filters }
+      const data = await makeGraphQLRequest(queries.GET_TRANSACTIONS_INCLUDE_INVOLVED_ADDRESS, variables)
+      return new PaginatedResponseModel(data.transactions, TransactionModel)
+    } catch (error) {
+      console.error('Error fetching transactions with involved address:', error)
+      throw error
+    }
+  },
+
+  async getTransactionsIncludeInvolvedAvatarAddress(skip, take, filters = {}) {
+    try {
+      const variables = { skip, take, ...filters }
+      const data = await makeGraphQLRequest(queries.GET_TRANSACTIONS_INCLUDE_INVOLVED_AVATAR_ADDRESS, variables)
+      return new PaginatedResponseModel(data.transactions, TransactionModel)
+    } catch (error) {
+      console.error('Error fetching transactions with involved avatar address:', error)
+      throw error
+    }
+  },
+
   async getActionTypes() {
     try {
       const data = await makeGraphQLRequest(queries.GET_ACTION_TYPES)

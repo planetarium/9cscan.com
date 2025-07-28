@@ -83,17 +83,41 @@ export class BlockObjectModel {
   }
 }
 
+export class RecipientModel {
+  constructor(data) {
+    this.amount = data?.amount || ''
+    this.recipient = data?.recipient || ''
+  }
+}
+
+export class ExtractedActionValuesModel {
+  constructor(data) {
+    this.avatarAddress = data?.avatarAddress || ''
+    this.fungibleAssetValues = data?.fungibleAssetValues || []
+    this.involvedAddresses = data?.involvedAddresses || []
+    this.involvedAvatarAddresses = data?.involvedAvatarAddresses || []
+    this.sender = data?.sender || ''
+    this.typeId = data?.typeId || ''
+    this.recipients = (data?.recipients || []).map(recipient => new RecipientModel(recipient))
+  }
+}
+
+export class InvolvedModel {
+  constructor(data) {
+    this.type = data?.type || ''
+    this.address = data?.address || ''
+  }
+}
+
 export class TransactionModel {
   constructor(data) {
     this.blockHash = data?.blockHash || ''
     this.blockIndex = data?.blockIndex || 0
-    this.firstActionTypeId = data?.firstActionTypeId || ''
-    this.firstAvatarAddressInActionArguments = data?.firstAvatarAddressInActionArguments || ''
-    this.firstNCGAmountInActionArguments = data?.firstNCGAmountInActionArguments || ''
-    this.firstRecipientInActionArguments = data?.firstRecipientInActionArguments || ''
-    this.firstSenderInActionArguments = data?.firstSenderInActionArguments || ''
+    this.blockTimestamp = data?.blockTimestamp || ''
     this.id = data?.id || ''
     this.object = data?.object ? new TransactionObjectModel(data.object) : null
+    this.extractedActionValues = data?.extractedActionValues ? new ExtractedActionValuesModel(data.extractedActionValues) : null
+    this.involved = data?.involved ? new InvolvedModel(data.involved) : null
   }
 }
 
