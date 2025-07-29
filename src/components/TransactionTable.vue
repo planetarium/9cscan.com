@@ -38,7 +38,7 @@
               </router-link>
             </td>
             <td><v-btn class="rect pointlink-btn" outlined small depressed  :target="embedMode ? '_blank' : ''" :to="{name: 'block', params: {index: tx.blockIndex}}">{{tx.blockIndex}}</v-btn></td>
-            <td class="text-no-wrap">{{moment(tx.object.blockTimestamp || tx.object.timestamp).fromNow()}}</td>
+            <td class="text-no-wrap">{{moment(tx.blockTimestamp || tx.object.timestamp).fromNow()}}</td>
             <td v-if="detail">
               <v-chip label small outlined text-color="#555"><strong class="mr-1">{{latestBlockIndex - tx.blockIndex + 1}}</strong> Confirms</v-chip>
             </td>
