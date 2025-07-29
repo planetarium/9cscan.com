@@ -174,4 +174,46 @@ describe('Block Module', () => {
             expect(store.state.block.latestTransactions).toEqual(txs)
         })
     })
+
+    describe('data limiting', () => {
+        test('should limit blocks to maximum items', () => {
+            const largeBlocks = Array.from({ length: 150 }, (_, i) => ({ 
+                object: { index: i, hash: `hash${i}` } 
+            }))
+            
+            store.commit('block/setLatestBlocks', largeBlocks)
+            expect(store.state.block.latestBlocks).toHaveLength(150)
+            
+            const limitedBlocks = largeBlocks.slice(0, 100)
+            store.commit('block/setLatestBlocks', limitedBlocks)
+            expect(store.state.block.latestBlocks).toHaveLength(100)
+        })
+
+        test('should limit transactions to maximum items', () => {
+            const largeTxs = Array.from({ length: 150 }, (_, i) => ({ 
+                id: `tx${i}`, blockIndex: i 
+            }))
+            
+            store.commit('block/setLatestTransactions', largeTxs)
+            expect(store.state.block.latestTransactions).toHaveLength(150)
+            
+            const limitedTxs = largeTxs.slice(0, 100)
+            store.commit('block/setLatestTransactions', limitedTxs)
+            expect(store.state.block.latestTransactions).toHaveLength(100)
+        })
+
+        test('should maintain data integrity when limiting', () => {
+            const blocks = Array.from({ length: 120 }, (_, i) => ({ 
+                object: { index: i, hash: `hash${i}` } 
+            }))
+            
+            store.commit('block/setLatestBlocks', blocks)
+            const limitedBlocks = blocks.slice(0, 100)
+            store.commit('block/setLatestBlocks', limitedBlocks)
+            
+            expect(store.state.block.latestBlocks[0].object.index).toBe(0)
+            expect(store.state.block.latestBlocks[99].object.index).toBe(99)
+            expect(store.state.block.latestBlocks).toHaveLength(100)
+        })
+    })
 }) 
