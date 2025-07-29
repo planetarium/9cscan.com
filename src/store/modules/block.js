@@ -105,12 +105,17 @@ export default {
                     const mergedBlocks = mergeAndDeduplicate(state.latestBlocks, newBlocks, 'hash', 'index')
                     const mergedTransactions = mergeAndDeduplicate(state.latestTransactions, newTransactions, 'id', 'blockIndex')
                     
-                    commit('setLatestBlocks', mergedBlocks)
-                    commit('setLatestTransactions', mergedTransactions)
+                    const maxItems = 100
+                    
+                    const limitedBlocks = mergedBlocks.slice(0, maxItems)
+                    const limitedTransactions = mergedTransactions.slice(0, maxItems)
+                    
+                    commit('setLatestBlocks', limitedBlocks)
+                    commit('setLatestTransactions', limitedTransactions)
                 } catch (error) {
                     console.error('Failed to poll data:', error)
                 }
-            }, 3500)
+            }, 4000)
         },
         setSize({commit}, size) {
             commit('setSize', size)

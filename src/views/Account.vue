@@ -129,7 +129,12 @@ export default {
                   console.error('Failed to load agent:', error)
                 }
 
-                const ncgBalance = await gqlClient.getNCG(this.normalizeAddress(this.$route.params.address))
+                let ncgBalance = null
+                try {
+                  ncgBalance = await gqlClient.getNCG(this.normalizeAddress(this.$route.params.address))
+                } catch (error) {
+                  console.error('Failed to load ncg balance:', error)
+                }
 
                 if (agent) {
                     this.account = [agent]
@@ -160,7 +165,7 @@ export default {
                       this.account[0].goldBalance = ncgBalance
                   } 
 
-                    this.checkIsAvatarAddress()
+                  this.checkIsAvatarAddress()
                 }
             } catch (error) {
                 console.error('Failed to load account:', error)
@@ -176,6 +181,7 @@ export default {
                 } catch (error) {
                     console.error('Failed to load avatar:', error)
                 }
+                console.log('avatar', avatar)
                 if (avatar) {
                     this.$router.replace({name: 'avatar', params: {address: this.$route.params.address}})
                 }
