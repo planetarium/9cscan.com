@@ -94,16 +94,16 @@
               <router-link :to="{name: 'avatar', params:{address: normalizeAddress(tx.extractedActionValues?.avatarAddress)}}">{{ normalizeAddress(tx.extractedActionValues?.avatarAddress) }}</router-link>
             </v-col>
           </v-row>
-          <v-row class="info-item ma-0" v-if="action.values">
+          <v-row class="info-item ma-0" v-if="action.values && getParsedValues(action.values) && getParsedValues(action.values).id">
             <v-col cols="12" sm="3" class="item-title">Id:</v-col>
-            <v-col cols="12" sm="9" class="item-value" v-if="getParsedValues(action.values)['id']">
-              {{getParsedValues(action.values)['id']}}
+            <v-col cols="12" sm="9" class="item-value">
+              {{getParsedValues(action.values).id}}
             </v-col>
           </v-row>
-          <v-row class="info-item ma-0 data-row" v-for="(k, index) in Object.keys(getParsedValues(action.values))" :key="`${action.typeId}-${k}-${index}`" v-if="['id'].indexOf(k) == -1">
+          <v-row class="info-item ma-0 data-row" v-for="(k, index) in Object.keys(getParsedValues(action.values) || {})" :key="`${action.typeId}-${k}-${index}`" v-if="['id'].indexOf(k) == -1">
             <v-col cols="12" sm="3" class="item-title">{{k}}:</v-col>
             <v-col cols="12" sm="9" class="item-value">
-              {{getParsedValues(action.values)[k]}}
+              {{(getParsedValues(action.values) || {})[k]}}
             </v-col>
           </v-row>
         </v-card-text>
@@ -181,8 +181,12 @@ export default {
             })
         },
         getParsedValues(values) {
+            if (!values) {
+                return {}
+            }
             try {
-                return JSON.parse(values)
+                const parsed = JSON.parse(values)
+                return parsed && typeof parsed === 'object' ? parsed : {}
             } catch (e) {
                 return {}
             }
