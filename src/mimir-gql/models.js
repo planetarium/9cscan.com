@@ -167,6 +167,6 @@ export class PaginatedResponseModel {
 export class AvatarDataModel {
   constructor(data) {
     this.avatar = data?.avatar ? new AvatarModel(data.avatar) : null
-    this.dailyRewardReceivedBlockIndex = data?.dailyRewardReceivedBlockIndex || 0
+    this.dailyRewardReceivedBlockIndex = data?.dailyRewardReceivedBlockIndex || null
   }
 } 
