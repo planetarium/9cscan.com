@@ -26,7 +26,8 @@ jest.mock('./queries', () => ({
   GET_ACTION_TYPES: 'query GetActionTypes',
   GET_BLOCKS_FOR_STATS: 'query GetBlocksForStats',
   GET_WNCG_PRICE: 'query GetWNCGPrice',
-  GET_AVATAR: 'query GetAvatar'
+  GET_AVATAR: 'query GetAvatar',
+  GET_DAILY_REWARD_RECEIVED_BLOCK_INDEX: 'query GetDailyRewardReceivedBlockIndex'
 }), { virtual: true })
 
 describe('GraphQL Client', () => {
@@ -472,8 +473,7 @@ describe('GraphQL Client', () => {
           address: 'avatar-address',
           name: 'Test Avatar',
           level: 10
-        },
-        dailyRewardReceivedBlockIndex: 1000
+        }
       }
 
       mockFetch.mockResolvedValue({
@@ -492,6 +492,54 @@ describe('GraphQL Client', () => {
         })
       )
       expect(result).toBeInstanceOf(AvatarDataModel)
+    })
+  })
+
+  describe('getDailyRewardReceivedBlockIndex', () => {
+    it('should fetch daily reward received block index successfully', async () => {
+      const mockData = {
+        dailyRewardReceivedBlockIndex: 1000
+      }
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: mockData })
+      })
+
+      const result = await gqlClient.getDailyRewardReceivedBlockIndex('avatar-address')
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: expect.stringContaining('query GetDailyRewardReceivedBlockIndex')
+        })
+      )
+      expect(result).toBe(1000)
+    })
+
+    it('should return null when daily reward received block index is not available', async () => {
+      const mockData = {
+        dailyRewardReceivedBlockIndex: null
+      }
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: mockData })
+      })
+
+      const result = await gqlClient.getDailyRewardReceivedBlockIndex('avatar-address')
+
+      expect(result).toBeNull()
+    })
+
+    it('should return null when network error occurs', async () => {
+      mockFetch.mockRejectedValue(new Error('Network error'))
+
+      const result = await gqlClient.getDailyRewardReceivedBlockIndex('avatar-address')
+
+      expect(result).toBeNull()
     })
   })
 }) 
