@@ -116,12 +116,13 @@ export default {
             try {
               const avatarData = await gqlClient.getAvatar(this.normalizeAddress(this.$route.params.address))
               const ncgBalance = await gqlClient.getNCG(this.normalizeAddress(avatarData.avatar.agentAddress))
+              const dailyRewardReceivedBlockIndex = await gqlClient.getDailyRewardReceivedBlockIndex(this.normalizeAddress(this.$route.params.address))
                 if (avatarData && avatarData.avatar) {
                     this.account = {
                         address: avatarData.agent?.address || '',
                         goldBalance: ncgBalance || 0,
                         avatar: avatarData.avatar,
-                        dailyRewardReceivedBlockIndex: avatarData.dailyRewardReceivedBlockIndex || 0
+                        dailyRewardReceivedBlockIndex: dailyRewardReceivedBlockIndex
                     }
                 }
             } catch (error) {

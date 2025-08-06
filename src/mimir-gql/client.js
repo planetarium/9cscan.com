@@ -167,6 +167,16 @@ export const gqlClient = {
       console.error('Error fetching avatar:', error)
       throw error
     }
+  },
+
+  async getDailyRewardReceivedBlockIndex(avatarAddress) {
+    try {
+      const data = await makeGraphQLRequest(queries.GET_DAILY_REWARD_RECEIVED_BLOCK_INDEX, { avatarAddress })
+      return data.dailyRewardReceivedBlockIndex || null
+    } catch (error) {
+      console.error('Error fetching daily reward received block index:', error)
+      return null
+    }
   }
 }
 
