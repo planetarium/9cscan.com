@@ -314,6 +314,11 @@ export const GET_AVATAR = `
       updatedAt
       version
     }
+  }
+`
+
+export const GET_DAILY_REWARD_RECEIVED_BLOCK_INDEX = `
+  query GetDailyRewardReceivedBlockIndex($avatarAddress: Address!) {
     dailyRewardReceivedBlockIndex(address: $avatarAddress)
   }
 ` 
